@@ -1,12 +1,12 @@
 class Pawn {
 
-    constructor(sketch, x = 400, y = 200, diameter = 10, speed, pg, target, idx) {
+    constructor(sketch, x = 400, y = 200, diameter = 10, speed, searchRadius, pg, target, idx) {
         this.sketch = sketch;
         this.x = x;
         this.y = y;
         this.diameter = diameter;
         this.speed = speed;
-        this.searchRadius = 100;
+        this.searchRadius = searchRadius;
         this.idx = idx;
 
         this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1));
@@ -35,6 +35,11 @@ class Pawn {
             this.pulsePeriod += this.sketch.deltaTime / 500;
         }
         this.sketch.pop();
+
+        if (this.sketch.keyIsDown(84)){
+            this.sketch.text(`x:${this.x.toFixed(2)}, y:${this.y.toFixed(2)}`, this.x + 10, this.y + 10);
+        }
+        
     }
 
     move() {
@@ -101,12 +106,10 @@ class Pawn {
         this.sketch.noFill();
         // this.sketch.line(this.x, this.y, other.x, other.y);
         // this.sketch.curve(this.x, this.y, other.x, other.y)
+        const noiseScale = 0.0;
         this.sketch.beginShape();
         this.sketch.curveVertex(this.x, this.y);
-        this.sketch.point(this.x, this.y);
-        this.sketch.point(this.x, this.y);
-
-        const noiseScale = 50;
+        this.sketch.curveVertex(this.x, this.y);
 
         for(let i = .05; i <= .95; i+= .05) {
             this.toNotify[other.idx].noiseOff += i;
@@ -126,13 +129,13 @@ class Pawn {
         const circleY = this.y + directionToTarget.y * this.toNotify[other.idx].time / 10;
         this.sketch.circle(circleX, circleY, 5);
         if (this.sketch.abs(circleX - other.x) <= other.diameter && this.sketch.abs(circleY - other.y) <= other.diameter) {
-            other.recieveTargetPosition();
+            other.receiveTargetPosition();
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
     }
 
-    recieveTargetPosition() {
+    receiveTargetPosition() {
         this.knowsTargetPosition = true;
     }
 }
