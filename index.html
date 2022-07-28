@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="./scripts/p5.min.js"></script>
+    <script type="text/javascript" src="./scripts/pawn.js"></script>
+
+    <script type="text/javascript" src="./scripts/trial-canvasClass.js"></script>
+    <script type="text/javascript" src="./scripts/trial-canvas.js"></script>
+    <script type="text/javascript" src="./scripts/trial-canvas-2.js"></script>
+    <style>
+        article {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            width: 800px;
+        }
+
+        .canvas-container {
+            align-items: center;
+        }
+
+        canvas {
+            filter: drop-shadow(8px 7px 3px rgba(0, 0, 0, 0.2))
+        }
+
+        .canvas-button {
+            position: absolute;
+            z-index: 10;
+        }
+
+        .read-more {
+            display: inline;
+            user-select: none;
+        }
+
+        .read-more.opened {
+            transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
+
+        .read-more-open {
+            width: 1em;
+            height: 1em;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        .read-more-open::after {
+            position: absolute;
+            content: "";
+            width: .8em;
+            height: .8em;
+            border-top: 2px solid black;
+            display: inline-block;
+            transform: translateY(calc(.4em - 1px + 3px));
+            transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
+
+        .read-more-open::before {
+            position: absolute;
+            content: "";
+            width: .8em;
+            height: .8em;
+            border-left: 2px solid black;
+            display: inline-block;
+            transform: translateX(calc(.4em - 1px)) translateY(3px);
+            transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+            transform-origin: center;
+        }
+
+        .read-more-open:hover::after {
+            border-top: 2px solid darkgray;
+        }
+
+        .read-more-open:hover::before {
+            border-left: 2px solid darkgray;
+        }
+
+        /* .read-more-open.opened::after {
+            transform: translateY(-.45em) rotateZ(90deg);
+        } */
+        .opened .read-more-open::before {
+            transform: translateY(calc(.4em - 1px + 3px)) rotateZ(90deg);
+            border-left: 2px solid rgba(0, 0, 0, 0);
+
+        }
+
+        .read-more-details {
+            display: block;
+            user-select: text;
+            height: 0px;
+            overflow: hidden;
+            animation-name: contract;
+            animation-duration: .3s;
+            animation-timing-function: ease-in;
+            color: rgba(1, 1, 1, 0);
+        }
+
+        .read-more.opened .read-more-details {
+            display: block;
+            width: fit-content;
+            height: fit-content;
+            padding: 20px;
+            background-color: aliceblue;
+            animation-name: expand;
+            animation-duration: .3s;
+            animation-timing-function: ease-in;
+            animation-direction: normal;
+            color: rgba(1, 1, 1, 1);
+        }
+
+        .display-none {
+            display: none;
+        }
+
+        .read-more-details span {
+            display: inline;
+        }
+
+        .read-more.opened .read-more-details span {
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        @keyframes expand {
+            from {
+                height: 0px;
+            }
+
+            to {
+                height: 70px;
+            }
+        }
+
+        @keyframes contract {
+            from {
+                height: 70px;
+            }
+
+            to {
+                height: 0px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const readMoreButtons = document.querySelectorAll('.read-more-open');
+            console.log(readMoreButtons);
+            readMoreButtons.forEach(b => {
+
+                const timers = [];
+                b.addEventListener('click', () => {
+                    b.parentElement.classList.toggle('opened');
+                    timers.push(setTimeout(() => {
+                        b.parentElement.querySelector('.read-more-details:not(.opened)').classList.toggle('display-none');
+                    }, 300));
+                })
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <main>
+        <header></header>
+        <article>
+            <header>
+                <h1>
+                    Organizations in motion
+                </h1>
+                <p>Exploring organizations, their uses and challenges through creative coding exercises.</p>
+            </header>
+            <section>
+                <h2>0. What is a model</h2>
+            </section>
+            <section>
+                <h2>1. The need for an organization</h2>
+                <h3>Opportunity acquisition</h3>
+                <p>Agents can share common goals. An organization offers its members the means to identify
+                    opportunities.</p>
+                <p>For this experiment the agents (the red dots) have been modeled as pseudo-<em>random walkers</em>
+                    <span class="read-more"><span class="read-more-open"></span><span
+                            class="read-more-details display-none"><span>The <em>random walk</em> is a process through which a
+                            mathematical space is traversed iteratively from the starting point, moving in each
+                            iteration with one unit on a particular dimension. This algorithm can be used to simulate
+                            brownian motion, the movement of amoebas on a surface, to trace a foraging animal or even to
+                            map stock prices.</span> <span> It this case the agents don't start at the origin point of the space and
+                            can move simultaneously on the X and Y direction.</span>
+                        </span></span> in pursuit of a destination (the green dot). Each agent only has a limited range
+                    of acquisition represented by the pulsing
+                    red circle. It will identify the opportunity only if it finds it in its range.
+                </p>
+                <div class="canvas-container">
+                    <div id="trial-canvas">
+                        <button class="canvas-button start-button">Start</button>
+                    </div>
+                    <!-- <div class="percentage"></div> -->
+                    <fig>Fig. 1a</fig>
+                    <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
+                        reaching the destination they will simply stop. The same space is covered multiple times over.
+                    </p>
+                </div>
+                <br />
+                <div class="canvas-container">
+                    <div id="trial-canvas-2">
+                        <button class="canvas-button start-button">Start</button>
+                    </div>
+                    <!-- <div class="percentage"></div> -->
+                    <fig>Fig. 1b</fig>
+                    <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
+                        the goal.</p>
+                    <p>Fundamental to this result are <em>lines of communication</em>, a <em>shared goal</em> and a
+                        <em>command structure</em>.
+                    </p>
+                    <p>In this case the lines of communication have been presumed to have perfect integrity and
+                        considerable speed. </p>
+                    <p>It's self-evident that the goal is shared.</p>
+                    <p>The command structure is perfectly horizontal. Each member can command each other the full
+                        spectrum of possible tasks, which consists of one single command.</p>
+                </div>
+                <h3>Resource pooling</h3>
+                <h3>Skills transfer</h3>
+            </section>
+            <section>
+                <h2>2. Structurelessness</h2>
+            </section>
+            <section>
+                <h2>3. No room to breath</h2>
+            </section>
+            <section>
+                <h2>4. Towards autonomous autopoetic organizations</h2>
+            </section>
+        </article>
+    </main>
+</body>
+
+</html>
