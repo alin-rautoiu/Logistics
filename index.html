@@ -3,12 +3,16 @@
 
 <head>
     <script type="text/javascript" src="./scripts/p5.min.js"></script>
+    <script type="text/javascript" src="./scripts/Entity.js"></script>
+    <script type="text/javascript" src="./scripts/Goal.js"></script>
     <script type="text/javascript" src="./scripts/pawn.js"></script>
 
     <script type="text/javascript" src="./scripts/trial-canvasClass.js"></script>
     <script type="text/javascript" src="./scripts/opportunity-canvasClass.js"></script>
     <script type="text/javascript" src="./scripts/trial-canvas.js"></script>
     <script type="text/javascript" src="./scripts/trial-canvas-2.js"></script>
+    <script type="text/javascript" src="./scripts/resource-canvasClass.js"></script>
+    <script type="text/javascript" src="./scripts/resource-canvas-1.js"></script>
     <link rel="stylesheet" href="./syles/style.css" >
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -119,7 +123,7 @@
                 <h3>Resource pooling</h3>
                 <div class="canvas-wrapper">
                     <div id="resource-canvas-1" class="canvas-container">
-                        <fig id="fib2a">Fib. 2a</fig>
+                        <fig id="fig2a">Fig. 2a</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
                             <input id="actors-num" type="number" value="6" max="200">

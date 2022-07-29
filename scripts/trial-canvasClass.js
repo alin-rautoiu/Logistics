@@ -7,11 +7,6 @@ class TrialCanvasBase {
         this.redAmount = 0;
         this.canvasId = canvasId;
 
-        this.target = {
-            x: 0,
-            y: 0
-        }
-
         this.pawnsNumberControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-num`);
         this.pawnsSpeedControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-speed`);
         this.pawnsSearchControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-search`);
@@ -104,7 +99,7 @@ class TrialCanvasBase {
                 }
             })
         }
-
+        this.pg = this.sketch.createGraphics(800, 400);
         this.setup(canvasId);
     }
 
@@ -115,12 +110,12 @@ class TrialCanvasBase {
 
     draw() {
         if (!this.hasStarted) {
-            this.pg.background(this.sketch.color(230, 230, 230));
+            this.pg.background(this.sketch.color(235, 235, 235));
 
         }
         this.sketch.blendMode(this.sketch.BLEND)
 
-        this.pg.background(this.sketch.color(230, 230, 230, 20));
+        this.pg.background(this.sketch.color(235, 235, 235, 20));
         this.sketch.image(this.pg, 0, 0);
 
         for (let i = 0; i < this.pawns.length; i++) {
