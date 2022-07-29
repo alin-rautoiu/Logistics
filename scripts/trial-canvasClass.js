@@ -15,6 +15,9 @@ class TrialCanvasBase {
         this.pawnsSpeed = this.pawnsSpeedControl.value;
         this.pawnsSearch = this.pawnsSearchControl.value;
 
+        this.numCols = 0;
+        this.numRows = 0;
+
         this.pawnsSearchControl.addEventListener('change', () => {
             this.pawnsSearch = this.pawnsSearchControl.value;
             for (const pawn of this.pawns) {
@@ -34,19 +37,13 @@ class TrialCanvasBase {
         this.pawnsNumberControl.addEventListener("change", () => {
             this.pawnsNumber = this.pawnsNumberControl.value;
             const sqrSz = this.pawnsNumber == 0 ? Math.sqrt((800 * 400)) : Math.sqrt((800 * 400) / this.pawnsNumber);
-            const numCols = Math.max(1, Math.floor(800 / sqrSz));
-            const numRows = Math.max(1, Math.ceil(400 / sqrSz));
+            this.numCols = Math.max(1, Math.floor(800 / sqrSz));
+            this.numRows = Math.max(1, Math.ceil(400 / sqrSz));
             console.log({curr: this.pawns.length, tar: this.pawnsNumber, ev: this.pawns.length < this.pawnsNumber})
             if (this.pawns.length < this.pawnsNumber) {
 
                 for (let i = this.pawns.length; i < this.pawnsNumber; i++) {
-                    const x = numCols == 1 ? 800 / 2 : this.sketch.map(i % numCols, 0, numCols - 1, 100, 700);
-                    const y = numRows == 1 ? 400 / 2 : this.sketch.map(Math.floor(i / numCols), 0, numRows, 100, 350);
-                    const randomX = this.sketch.random(20) - 10;
-                    const randomY = this.sketch.random(20) - 10;
-                    this.pawns.push(new Pawn(this.sketch, x + randomX, y + randomY, 10, this.pawnsSpeed, this.pawnsSearch, this.pg, this.target, this.pawns.length));
-                    this.pawns[i].randomX = randomX;
-                    this.pawns[i].randomY = randomY;
+                    this.addAPawn(i);
                 }
             } else if (this.pawns.length > this.pawnsNumberControl.value) {
                 this.pawns = this.pawns.slice(0, this.pawnsNumber);
@@ -55,11 +52,7 @@ class TrialCanvasBase {
             for (const pawn of this.pawns) {
                 const i = this.pawns.indexOf(pawn);
 
-                const newX = numCols == 1 ? 700 / 2 : this.sketch.map(i % numCols, 0, numCols - 1, 100, 700) + pawn.randomX;
-                const newY = numRows == 1 ? 300 / 2 : this.sketch.map(Math.floor(i / numCols), 0, numRows, 100, 350) + pawn.randomY;
-
-                pawn.x = newX;
-                pawn.y = newY;
+                this.setPawnOnGrid(pawn, i);
             }
             this.draw();
         })
@@ -103,9 +96,33 @@ class TrialCanvasBase {
         this.setup(canvasId);
     }
 
+    addAPawn(i, x, y) {
+        const p = this.createPawn(i, x ,y);
+        this.setPawnOnGrid(p, i);
+        this.pawns.push(p);
+        return p;
+    }
+
     setup(canvasId) {
         let canvas = this.sketch.select(`#${this.canvasId} canvas`) ?? this.sketch.createCanvas(800, 400);
         canvas.parent(canvasId);
+        const sqrSz = Math.sqrt((800 * 400) / this.pawnsNumber);
+        this.numCols = Math.max(1, Math.floor(800 / sqrSz));
+        this.numRows = Math.max(1, Math.ceil(400 / sqrSz));
+    }
+
+    createPawn(idx, x = 400, y = 200){
+        return new Pawn(this.sketch, x, y, 10, this.pawnsSpeed, this.pawnsSearch, this.pg, this.target, idx);
+    }
+
+    setPawnOnGrid(pawn, idx, randomScale = 10) {
+        const x = this.numCols == 1 ? 800 / 2 : this.sketch.map(idx % this.numCols, 0, this.numCols - 1, 100, 700);
+        const y = this.numRows == 1 ? 400 / 2 : this.sketch.map(Math.floor(idx / this.numCols), 0, this.numRows, 100, 350);
+        const randomX = pawn.randomX ?? this.sketch.random(randomScale * 2) - randomScale;
+        const randomY = pawn.randomY ?? this.sketch.random(randomScale * 2) - randomScale;
+        pawn.position = this.sketch.createVector(x + randomX, y + randomY);
+        pawn.randomX = randomX;
+        pawn.randomY = randomY;
     }
 
     draw() {

@@ -137,4 +137,8 @@ class Pawn extends Entity {
     receiveTargetPosition(targetPosition) {
         this.movementTarget = targetPosition;
     }
+
+    setGoal(goal) {
+        this.goal = goal;
+    }
 }
