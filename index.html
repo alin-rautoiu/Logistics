@@ -72,11 +72,11 @@
                         <button class="canvas-button start-button">Start</button>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="10" max="200">
+                            <input id="actors-num" type="number" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="100">
+                            <input id="actors-search" type="number" value="70">
                         </div>
                         <fig>Fig. 1a</fig>
                     </div>
@@ -89,19 +89,20 @@
                         <fig id="fig1b">Fig. 1b</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="10" max="200">
+                            <input id="actors-num" type="number" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="100">
+                            <input id="actors-search" type="number" value="70">
                         </div>
                     </div>
                     <div class="canvas-discussion">
                         <div>
-                            
                             <p>You can retry the experiment. There is even a slight possibility that all the independent actors in the first canvas will reach their destination before any in the second one.</p>
                         </div>
                         <div class="canvas-discussion-to-be-expanded">
+                            <p>Play with the parameters for the agents on each canvas. Notice how much fitter (faster and/or with a larger search radius) the agents exploring on their own have to be to reach the goal in a comparable time with those able to collaborate. Also note that the more collaborating agents there are, the quicker they all reach the destination.</p>
+                            
                             <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared goal</strong> and a
                                 <strong>command structure</strong>.
                             </p>
@@ -110,6 +111,7 @@
                             <p>It's self-evident that the goal is shared.</p>
                             <p>The command structure is perfectly horizontal. Each member can command each other the full
                                 spectrum of possible tasks, which consists of one single command.</p>
+                            <p>This is a naive organizational model which we'll complicate later on.</p>
                         </div>
                     </div>
                 </div>
