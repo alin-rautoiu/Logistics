@@ -1,4 +1,4 @@
-class TrialCanvas2 extends TrialCanvasBase {
+class TrialCanvas2 extends OpportunityCanvas {
     constructor(sketch, canvas) {
         super(sketch, canvas);
 
