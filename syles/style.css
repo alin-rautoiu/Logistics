@@ -1,0 +1,221 @@
+@font-face {
+    font-family: "Raleway";
+    src: url('../resources/fonts/Raleway-VariableFont_wght.ttf');
+}
+
+body {
+    font-family: 'Raleway';
+}
+
+p {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+}
+
+.canvas-wrapper {
+    align-items: center;
+    transition: all 1s ease-in-out;
+    position: relative ;
+}
+
+.canvas-wrapper.expanded {
+    display: flex;
+    flex-direction: row;
+    transform: translateX(-400px);
+    width: 1600px;
+}
+
+.canvas-discussion {
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-wrapper.expanded .canvas-discussion {
+    margin-left: 20px;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.canvas-discussion-to-be-expanded {
+    display: none;
+}
+
+.canvas-wrapper.expanded .canvas-discussion-to-be-expanded {
+    display: block;
+}
+
+canvas {
+    filter: drop-shadow(8px 7px 3px rgba(0, 0, 0, 0.2))
+}
+
+.canvas-button {
+    position: absolute;
+    z-index: 10;
+}
+
+.canvas-container {
+    position: relative;
+}
+
+.canvas-container fig {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.canvas-setup.hidden {
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+    left: 0px;
+    overflow: hidden;
+}
+
+.canvas-setup {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    width: fit-content;
+    height: fit-content;
+    left: -200px;
+    opacity: 1;
+    transition: transform .5s .5s ease-in-out, opacity 1s ease-in-out, left .5s ease-in-out;
+}
+
+.expanded .canvas-setup {
+    transform: translateY(-180px) translateX(200px);
+}
+
+.canvas-setup input[type=number] {
+    margin-bottom: 10px;
+}
+
+.read-more {
+    display: inline;
+    user-select: none;
+}
+
+.read-more.opened {
+    transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.read-more-open {
+    width: 1em;
+    height: 1em;
+    margin: 2px;
+    display: inline-block;
+}
+
+.read-more-open::after {
+    position: absolute;
+    content: "";
+    width: .8em;
+    height: .8em;
+    border-top: 2px solid black;
+    display: inline-block;
+    transform: translateY(calc(.4em - 1px + 3px));
+    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.read-more-open::before {
+    position: absolute;
+    content: "";
+    width: .8em;
+    height: .8em;
+    border-left: 2px solid black;
+    display: inline-block;
+    transform: translateX(calc(.4em - 1px)) translateY(3px);
+    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transform-origin: center;
+}
+
+.read-more-open:hover::after {
+    border-top: 2px solid darkgray;
+}
+
+.read-more-open:hover::before {
+    border-left: 2px solid darkgray;
+}
+
+/* .read-more-open.opened::after {
+    transform: translateY(-.45em) rotateZ(90deg);
+} */
+.opened .read-more-open::before {
+    transform: translateY(calc(.4em - 1px + 3px)) rotateZ(90deg);
+    border-left: 2px solid rgba(0, 0, 0, 0);
+
+}
+
+.read-more-details {
+    display: block;
+    user-select: text;
+    height: 0px;
+    overflow: hidden;
+    animation-name: contract;
+    animation-duration: .3s;
+    animation-timing-function: ease-in;
+    color: rgba(1, 1, 1, 0);
+}
+
+.read-more.opened .read-more-details {
+    display: block;
+    width: fit-content;
+    height: fit-content;
+    padding: 20px;
+    background-color: aliceblue;
+    animation-name: expand;
+    animation-duration: .3s;
+    animation-timing-function: ease-in;
+    animation-direction: normal;
+    color: rgba(1, 1, 1, 1);
+}
+
+.display-none {
+    display: none;
+}
+
+.read-more-details span {
+    display: inline;
+}
+
+.read-more.opened .read-more-details span {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+@keyframes expand {
+    from {
+        height: 0px;
+    }
+
+    to {
+        height: 70px;
+    }
+}
+
+@keyframes contract {
+    from {
+        height: 70px;
+    }
+
+    to {
+        height: 0px;
+    }
+}

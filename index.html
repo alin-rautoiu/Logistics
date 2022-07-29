@@ -8,206 +8,7 @@
     <script type="text/javascript" src="./scripts/trial-canvasClass.js"></script>
     <script type="text/javascript" src="./scripts/trial-canvas.js"></script>
     <script type="text/javascript" src="./scripts/trial-canvas-2.js"></script>
-    <style>
-        article {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        section {
-            display: flex;
-            flex-direction: column;
-            width: 800px;
-        }
-
-        .canvas-wrapper {
-            align-items: center;
-            transition: all 1s ease-in-out;
-            position: relative ;
-        }
-
-        .canvas-wrapper.expanded {
-            display: flex;
-            flex-direction: row;
-            transform: translateX(-400px);
-            width: 1600px;
-        }
-
-        .canvas-discussion {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .canvas-wrapper.expanded .canvas-discussion {
-            margin-left: 20px;
-        }
-
-        canvas {
-            filter: drop-shadow(8px 7px 3px rgba(0, 0, 0, 0.2))
-        }
-
-        .canvas-button {
-            position: absolute;
-            z-index: 10;
-        }
-
-        .canvas-container {
-            position: relative;
-        }
-
-        .canvas-container fig {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-
-        .canvas-setup.hidden {
-            width: 0px;
-            height: 0px;
-            opacity: 0;
-            left: 0px;
-            overflow: hidden;
-        }
-
-        .canvas-setup {
-            position: absolute;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-            justify-content: center;
-            width: fit-content;
-            height: fit-content;
-            left: -200px;
-            opacity: 1;
-            transition: transform .5s .5s ease-in-out, opacity 1s ease-in-out, left .5s ease-in-out;
-        }
-
-        .expanded .canvas-setup {
-            transform: translateY(-180px) translateX(200px);
-        }
-
-        .canvas-setup input[type=number] {
-            margin-bottom: 10px;
-        }
-
-        .read-more {
-            display: inline;
-            user-select: none;
-        }
-
-        .read-more.opened {
-            transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
-        }
-
-        .read-more-open {
-            width: 1em;
-            height: 1em;
-            margin: 2px;
-            display: inline-block;
-        }
-
-        .read-more-open::after {
-            position: absolute;
-            content: "";
-            width: .8em;
-            height: .8em;
-            border-top: 2px solid black;
-            display: inline-block;
-            transform: translateY(calc(.4em - 1px + 3px));
-            transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-        }
-
-        .read-more-open::before {
-            position: absolute;
-            content: "";
-            width: .8em;
-            height: .8em;
-            border-left: 2px solid black;
-            display: inline-block;
-            transform: translateX(calc(.4em - 1px)) translateY(3px);
-            transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-            transform-origin: center;
-        }
-
-        .read-more-open:hover::after {
-            border-top: 2px solid darkgray;
-        }
-
-        .read-more-open:hover::before {
-            border-left: 2px solid darkgray;
-        }
-
-        /* .read-more-open.opened::after {
-            transform: translateY(-.45em) rotateZ(90deg);
-        } */
-        .opened .read-more-open::before {
-            transform: translateY(calc(.4em - 1px + 3px)) rotateZ(90deg);
-            border-left: 2px solid rgba(0, 0, 0, 0);
-
-        }
-
-        .read-more-details {
-            display: block;
-            user-select: text;
-            height: 0px;
-            overflow: hidden;
-            animation-name: contract;
-            animation-duration: .3s;
-            animation-timing-function: ease-in;
-            color: rgba(1, 1, 1, 0);
-        }
-
-        .read-more.opened .read-more-details {
-            display: block;
-            width: fit-content;
-            height: fit-content;
-            padding: 20px;
-            background-color: aliceblue;
-            animation-name: expand;
-            animation-duration: .3s;
-            animation-timing-function: ease-in;
-            animation-direction: normal;
-            color: rgba(1, 1, 1, 1);
-        }
-
-        .display-none {
-            display: none;
-        }
-
-        .read-more-details span {
-            display: inline;
-        }
-
-        .read-more.opened .read-more-details span {
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        @keyframes expand {
-            from {
-                height: 0px;
-            }
-
-            to {
-                height: 70px;
-            }
-        }
-
-        @keyframes contract {
-            from {
-                height: 70px;
-            }
-
-            to {
-                height: 0px;
-            }
-        }
-    </style>
-
+    <link rel="stylesheet" href="./syles/style.css" >
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const readMoreButtons = document.querySelectorAll('.read-more-open');
@@ -237,6 +38,11 @@
             </header>
             <section>
                 <h2>0. What is a model</h2>
+                <p>Models can be thought of as many things. As a system of equations that takes an input and outputs a result. As a map. As a story.</p>
+                <p>We live only in the here and now, but models allow us, in a certain sense and for a limited number of issues, to be everywhere and everytime.</p>
+                <p>This is why we use models to predict what would happen, to measure the consequences of our decisions. We also use models to diagnose what went wrong.</p>
+                <p>There are brilliantly elegant models that rest on flawed assumptions of the real world. There are models that ask the wrong questions.</p>
+                <p>This is why a model is not a role-model and building it is in fact the first cybernetic act.</p>
             </section>
             <section>
                 <h2>1. The need for an organization</h2>
@@ -255,48 +61,56 @@
                     of acquisition represented by the pulsing
                     red circle. It will identify the opportunity only if it finds it in its range.
                 </p>
+                <p></p>
+                <p>The actors are placed on grid with a random offset. The goal is randomly placed.</p>
+                <p>The model doesn't necessarily look like what it models. You can think of this simulation in as literal a way as possible: an entity, be it an amoeba, a grazing cow, a drunk man or a submarine, searching for something in low visibility conditions. But this can simulate any kind of searching where the domain is not organized in any way: looking for an arbitrary turn of phrase in a book of poems or finding the differences between nearly matching photos. In these cases the pixels would represent the words, respectively where the eye is falling on the images.</p>
+                <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
+                    reaching the destination they will simply stop. The same space is covered multiple times over. It can take a long time for all of them to reach their goal.
+                </p>
                 <div class="canvas-wrapper">
                     <div id="trial-canvas" class="canvas-container">
                         <button class="canvas-button start-button">Start</button>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="10">
+                            <input id="actors-num" type="number" value="10" max="200">
                             <label for="actors-speed">Actors' speed</label>
-                            <input id="actors-speed" type="number" value="1">
+                            <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
                             <input id="actors-search" type="number" value="100">
                         </div>
                         <fig>Fig. 1a</fig>
                     </div>
-                    <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
-                        reaching the destination they will simply stop. The same space is covered multiple times over. It can take a long time for all of them to reach their goal.
-                    </p>
                 </div>
-                <br />
+                <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
+                    the goal. In this way, the agent to finish last will do so with only a small delay compared to the fastest one.</p>
                 <div class="canvas-wrapper has-more" data-link="trial-canvas">
                     <div id="trial-canvas-2" class="canvas-container">
                         <button class="canvas-button start-button">Start</button>
                         <fig id="fig1b">Fig. 1b</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="10">
+                            <input id="actors-num" type="number" value="10" max="200">
                             <label for="actors-speed">Actors' speed</label>
-                            <input id="actors-speed" type="number" value="1">
+                            <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
                             <input id="actors-search" type="number" value="100">
                         </div>
                     </div>
                     <div class="canvas-discussion">
-                    <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
-                        the goal. In this way, the agent to finish last will do so with only a small delay compared to the fastest one.</p>
-                    <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared goal</strong> and a
-                        <strong>command structure</strong>.
-                    </p>
-                    <p>In this case the lines of communication have been presumed to have perfect integrity and
-                        considerable speed. </p>
-                    <p>It's self-evident that the goal is shared.</p>
-                    <p>The command structure is perfectly horizontal. Each member can command each other the full
-                        spectrum of possible tasks, which consists of one single command.</p>
+                        <div>
+                            
+                            <p>You can retry the experiment. There is even a slight possibility that all the independent actors in the first canvas will reach their destination before any in the second one.</p>
+                        </div>
+                        <div class="canvas-discussion-to-be-expanded">
+                            <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared goal</strong> and a
+                                <strong>command structure</strong>.
+                            </p>
+                            <p>In this case the lines of communication have been presumed to have perfect integrity and
+                                considerable speed. </p>
+                            <p>It's self-evident that the goal is shared.</p>
+                            <p>The command structure is perfectly horizontal. Each member can command each other the full
+                                spectrum of possible tasks, which consists of one single command.</p>
+                        </div>
                     </div>
                 </div>
                 <h3>Resource pooling</h3>
