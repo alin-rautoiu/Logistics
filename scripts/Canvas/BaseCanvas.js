@@ -8,4 +8,10 @@ class BaseCanvas {
         let canvas = this.sketch.select(`#${this.canvasId} canvas`) ?? this.sketch.createCanvas(this.width, this.height);
         canvas.parent(canvasId);
     }
+
+    setup() {
+    }
+
+    draw(){
+    }
 }

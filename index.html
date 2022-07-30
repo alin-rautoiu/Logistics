@@ -11,10 +11,11 @@
     <script type="text/javascript" src="./scripts/Canvas/BaseCanvas.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/CanvasWithPawns.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Opportunity/opportunity-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/OpportunityCollab.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/OpportunityNonCollab.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityNonCollab.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvas-1.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
+    <script type="text/javascript" src="./scripts//Canvas/Planets/PlanetCanvas.js"></script>
     <link rel="stylesheet" href="./syles/style.css" >
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -38,10 +39,16 @@
         <header></header>
         <article>
             <header>
-                <h1>
-                    Organizations in motion
-                </h1>
-                <p>Exploring organizations, their uses and challenges through creative coding exercises.</p>
+                <div class="cover">
+                    <div class="canvas-wrapper">
+                        <div id="planets-background-canvas" class="canvas-container">
+                        </div>
+                    </div>
+                    <h1>
+                        Organizations in motion
+                    </h1>
+                    <p>Exploring organizations, their uses and challenges through creative coding exercises.</p>
+                </div>
             </header>
             <section>
                 <h2>0. What is a model</h2>

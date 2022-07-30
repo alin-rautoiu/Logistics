@@ -24,6 +24,24 @@ section {
     width: 800px;
 }
 
+.cover {
+    height: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover .canvas-wrapper {
+    position: absolute;
+    opacity: 0.1;
+}
+
+.cover .canvas-wrapper canvas {
+    filter: none;
+}
+
 .canvas-wrapper {
     align-items: center;
     transition: all 1s ease-in-out;
