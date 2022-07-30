@@ -5,6 +5,7 @@
 
 body {
     font-family: 'Raleway';
+    z-index: 2;
 }
 
 p {
@@ -21,7 +22,7 @@ article {
 section {
     display: flex;
     flex-direction: column;
-    width: 800px;
+    max-width: 800px;
 }
 
 .cover {
@@ -33,13 +34,24 @@ section {
     justify-content: center;
 }
 
+.text-align-center {
+    text-align: center;
+}
+
 .cover .canvas-wrapper {
     position: absolute;
-    opacity: 0.1;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%,  rgba(0,0,0,0) 90%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%,  rgba(0,0,0,0) 90%);
+
 }
 
 .cover .canvas-wrapper canvas {
     filter: none;
+    z-index: 1;
+    mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
 }
 
 .canvas-wrapper {

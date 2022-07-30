@@ -7,22 +7,26 @@ class PlanetCanvas extends BaseCanvas {
         super.setup();
         this.frameRate = 60;
         this.sketch.frameRate(this.frameRate);
+        this.centerX = this.width / 2;
+        this.centerY = this.height / 2;
     }
 
     draw() {
         super.draw();
-        let centerX = this.width / 2;
-        let centerY = this.height / 2;
+
         this.sketch.background("white");
-        this.drawSun(centerX, centerY);
-        this.drawEarth(centerX, centerY);
+        this.drawSun();
+        this.drawEarth();
+        this.drawMercury();
+        this.drawVenus();
+        this.drawMars();
     }
 
-    drawSun(centerX, centerY) {
+    drawSun() {
         this.sketch.push();
         this.sketch.fill("yellow")
         this.sketch.noStroke();
-        this.sketch.circle(centerX, centerY, 300);
+        this.sketch.circle(this.centerX, this.centerY, 300);
         this.sketch.pop();
     }
 
@@ -57,14 +61,41 @@ class PlanetCanvas extends BaseCanvas {
         }
     }
 
-    drawEarth(centerX, centerY) {
-        const radius = 300;
+    drawEarth() {
+        const radius = 400;
         const color = 'blue';
         const planetRadius = 10;
         const moons = [];
         const planetPeriod = 365.5;
-        moons.push({radius: 100, color: "black", planetRadius: 5, period: 24});
-        this.drawPlanet(centerX, centerY, color, radius, planetRadius, planetPeriod, moons);
+        moons.push({radius: 45, color: "black", planetRadius: 5, period: 24});
+        this.drawPlanet(this.centerX, this.centerY, color, radius, planetRadius, planetPeriod, moons);
+    }
+
+    drawMercury(){
+        const radius = 200;
+        const color = this.sketch.color(230,230,230);
+        const planetRadius = 5;
+        const planetPeriod = 87.97;
+        this.drawPlanet(this.centerX, this.centerY, color, radius, planetRadius, planetPeriod, null);
+    }
+
+    drawVenus() {
+        const radius = 300;
+        const color = this.sketch.color(230,30,230);
+        const planetRadius = 9;
+        const planetPeriod = 224.7;
+        this.drawPlanet(this.centerX, this.centerY, color, radius, planetRadius, planetPeriod, null);
+    }
+
+    drawMars () {
+        const radius = 500;
+        const color = this.sketch.color(230,30,30);
+        const planetRadius = 6;
+        const planetPeriod = 687;
+        const moons = [];
+        moons.push({radius: 50, color: this.sketch.color(150, 0, 0), planetRadius: 4, period: 30})
+        moons.push({radius: 20, color: this.sketch.color(200, 0, 0), planetRadius: 5, period: 8})
+        this.drawPlanet(this.centerX, this.centerY, color, radius, planetRadius, planetPeriod, moons);
     }
 }
 
