@@ -8,7 +8,7 @@ class Pawn extends Entity {
         this.idx = idx;
 
         this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1));
-
+        this.behavior = 'random-walk';
         this.pulse = true;
         this.pulsePeriod = 0;
         this.pg = pg;
@@ -57,8 +57,7 @@ class Pawn extends Entity {
     }
     
     getDirectionToTarget(target) {
-        const targetPosition = this.sketch.createVector(target.x, target.y);
-        const toTarget = targetPosition.sub(this.position);
+        const toTarget = p5.Vector.sub(target, this.position);
         return toTarget;
     }
 
@@ -84,6 +83,14 @@ class Pawn extends Entity {
 
         this.move();
         this.searchForTarget()
+    }
+
+    behave() {
+        switch(this.behavior) {
+            case 'random-walk':
+                this.randomWalk();
+                break;
+        }
     }
 
     notify(other) {

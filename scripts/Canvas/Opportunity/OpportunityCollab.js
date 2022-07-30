@@ -1,4 +1,4 @@
-class TrialCanvas2 extends OpportunityCanvas {
+class OpportunityCollab extends OpportunityCanvas {
     constructor(sketch, canvas) {
         super(sketch, canvas);
 
@@ -8,8 +8,6 @@ class TrialCanvas2 extends OpportunityCanvas {
 
         this.bubble = [];
     }
-
-
 
     draw () {
         super.draw();
@@ -31,7 +29,8 @@ const canvas2 = (sketch) => {
     let myCanvas2;
     
     sketch.setup = () => {
-        myCanvas2 = new TrialCanvas2(sketch, "trial-canvas-2");
+        myCanvas2 = new OpportunityCollab(sketch, "trial-canvas-2");
+        myCanvas2.setup();
     }
     
     sketch.draw = () => {

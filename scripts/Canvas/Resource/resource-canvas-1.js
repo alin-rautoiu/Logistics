@@ -1,19 +1,16 @@
-class TrialCanvas1 extends OpportunityCanvas {
+class ResourceCanvas1 extends ResourceCanvasBase {
     constructor(sketch, canvas){
         super(sketch, canvas);
     }
 }
 
-const canvas1 = (sketch) => {
+new p5((sketch) => {
     let myCanvas;
-
     sketch.setup = () => {
-        myCanvas = new TrialCanvas1(sketch, 'trial-canvas');
+        myCanvas = new ResourceCanvas1(sketch, 'resource-canvas-1');
+        myCanvas.setup();
     }
-
     sketch.draw = () => {
         myCanvas.draw();
     }
-}
-
-new p5(canvas1);
+})

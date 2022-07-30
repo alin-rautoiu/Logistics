@@ -1,11 +1,10 @@
-class TrialCanvasBase {
+class CanvasWithPawns extends BaseCanvas {
     constructor(sketch, canvasId) {
+        super(sketch, canvasId);
         this.pawns = [];
         this.baseColor = [];
         this.pg = null;
-        this.sketch = sketch;
         this.redAmount = 0;
-        this.canvasId = canvasId;
 
         this.pawnsNumberControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-num`);
         this.pawnsSpeedControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-speed`);
@@ -36,9 +35,9 @@ class TrialCanvasBase {
 
         this.pawnsNumberControl.addEventListener("change", () => {
             this.pawnsNumber = this.pawnsNumberControl.value;
-            const sqrSz = this.pawnsNumber == 0 ? Math.sqrt((800 * 400)) : Math.sqrt((800 * 400) / this.pawnsNumber);
-            this.numCols = Math.max(1, Math.floor(800 / sqrSz));
-            this.numRows = Math.max(1, Math.ceil(400 / sqrSz));
+            const sqrSz = this.pawnsNumber == 0 ? Math.sqrt((this.width * this.height)) : Math.sqrt((this.width * this.height) / this.pawnsNumber);
+            this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
+            this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
             console.log({curr: this.pawns.length, tar: this.pawnsNumber, ev: this.pawns.length < this.pawnsNumber})
             if (this.pawns.length < this.pawnsNumber) {
 
@@ -73,7 +72,6 @@ class TrialCanvasBase {
                         canvasContainer.classList.add('expanded');
                         canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
                         const link = canvasContainer.dataset.link;
-                        console.log(canvasContainer);
                         const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
                         linkedCanvasSetup.classList.remove('hidden');
                     }
@@ -81,43 +79,40 @@ class TrialCanvasBase {
                     startButton.innerHTML = "Start";
                     this.pawns = [];
                     this.baseColor = [];
-                    this.pg = null;
+                    this.pg = this.sketch.createGraphics(this.width, this.height);
                     this.redAmount = 0;
                     this.target = {
                         x: 0,
                         y: 0
                     }
                     this.hasStarted = false;
-                    this.sketch.setup(this.canvasId);
+                    this.setup(this.canvasId);
                 }
             })
         }
-        this.pg = this.sketch.createGraphics(800, 400);
-        this.setup(canvasId);
+        this.pg = this.sketch.createGraphics(this.width, this.height);
     }
 
     addAPawn(i, x, y) {
-        const p = this.createPawn(i, x ,y);
-        this.setPawnOnGrid(p, i);
+        const p = this.createPawn(i ?? this.pawns.length, x ,y);
         this.pawns.push(p);
         return p;
     }
 
     setup(canvasId) {
-        let canvas = this.sketch.select(`#${this.canvasId} canvas`) ?? this.sketch.createCanvas(800, 400);
-        canvas.parent(canvasId);
-        const sqrSz = Math.sqrt((800 * 400) / this.pawnsNumber);
-        this.numCols = Math.max(1, Math.floor(800 / sqrSz));
-        this.numRows = Math.max(1, Math.ceil(400 / sqrSz));
+        this.pawns = [];
+        const sqrSz = Math.sqrt((this.width * this.height) / this.pawnsNumber);
+        this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
+        this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
     }
 
-    createPawn(idx, x = 400, y = 200){
+    createPawn(idx, x = this.width / 2, y = this.height / 2){
         return new Pawn(this.sketch, x, y, 10, this.pawnsSpeed, this.pawnsSearch, this.pg, this.target, idx);
     }
 
     setPawnOnGrid(pawn, idx, randomScale = 10) {
-        const x = this.numCols == 1 ? 800 / 2 : this.sketch.map(idx % this.numCols, 0, this.numCols - 1, 100, 700);
-        const y = this.numRows == 1 ? 400 / 2 : this.sketch.map(Math.floor(idx / this.numCols), 0, this.numRows, 100, 350);
+        const x = this.numCols == 1 ? this.width / 2 : this.sketch.map(idx % this.numCols, 0, this.numCols - 1, 100, 700);
+        const y = this.numRows == 1 ? this.height / 2 : this.sketch.map(Math.floor(idx / this.numCols), 0, this.numRows, 100, 350);
         const randomX = pawn.randomX ?? this.sketch.random(randomScale * 2) - randomScale;
         const randomY = pawn.randomY ?? this.sketch.random(randomScale * 2) - randomScale;
         pawn.position = this.sketch.createVector(x + randomX, y + randomY);
@@ -137,11 +132,7 @@ class TrialCanvasBase {
 
         for (let i = 0; i < this.pawns.length; i++) {
             if (this.hasStarted) {
-                switch(this.pawnsBehavior){
-                    case 'random-walk':
-                        this.pawns[i].randomWalk();
-                        break;
-                }
+                this.pawns[i].behave();
             }
             this.pawns[i].display();
         }
@@ -149,7 +140,7 @@ class TrialCanvasBase {
         if (this.sketch.frameCount % 24 == 1) {
             this.pg.loadPixels()
             this.redAmount = 0;
-            for (let j = 0; j < 4 * (800 * 400); j += 4) {
+            for (let j = 0; j < 4 * (this.width * this.height); j += 4) {
                 if (this.sketch.frameCount == 1) {
                     this.baseColor[j] = this.pg.pixels[j];
                     this.baseColor[j + 1] = 0;

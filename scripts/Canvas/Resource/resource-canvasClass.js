@@ -1,4 +1,4 @@
-class ResourceCanvasBase extends TrialCanvasBase {
+class ResourceCanvasBase extends CanvasWithPawns {
     constructor(sketch, canvasId) {
         super(sketch, canvasId)
     }
@@ -9,7 +9,11 @@ class ResourceCanvasBase extends TrialCanvasBase {
         this.pawns.push()
 
         this.resources = [];
-        this.resources.push(new ResourcePoint(this.sketch, 400, 200));
+        const res = new ResourcePoint(this.sketch, 200, 200);
+        this.resources.push(res);
+        const p = this.addAPawn(null, 400, 200);
+        p.setGoal(res);
+        p.pawnsBehavior = 'random-walk';
     }
 
     draw() {

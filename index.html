@@ -3,17 +3,18 @@
 
 <head>
     <script type="text/javascript" src="./scripts/p5.min.js"></script>
-    <script type="text/javascript" src="./scripts/Entity.js"></script>
-    <script type="text/javascript" src="./scripts/Goal.js"></script>
-    <script type="text/javascript" src="./scripts/ResourcePoint.js"></script>
-    <script type="text/javascript" src="./scripts/pawn.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/Entity.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/Goal.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/ResourcePoint.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/pawn.js"></script>
 
-    <script type="text/javascript" src="./scripts/trial-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/opportunity-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/trial-canvas.js"></script>
-    <script type="text/javascript" src="./scripts/trial-canvas-2.js"></script>
-    <script type="text/javascript" src="./scripts/resource-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/resource-canvas-1.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/BaseCanvas.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/CanvasWithPawns.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/opportunity-canvasClass.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/OpportunityCollab.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/OpportunityNonCollab.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvasClass.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvas-1.js"></script>
     <link rel="stylesheet" href="./syles/style.css" >
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -75,7 +76,6 @@
                 </p>
                 <div class="canvas-wrapper">
                     <div id="trial-canvas" class="canvas-container">
-                        <button class="canvas-button start-button">Start</button>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
                             <input id="actors-num" type="number" value="6" max="200">
@@ -84,6 +84,7 @@
                             <label for="actors-search">Actors' search radius</label>
                             <input id="actors-search" type="number" value="70">
                         </div>
+                        <button class="canvas-button start-button">Start</button>
                         <fig>Fig. 1a</fig>
                     </div>
                 </div>
@@ -91,7 +92,6 @@
                     the goal. In this way, the agent to finish last will do so with only a small delay compared to the fastest one.</p>
                 <div class="canvas-wrapper has-more" data-link="trial-canvas">
                     <div id="trial-canvas-2" class="canvas-container">
-                        <button class="canvas-button start-button">Start</button>
                         <fig id="fig1b">Fig. 1b</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
@@ -101,6 +101,7 @@
                             <label for="actors-search">Actors' search radius</label>
                             <input id="actors-search" type="number" value="70">
                         </div>
+                        <button class="canvas-button start-button">Start</button>
                     </div>
                     <div class="canvas-discussion">
                         <div>
