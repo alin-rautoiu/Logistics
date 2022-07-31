@@ -38,7 +38,7 @@ class CanvasWithPawns extends BaseCanvas {
             const sqrSz = this.pawnsNumber == 0 ? Math.sqrt((this.width * this.height)) : Math.sqrt((this.width * this.height) / this.pawnsNumber);
             this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
             this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
-            console.log({curr: this.pawns.length, tar: this.pawnsNumber, ev: this.pawns.length < this.pawnsNumber})
+            
             if (this.pawns.length < this.pawnsNumber) {
 
                 for (let i = this.pawns.length; i < this.pawnsNumber; i++) {

@@ -14,19 +14,26 @@ class BaseCanvas {
                 this.draw();
             }
             s.mouseWheel = (event) => {
-                this.scale += .1;
+                this.mouseWheel(event);
             }
         });
+
+        this.zoomable = document.querySelector(`#${this.canvasId}`).classList.contains('zoomable');
+        this.scale = 1;
+        this.canZoom = false;
     }
 
     setup() {
     }
 
     draw(){
+        console.log(this.scale);
         this.sketch.scale(this.scale);
     }
 
     mouseWheel(event) {
-        this.scale += .1;
+        if (!this.canZoom) return;
+        if (event.target !== this.canvas.canvas) return;
+        this.scale += .1 * Math.sign(event.wheelDeltaY);
     }
 }

@@ -16,7 +16,7 @@
     <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvasClass.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Planets/PlanetCanvas.js"></script>
-    <link rel="stylesheet" href="./syles/style.css" >
+    <link rel="stylesheet" href="./syles/style.css">
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight);
@@ -35,14 +35,21 @@
                 })
             })
 
-            const canvases = document.querySelectorAll('.canvas-wrapper');
-            canvases.forEach((c) => {
+            const canvases = Array.from(document.querySelectorAll('.canvas-wrapper'));
+            let canScroll = true;
+            canvases.filter(c => c.querySelector('.zoomable') != null).forEach((c) => {
                 c.addEventListener('mouseenter', (e) => {
-                    document.querySelector('body').style
+                    canScroll = false;
                 })
 
                 c.addEventListener('mouseout', (e) => {
-                    console.log('exit');
+                    canScroll = true;
+                })
+                c.addEventListener('wheel', (e) => {
+                    if (!canScroll) {
+                        e.preventDefault();
+                        c.scroll(0, e.deltaY);
+                    }
                 })
             })
         })
@@ -62,15 +69,20 @@
                     <h1>
                         Organizations in motion
                     </h1>
-                    <p class="text-align-center">Exploring organizations, their uses and challenges through creative coding exercises.</p>
+                    <p class="text-align-center">Exploring organizations, their uses and challenges through creative
+                        coding exercises.</p>
                 </div>
             </header>
             <section>
                 <h2>0. What is a model</h2>
-                <p>Models can be thought of as many things. As a system of equations that takes an input and outputs a result. As a map. As a story.</p>
-                <p>We live only in the here and now, but models allow us, in a certain sense and for a limited number of issues, to be everywhere and everytime.</p>
-                <p>This is why we use models to predict what would happen, to measure the consequences of our decisions. We also use models to diagnose what went wrong.</p>
-                <p>There are brilliantly elegant models that rest on flawed assumptions of the real world. There are models that ask the wrong questions.</p>
+                <p>Models can be thought of as many things. As a system of equations that takes an input and outputs a
+                    result. As a map. As a story.</p>
+                <p>We live only in the here and now, but models allow us, in a certain sense and for a limited number of
+                    issues, to be everywhere and everytime.</p>
+                <p>This is why we use models to predict what would happen, to measure the consequences of our decisions.
+                    We also use models to diagnose what went wrong.</p>
+                <p>There are brilliantly elegant models that rest on flawed assumptions of the real world. There are
+                    models that ask the wrong questions.</p>
                 <p>This is why a model is not a role-model and building it is in fact the first cybernetic act.</p>
             </section>
             <section>
@@ -80,21 +92,31 @@
                     opportunities.</p>
                 <p>For this experiment the agents (the red dots) have been modeled as pseudo-<em>random walkers</em>
                     <span class="read-more"><span class="read-more-open"></span><span
-                            class="read-more-details display-none"><span>The <em>random walk</em> is a process through which a
-                            mathematical space is traversed iteratively from the starting point, moving in each
-                            iteration with one unit on a particular dimension. This algorithm can be used to simulate
-                            brownian motion, the movement of amoebas on a surface, to trace a foraging animal or even to
-                            map stock prices.</span> <span> It this case the agents don't start at the origin point of the space and
-                            can move simultaneously on the X and Y direction.</span>
+                            class="read-more-details display-none"><span>The <em>random walk</em> is a process through
+                                which a
+                                mathematical space is traversed iteratively from the starting point, moving in each
+                                iteration with one unit on a particular dimension. This algorithm can be used to
+                                simulate
+                                brownian motion, the movement of amoebas on a surface, to trace a foraging animal or
+                                even to
+                                map stock prices.</span> <span> It this case the agents don't start at the origin point
+                                of the space and
+                                can move simultaneously on the X and Y direction.</span>
                         </span></span> in pursuit of a destination (the green dot). Each agent only has a limited range
                     of acquisition represented by the pulsing
                     red circle. It will identify the opportunity only if it finds it in its range.
                 </p>
                 <p></p>
                 <p>The actors are placed on grid with a random offset. The goal is randomly placed.</p>
-                <p>The model doesn't necessarily look like what it models. You can think of this simulation in as literal a way as possible: an entity, be it an amoeba, a grazing cow, a drunk man or a submarine, searching for something in low visibility conditions. But this can simulate any kind of searching where the domain is not organized in any way: looking for an arbitrary turn of phrase in a book of poems or finding the differences between nearly matching photos. In these cases the pixels would represent the words, respectively where the eye is falling on the images.</p>
+                <p>The model doesn't necessarily look like what it models. You can think of this simulation in as
+                    literal a way as possible: an entity, be it an amoeba, a grazing cow, a drunk man or a submarine,
+                    searching for something in low visibility conditions. But this can simulate any kind of searching
+                    where the domain is not organized in any way: looking for an arbitrary turn of phrase in a book of
+                    poems or finding the differences between nearly matching photos. In these cases the pixels would
+                    represent the words, respectively where the eye is falling on the images.</p>
                 <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
-                    reaching the destination they will simply stop. The same space is covered multiple times over. It can take a long time for all of them to reach their goal.
+                    reaching the destination they will simply stop. The same space is covered multiple times over. It
+                    can take a long time for all of them to reach their goal.
                 </p>
                 <div class="canvas-wrapper">
                     <div id="trial-canvas" class="canvas-container">
@@ -111,7 +133,8 @@
                     </div>
                 </div>
                 <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
-                    the goal. In this way, the agent to finish last will do so with only a small delay compared to the fastest one.</p>
+                    the goal. In this way, the agent to finish last will do so with only a small delay compared to the
+                    fastest one.</p>
                 <div class="canvas-wrapper has-more" data-link="trial-canvas">
                     <div id="trial-canvas-2" class="canvas-container">
                         <fig id="fig1b">Fig. 1b</fig>
@@ -127,18 +150,25 @@
                     </div>
                     <div class="canvas-discussion">
                         <div>
-                            <p>You can retry the experiment. There is even a slight possibility that all the independent actors in the first canvas will reach their destination before any in the second one.</p>
+                            <p>You can retry the experiment. There is even a slight possibility that all the independent
+                                actors in the first canvas will reach their destination before any in the second one.
+                            </p>
                         </div>
                         <div class="canvas-discussion-to-be-expanded">
-                            <p>Play with the parameters for the agents on each canvas. Notice how much fitter (faster and/or with a larger search radius) the agents exploring on their own have to be to reach the goal in a comparable time with those able to collaborate. Also note that the more collaborating agents there are, the quicker they all reach the destination.</p>
-                            
-                            <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared goal</strong> and a
+                            <p>Play with the parameters for the agents on each canvas. Notice how much fitter (faster
+                                and/or with a larger search radius) the agents exploring on their own have to be to
+                                reach the goal in a comparable time with those able to collaborate. Also note that the
+                                more collaborating agents there are, the quicker they all reach the destination.</p>
+
+                            <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared
+                                    goal</strong> and a
                                 <strong>command structure</strong>.
                             </p>
                             <p>In this case the lines of communication have been presumed to have perfect integrity and
                                 considerable speed. </p>
                             <p>It's self-evident that the goal is shared.</p>
-                            <p>The command structure is perfectly horizontal. Each member can command each other the full
+                            <p>The command structure is perfectly horizontal. Each member can command each other the
+                                full
                                 spectrum of possible tasks, which consists of one single command.</p>
                             <p>This is a naive organizational model which we'll complicate later on.</p>
                         </div>
