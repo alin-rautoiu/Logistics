@@ -8,7 +8,7 @@ class Pawn extends Entity {
         this.idx = idx;
 
         this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1));
-        this.behavior = 'random-walk';
+        this.behavior = 'decide';
         this.pulse = true;
         this.pulsePeriod = 0;
         this.pg = pg;
@@ -17,6 +17,9 @@ class Pawn extends Entity {
         this.found = false;
 
         this.toNotify = {};
+        this.resources = {};
+        this.knownLocations = [];
+        this.tasks = [];
     }
 
     display() {
@@ -31,13 +34,54 @@ class Pawn extends Entity {
             this.pg.noFill();
             this.pg.ellipse(this.position.x, this.position.y, range, range);
             this.pulsePeriod += this.sketch.deltaTime / 500;
+        } else {
+            this.pg.noStroke();
+            this.pg.fill('red');
+            this.pg.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
         }
         this.sketch.pop();
 
         if (this.sketch.keyIsDown(84)){
             this.sketch.text(`x:${this.position.x.toFixed(2)}, y:${this.position.y.toFixed(2)}`, this.position.x + 10, this.position.y + 10);
         }
-        
+    }
+
+    decide () {
+
+        if (this.tasks.length === 0) return;
+
+        const currentTask = this.tasks[this.tasks.length - 1];
+        if (this.knownLocations.length === 0 || this.knownLocations.filter(l => l.kind === currentTask).length == 0) {
+            this.behavior = 'random-walk';
+            return;
+        }
+
+        let currentRequirement = TaskPoint.requirements(currentTask);
+
+        if (currentRequirement.length === 0) {
+            if (this.goal.kind !== currentTask) {
+                this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
+            }
+            this.receiveTargetPosition(this.goal);
+            this.behavior = 'go-to-target';
+            console.log(this.goal);
+            return;
+        }
+
+        if (this.resources[currentRequirement[0]] && this.resources[currentRequirement[0]].amount >= 20) {
+            if (this.goal.kind !== currentTask) {
+                this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
+            }
+            this.receiveTargetPosition(this.goal);
+            this.behavior = 'go-to-target';
+            return;
+        }
+
+        if (!this.resources[currentRequirement[0]] || this.resources[currentRequirement[0]].amount < 0.1) {
+            this.setGoal(this.knownLocations.find(l => l.kind === currentRequirement[0]));
+
+            return;
+        }
     }
 
     move() {
@@ -47,12 +91,21 @@ class Pawn extends Entity {
     }
 
     searchForTarget() {
-        const range = this.diameter / 2 + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius / 2;
+        const range = this.pulse 
+            ? this.diameter / 2 + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius / 2
+            : this.diameter / 2 + 5 + this.goal.r;
         const toTarget = this.getDirectionToTarget(this.goal.position);
         
         if (toTarget.mag() < range) {
             this.pulse = false;
             this.found = true;
+            this.knownLocations.push(this.goal);
+
+            if (this.goal.type === 'resource') {
+                this.behavior = 'collect';
+            } else {
+                this.behavior = 'stop';
+            }
         }
     }
     
@@ -62,34 +115,79 @@ class Pawn extends Entity {
     }
 
     randomWalk() {
-        if (this.found) return;
+        var newX = this.sketch.constrain(this.direction.x + this.sketch.random(-.25, .25), -1, 1);
+        var newY = this.sketch.constrain(this.direction.y + this.sketch.random(-.25, .25), -1, 1);
 
-        if (this.movementTarget) {
-            this.direction = this.getDirectionToTarget(this.movementTarget).normalize();
-        } else {
-            var newX = this.sketch.constrain(this.direction.x + this.sketch.random(-.25, .25), -1, 1);
-            var newY = this.sketch.constrain(this.direction.y + this.sketch.random(-.25, .25), -1, 1);
-    
-            if (this.position.x < 0 || this.position.x > 800) {
-                newX *= -1;
-            }
-    
-            if (this.position.y < 0 || this.position.y > 400) {
-                newY *= -1;
-            }
-            this.direction = this.sketch.createVector(newX, newY);
+        if (this.position.x < 0 || this.position.x > 800) {
+            newX *= -1;
         }
-        
+
+        if (this.position.y < 0 || this.position.y > 400) {
+            newY *= -1;
+        }
+        this.direction = this.sketch.createVector(newX, newY);
 
         this.move();
         this.searchForTarget()
     }
 
+    collect() {
+        const requirements = this.goal.requires();
+        if (this.resources[this.goal.kind]) {
+            this.resources[this.goal.kind].amount += 0.5;
+        } else {
+            this.resources[this.goal.kind] = {kind: this.goal.kind, amount: 0.5}
+        }
+        this.resources[this.goal.kind].amount = this.sketch.constrain(this.resources[this.goal.kind].amount, 0 , 20);
+        for(const req of requirements) {
+            if (this.resources[req]) {
+                this.resources[req].amount -= .5;
+            }
+        }
+
+        this.sketch.push();
+        this.sketch.noStroke();
+        this.sketch.fill(this.goal.mainColor);
+        this.sketch.rect(this.position.x - this.diameter, this.position.y - this.diameter / 2 - 10, this.resources[this.goal.kind].amount, 7);
+        this.sketch.pop();
+        this.goal.isWorkedOn();
+
+        if (this.resources[this.goal.kind].amount >= 20) {
+            console.log('slice');
+            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+            this.behavior = 'decide';
+        }
+    }
+
+    goToTarget() {
+        this.direction = this.getDirectionToTarget(this.movementTarget).normalize();
+        this.move();
+        this.searchForTarget()
+    }
+
+    stop()
+    {
+    }
+
     behave() {
         switch(this.behavior) {
+            case 'decide':
+                this.decide();
+                break;
             case 'random-walk':
                 this.randomWalk();
                 break;
+            case 'go-to-target':
+                this.goToTarget();
+                break;
+            case 'collect':
+                this.collect();
+                break;
+            case 'stop':
+                this.stop();
+                break;
+            default:
+                this.decide();
         }
     }
 
@@ -109,8 +207,6 @@ class Pawn extends Entity {
         this.sketch.stroke(250,250,30, 80);
         this.sketch.strokeWeight(4);
         this.sketch.noFill();
-        // this.sketch.line(this.x, this.y, other.x, other.y);
-        // this.sketch.curve(this.x, this.y, other.x, other.y)
         const noiseScale = 0.0;
         this.sketch.beginShape();
         this.sketch.curveVertex(this.position.x, this.position.y);
@@ -135,17 +231,22 @@ class Pawn extends Entity {
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).mag() <= other.diameter) {
-            other.receiveTargetPosition(this.goal.position);
+            other.receiveTargetPosition(this.goal);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
     }
 
-    receiveTargetPosition(targetPosition) {
-        this.movementTarget = targetPosition;
+    receiveTargetPosition(target) {
+        this.movementTarget = target.position;
+        this.knownLocations.push(target);
+        this.pulse = false;
+        this.behavior = 'decide';
     }
 
     setGoal(goal) {
         this.goal = goal;
+        this.pulse = this.knownLocations.length === 0 || this.knownLocations.indexOf(goal) == -1;
+        this.tasks.push(goal.kind);
     }
 }

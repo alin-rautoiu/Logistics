@@ -27,7 +27,6 @@ class BaseCanvas {
     }
 
     draw(){
-        console.log(this.scale);
         this.sketch.scale(this.scale);
     }
 

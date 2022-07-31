@@ -11,12 +11,10 @@ class ResourceCanvasBase extends CanvasWithPawns {
         this.resources = [];
         const res = new TaskPoint(this.sketch, 200, 200, 1);
         this.resources.push(res);
-        //this.resources.push(new TaskPoint(this.sketch, 150, 200, 2));
-        this.resources.push(new TaskPoint(this.sketch, 200, 150, 3));
-        //this.resources.push(new TaskPoint(this.sketch, 150, 150, 4));
+        this.resources.push(new TaskPoint(this.sketch, 600, 200, 3));
         const p = this.addAPawn(null, 400, 200);
-        p.setGoal(res);
-        p.pawnsBehavior = 'random-walk';
+        p.knownLocations = Array.from(this.resources);
+        p.setGoal(this.resources[1]);
     }
 
     draw() {
