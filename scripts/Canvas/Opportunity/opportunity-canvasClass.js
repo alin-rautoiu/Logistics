@@ -1,16 +1,14 @@
 class OpportunityCanvas extends CanvasWithPawns {
-    constructor(sketch, canvasId) {
-        super(sketch, canvasId);
+    constructor(canvasId) {
+        super(canvasId);
     }
 
-    setup(canvasId) {
-        super.setup(canvasId);
+    setup() {
+        super.setup();
         this.goal = new Goal(this.sketch, this.sketch.random(this.width - 200) + 100, this.sketch.random(this.height - 100) + 50)
         
         for (let i = 0; i < this.pawnsNumber; i++) {
-            const p = this.addAPawn(i);
-            this.setPawnOnGrid(p, i);
-            p.setGoal(this.goal);
+            this.addAPawn(i);
         }
 
         this.pawnsBehavior = 'random-walk';
@@ -19,5 +17,11 @@ class OpportunityCanvas extends CanvasWithPawns {
     draw() {
         super.draw();
         this.goal.draw(this.pawnsSearch);
+    }
+
+    addAPawn(i) {
+        const p = super.addAPawn(i);
+        this.setPawnOnGrid(p, i);
+        p.setGoal(this.goal);
     }
 }

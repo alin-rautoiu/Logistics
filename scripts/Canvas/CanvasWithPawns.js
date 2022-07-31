@@ -1,6 +1,6 @@
 class CanvasWithPawns extends BaseCanvas {
-    constructor(sketch, canvasId) {
-        super(sketch, canvasId);
+    constructor(canvasId) {
+        super(canvasId);
         this.pawns = [];
         this.baseColor = [];
         this.pg = null;
@@ -86,24 +86,27 @@ class CanvasWithPawns extends BaseCanvas {
                         y: 0
                     }
                     this.hasStarted = false;
-                    this.setup(this.canvasId);
+                    this.setup();
                 }
             })
         }
         this.pg = this.sketch.createGraphics(this.width, this.height);
     }
 
-    addAPawn(i, x, y) {
-        const p = this.createPawn(i ?? this.pawns.length, x ,y);
-        this.pawns.push(p);
-        return p;
-    }
-
-    setup(canvasId) {
+    setup() {
         this.pawns = [];
         const sqrSz = Math.sqrt((this.width * this.height) / this.pawnsNumber);
         this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
         this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
+        this.pawnsNumber = this.pawnsNumberControl.value;
+        this.pawnsSpeed = this.pawnsSpeedControl.value;
+        this.pawnsSearch = this.pawnsSearchControl.value;
+    }
+
+    addAPawn(i, x, y) {
+        const p = this.createPawn(i ?? this.pawns.length, x ,y);
+        this.pawns.push(p);
+        return p;
     }
 
     createPawn(idx, x = this.width / 2, y = this.height / 2){
@@ -121,6 +124,7 @@ class CanvasWithPawns extends BaseCanvas {
     }
 
     draw() {
+        super.draw();
         if (!this.hasStarted) {
             this.pg.background(this.sketch.color(235, 235, 235));
 

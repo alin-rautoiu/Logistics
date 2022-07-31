@@ -5,20 +5,24 @@
     <script type="text/javascript" src="./scripts/p5.min.js"></script>
     <script type="text/javascript" src="./scripts/Entities/Entity.js"></script>
     <script type="text/javascript" src="./scripts/Entities/Goal.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/ResourcePoint.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/TaskPoint.js"></script>
     <script type="text/javascript" src="./scripts/Entities/Pawn.js"></script>
 
     <script type="text/javascript" src="./scripts/Canvas/BaseCanvas.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/CanvasWithPawns.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Opportunity/opportunity-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityNonCollab.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvasClass.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
-    <script type="text/javascript" src="./scripts//Canvas/Planets/PlanetCanvas.js"></script>
+    <script type="text/javascript" src="./scripts/Canvas/Planets/PlanetCanvas.js"></script>
     <link rel="stylesheet" href="./syles/style.css" >
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight);
+            new OpportunityNonCollab('trial-canvas');
+            new OpportunityCollab('trial-canvas-2');
+            new ResourceCanvas1('resource-canvas-1');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -28,6 +32,17 @@
                     timers.push(setTimeout(() => {
                         b.parentElement.querySelector('.read-more-details:not(.opened)').classList.toggle('display-none');
                     }, 300));
+                })
+            })
+
+            const canvases = document.querySelectorAll('.canvas-wrapper');
+            canvases.forEach((c) => {
+                c.addEventListener('mouseenter', (e) => {
+                    document.querySelector('body').style
+                })
+
+                c.addEventListener('mouseout', (e) => {
+                    console.log('exit');
                 })
             })
         })

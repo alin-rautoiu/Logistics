@@ -98,15 +98,3 @@ class PlanetCanvas extends BaseCanvas {
         this.drawPlanet(this.centerX, this.centerY, color, radius, planetRadius, planetPeriod, moons);
     }
 }
-
-new p5((sketch) => {
-    let myCanvas;
-    sketch.setup = () => {
-        myCanvas = new PlanetCanvas(sketch, 'planets-background-canvas', window.innerWidth, window.innerHeight);
-        myCanvas.setup()
-    }
-
-    sketch.draw = () => {
-        myCanvas.draw();
-    }
-})
