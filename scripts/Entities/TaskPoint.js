@@ -26,6 +26,7 @@ class TaskPoint extends Entity {
         }
         this.rotation = 0;
         this.r = 7;
+        this.workers = [];
     }
 
     draw() {
@@ -80,6 +81,10 @@ class TaskPoint extends Entity {
 
     isWorkedOn() {
         this.active = true;
+    }
+
+    workStops() {
+        this.active = false;
     }
 
     drawHex(x, y, r) {

@@ -170,6 +170,7 @@ class Pawn extends Entity {
     }
 
     behave() {
+        this.goal.workStops();
         switch(this.behavior) {
             case 'decide':
                 this.decide();
