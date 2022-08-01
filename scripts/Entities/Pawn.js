@@ -3,11 +3,11 @@ class Pawn extends Entity {
     constructor(sketch, x = 400, y = 200, diameter = 10, speed, searchRadius, pg, target, idx) {
         super(sketch, x, y, "Pawn");
         this.diameter = diameter;
-        this.speed = speed;
+        this.speed = speed * 60;
         this.searchRadius = searchRadius;
         this.idx = idx;
 
-        this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1));
+        this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1)).normalize();
         this.behavior = 'decide';
         this.pulse = true;
         this.pulsePeriod = 0;
@@ -20,13 +20,33 @@ class Pawn extends Entity {
         this.resources = new ResourceHolder(this.sketch);
         this.knownLocations = [];
         this.tasks = [];
+        this.needs = 1;
+        this.consumes = false;
+        this.hungerMeter = 5000;
+        this.maxHunger = 5000;
+        this.lifetimeDecay = 0;
     }
 
     display() {
         this.sketch.push();
         this.sketch.noStroke();
+        
         this.sketch.fill('red');
+
         this.sketch.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
+        this.resources.display(this.position, this.diameter);
+
+        if (this.consumes) {
+            this.sketch.fill('#F47A9E');
+            this.sketch.arc(this.position.x, this.position.y, this.diameter, this.diameter, - Math.PI / 4, - Math.PI / 4 - Math.PI * 2 * this.hungerMeter / this.maxHunger);
+        }
+        
+        if (this.behavior === 'dead') {
+            this.sketch.stroke('darkGrey');
+            this.sketch.fill('darkGrey');
+            this.sketch.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
+        }
+
         if (this.pulse) {
             const range = this.diameter + 5 +  Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius;
             this.pg.strokeWeight(this.sketch.map(range, this.diameter + 5 + this.searchRadius, this.diameter + 5, 0.1, 4));
@@ -39,10 +59,13 @@ class Pawn extends Entity {
             this.pg.fill('red');
             this.pg.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
         }
+
         this.sketch.pop();
 
         if (this.sketch.keyIsDown(84)){
             this.sketch.text(`x:${this.position.x.toFixed(2)}, y:${this.position.y.toFixed(2)}`, this.position.x + 10, this.position.y + 10);
+            this.sketch.text(`lifetime:${this.lifetime}`, this.position.x + 10, this.position.y + 20);
+            this.sketch.text(`hunger:${this.hungerMeter}`, this.position.x + 10, this.position.y + 30);
         }
     }
 
@@ -59,18 +82,14 @@ class Pawn extends Entity {
         let currentRequirement = TaskPoint.requirements(currentTask);
 
         if (currentRequirement.length === 0) {
-            if (this.goal.kind !== currentTask) {
-                this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
-            }
+            this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
             this.receiveTargetPosition(this.goal);
             this.behavior = 'go-to-target';
             return;
         }
 
         if (this.resources.hasSufficientResource(currentRequirement[0])) {
-            if (this.goal.kind !== currentTask) {
-                this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
-            }
+            this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
             this.receiveTargetPosition(this.goal);
             this.behavior = 'go-to-target';
             return;
@@ -78,15 +97,19 @@ class Pawn extends Entity {
 
         if (this.resources.isResourceEmpty(currentRequirement[0])) {
             this.setGoal(this.knownLocations.find(l => l.kind === currentRequirement[0]));
-
-            return;
         }
     }
 
     move() {
-        const x = this.position.x + this.direction.x * this.speed;
-        const y = this.position.y + this.direction.y * this.speed;
-        this.position = this.sketch.createVector(x, y);
+        const velocity = this.getVelocity();
+        this.position.add(velocity);
+    }
+
+    getVelocity() {
+        // const velocity = this.direction.copy().mult(this.speed);
+        // ^ Pare ca functioneaza, dar arunca warningul `p5.Vector.prototype.mult: x contains components that are either undefined or not finite numbers` si nu-mi place
+        const velocity = this.sketch.createVector(this.direction.x * this.speed / 60, this.direction.y * this.speed / 60);
+        return velocity;
     }
 
     searchForTarget() {
@@ -98,7 +121,9 @@ class Pawn extends Entity {
         if (toTarget.mag() < range) {
             this.pulse = false;
             this.found = true;
-            this.knownLocations.push(this.goal);
+            if (this.knownLocations.indexOf(this.goal) == -1){
+                this.knownLocations.push(this.goal);
+            }
 
             if (this.goal.type === 'resource') {
                 this.behavior = 'collect';
@@ -114,8 +139,8 @@ class Pawn extends Entity {
     }
 
     randomWalk() {
-        var newX = this.sketch.constrain(this.direction.x + this.sketch.random(-.25, .25), -1, 1);
-        var newY = this.sketch.constrain(this.direction.y + this.sketch.random(-.25, .25), -1, 1);
+        var newX = this.direction.x + this.sketch.random(-.25, .25);
+        var newY = this.direction.y + this.sketch.random(-.25, .25);
 
         if (this.position.x < 0 || this.position.x > 800) {
             newX *= -1;
@@ -124,7 +149,7 @@ class Pawn extends Entity {
         if (this.position.y < 0 || this.position.y > 400) {
             newY *= -1;
         }
-        this.direction = this.sketch.createVector(newX, newY);
+        this.direction = this.sketch.createVector(newX, newY).normalize();
 
         this.move();
         this.searchForTarget()
@@ -132,7 +157,6 @@ class Pawn extends Entity {
 
     collect() {
 
-        this.resources.display(this.position, this.diameter);
         this.goal.isWorkedOn(this.resources);
 
         if (this.resources.getAmount(this.goal.kind) >= 20) {
@@ -142,7 +166,8 @@ class Pawn extends Entity {
     }
 
     goToTarget() {
-        this.direction = this.getDirectionToTarget(this.movementTarget).normalize();
+        const toTarget = this.getDirectionToTarget(this.movementTarget);
+        this.direction = toTarget.normalize();
         this.move();
         this.searchForTarget()
     }
@@ -153,6 +178,40 @@ class Pawn extends Entity {
 
     behave() {
         this.goal.workStops();
+
+        this.lifetime -= (this.sketch.deltaTime * this.lifetimeDecay);
+        this.hungerMeter -= this.consumes ? this.sketch.deltaTime : 0;
+
+        if (this.lifetime <= 0) {
+            this.die();
+        }
+
+        if (this.consumes) {
+            if (this.hungerMeter <= 0.0) {
+                this.resources.consume(this.needs)
+                    ? this.hungerMeter = this.maxHunger
+                    : this.die()
+            }
+        }
+
+        this.eval();
+    }
+
+    eval() {
+
+        if (this.consumes && this.goal.kind !== this.needs ) {
+            const foodLocation = this.knownLocations.filter(l => l.kind === this.needs)[0];
+            if (foodLocation) {
+                const distanceToFood = p5.Vector.sub(foodLocation.position, this.position);
+                const remainingDistance = this.remainingDistance();
+                if (distanceToFood.mag() - 5 >= remainingDistance) {
+                    this.setGoal(foodLocation);
+                    this.receiveTargetPosition(this.goal);
+                    this.behavior = 'go-to-target';
+                }
+            }
+        }
+
         switch(this.behavior) {
             case 'decide':
                 this.decide();
@@ -169,8 +228,6 @@ class Pawn extends Entity {
             case 'stop':
                 this.stop();
                 break;
-            default:
-                this.decide();
         }
     }
 
@@ -228,8 +285,20 @@ class Pawn extends Entity {
     }
 
     setGoal(goal) {
+        if (this.goal && this.goal.kind === goal.kind) return;
+
         this.goal = goal;
         this.pulse = this.knownLocations.length === 0 || this.knownLocations.indexOf(goal) == -1;
         this.tasks.push(goal.kind);
+    }
+
+    die() {
+        this.behavior = 'dead';
+    }
+
+    remainingDistance() {
+        const velocity = this.getVelocity().mag() / 60;
+        const portions = Math.floor(this.resources.getAmount(this.needs) / 5);
+        return portions > 1 ? velocity * (this.hungerMeter + (portions - 1) * this.maxHunger) :  velocity * this.hungerMeter;
     }
 }

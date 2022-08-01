@@ -4,6 +4,8 @@ class Entity {
         this.type = type;
         this.sketch = sketch;
         this.r = 10;
+        this.lifetime = 20000;
+        this.maxLifetime = this.lifetime;
     }
 
     hover(r) {
@@ -11,6 +13,5 @@ class Entity {
     }
 
     workStops(){
-        
     }
 }

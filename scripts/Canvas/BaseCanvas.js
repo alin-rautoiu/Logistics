@@ -21,6 +21,7 @@ class BaseCanvas {
         this.zoomable = document.querySelector(`#${this.canvasId}`).classList.contains('zoomable');
         this.scale = 1;
         this.canZoom = false;
+        this.sketch.frameRate(60);
     }
 
     setup() {

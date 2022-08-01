@@ -15,12 +15,14 @@ class ResourceCanvasBase extends CanvasWithPawns {
         const p = this.addAPawn(null, 400, 200);
         p.knownLocations = Array.from(this.resources);
         p.setGoal(this.resources[1]);
+        p.lifetimeDecay = 0;
+        p.consumes = true;
     }
 
     draw() {
         super.draw();
         for (const res of this.resources) {
-            res.draw();
+            res.display();
         }
     }
 }

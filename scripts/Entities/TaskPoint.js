@@ -28,13 +28,14 @@ class TaskPoint extends Entity {
         this.rotation = 0;
         this.r = 7;
         this.workers = [];
+        this.lifetime = 100;
 
         for(const r of this.req) {
             this.resources.setResource(r, 0.0);
         }
     }
 
-    draw() {
+    display() {
         this.sketch.push();
         switch (this.kind) {
             case 1:
@@ -65,7 +66,7 @@ class TaskPoint extends Entity {
         this.drawHex(this.position.x, this.position.y, this.r);
         this.sketch.pop();
         this.sketch.text(this.kind, this.position.y - 10);
-        this.resources.display(this.position, this.r + 5);
+        this.resources.display(this.position, this.r + 4);
     }
 
     requires() {
@@ -106,12 +107,22 @@ class TaskPoint extends Entity {
     }
 
     isWorkedOn(receivedRes) {
-        receivedRes.collectResource(this.kind);
+        let canCollect = true;
         for(const req of this.req) {
-            receivedRes.extractResource(req);
-            this.resources.collectResource(req);
+            canCollect = canCollect && receivedRes.extractResource(req);
         }
-        this.active = true;
+        
+        for(const req of this.req) {
+            if (canCollect) {
+                this.resources.collectResource(req);
+            }
+        }
+
+        if (canCollect) {
+            receivedRes.collectResource(this.kind);
+        }
+        
+        this.active = canCollect;
     }
 
     workStops() {
