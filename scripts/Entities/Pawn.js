@@ -17,7 +17,7 @@ class Pawn extends Entity {
         this.found = false;
 
         this.toNotify = {};
-        this.resources = {};
+        this.resources = new ResourceHolder(this.sketch);
         this.knownLocations = [];
         this.tasks = [];
     }
@@ -64,11 +64,10 @@ class Pawn extends Entity {
             }
             this.receiveTargetPosition(this.goal);
             this.behavior = 'go-to-target';
-            console.log(this.goal);
             return;
         }
 
-        if (this.resources[currentRequirement[0]] && this.resources[currentRequirement[0]].amount >= 20) {
+        if (this.resources.hasSufficientResource(currentRequirement[0])) {
             if (this.goal.kind !== currentTask) {
                 this.setGoal(this.knownLocations.find(l => l.kind === currentTask));
             }
@@ -77,7 +76,7 @@ class Pawn extends Entity {
             return;
         }
 
-        if (!this.resources[currentRequirement[0]] || this.resources[currentRequirement[0]].amount < 0.1) {
+        if (this.resources.isResourceEmpty(currentRequirement[0])) {
             this.setGoal(this.knownLocations.find(l => l.kind === currentRequirement[0]));
 
             return;
@@ -132,28 +131,11 @@ class Pawn extends Entity {
     }
 
     collect() {
-        const requirements = this.goal.requires();
-        if (this.resources[this.goal.kind]) {
-            this.resources[this.goal.kind].amount += 0.5;
-        } else {
-            this.resources[this.goal.kind] = {kind: this.goal.kind, amount: 0.5}
-        }
-        this.resources[this.goal.kind].amount = this.sketch.constrain(this.resources[this.goal.kind].amount, 0 , 20);
-        for(const req of requirements) {
-            if (this.resources[req]) {
-                this.resources[req].amount -= .5;
-            }
-        }
 
-        this.sketch.push();
-        this.sketch.noStroke();
-        this.sketch.fill(this.goal.mainColor);
-        this.sketch.rect(this.position.x - this.diameter, this.position.y - this.diameter / 2 - 10, this.resources[this.goal.kind].amount, 7);
-        this.sketch.pop();
-        this.goal.isWorkedOn();
+        this.resources.display(this.position, this.diameter);
+        this.goal.isWorkedOn(this.resources);
 
-        if (this.resources[this.goal.kind].amount >= 20) {
-            console.log('slice');
+        if (this.resources.getAmount(this.goal.kind) >= 20) {
             this.tasks = this.tasks.slice(0, this.tasks.length - 1);
             this.behavior = 'decide';
         }

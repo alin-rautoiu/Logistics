@@ -2,6 +2,7 @@ class TaskPoint extends Entity {
     constructor(sketch, x, y, kind) {
         super(sketch, x, y, "resource");
         this.kind = kind;
+        this.resources = new ResourceHolder(this.sketch);
         switch(kind) {
             case 1:
                 this.req = [];
@@ -27,6 +28,10 @@ class TaskPoint extends Entity {
         this.rotation = 0;
         this.r = 7;
         this.workers = [];
+
+        for(const r of this.req) {
+            this.resources.setResource(r, 0.0);
+        }
     }
 
     draw() {
@@ -60,6 +65,7 @@ class TaskPoint extends Entity {
         this.drawHex(this.position.x, this.position.y, this.r);
         this.sketch.pop();
         this.sketch.text(this.kind, this.position.y - 10);
+        this.resources.display(this.position, this.r + 5);
     }
 
     requires() {
@@ -79,7 +85,32 @@ class TaskPoint extends Entity {
         }
     }
 
-    isWorkedOn() {
+    static color(kind) {
+        switch(kind) {
+            case 1:
+                return "230, 255, 230";
+            case 2:
+                return "230, 230, 255";
+            case 3:
+                return 'green';
+            case 4:
+                return "20, 180, 180";
+        }
+    }
+
+    static requiredColor(kind) {
+        const reqCols = [];
+        for (const req of TaskPoint.requirements(kind)) {
+            reqCols.push(TaskPoint.color(req));
+        }
+    }
+
+    isWorkedOn(receivedRes) {
+        receivedRes.collectResource(this.kind);
+        for(const req of this.req) {
+            receivedRes.extractResource(req);
+            this.resources.collectResource(req);
+        }
         this.active = true;
     }
 
