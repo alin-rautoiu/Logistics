@@ -514,6 +514,35 @@ class RandomWalk extends PawnNode {
     }
 }
 
+class Collaborates extends PawnNode {
+    constructor(pawn) {
+        super(pawn);
+        this.name= "Collaborates";
+    }
+
+    run () {
+        super.run();
+        return this.pawn.collaborates ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+
+class SendCurrentTarget extends PawnNode {
+    constructor(pawn) {
+        super(pawn);
+        this.name = "SendCurrentTarget";
+    }
+
+    run () {
+        super.run();
+
+        for (const pawn of this.pawn.organization) {
+            this.pawn.notify(pawn);
+        }
+
+        return NodeState.SUCCESS;
+    }
+}
+
 class Move extends PawnNode {
     constructor(pawn) {
         super(pawn);

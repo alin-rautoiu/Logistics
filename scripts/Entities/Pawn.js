@@ -26,6 +26,7 @@ class Pawn extends Entity {
         this.hungerMeter = 5000;
         this.maxHunger = 5000;
         this.lifetimeDecay = 0;
+        this.organization = [];
 
         this.decision = new Sequence([
             new AlwaysSucceed(
@@ -75,7 +76,8 @@ class Pawn extends Entity {
                                         ]),
                                         new RandomWalk(this)
                                     ]),
-                                    new GoToTask(this)
+                                    new GoToTask(this),
+                                    new StopPulse(this)
                                 ]),
                                 new RandomWalk(this)
                             ]),
@@ -83,7 +85,10 @@ class Pawn extends Entity {
                         ])
                     ]),
                     new Sequence([
-                        new StopPulse(this)
+                        new Selector([
+                            new Inverter(new Collaborates(this)),
+                            new SendCurrentTarget(this)
+                        ])
                     ])
                 ])
             ])
@@ -103,7 +108,7 @@ class Pawn extends Entity {
     displayBranch(node, offset, depth) {
         const xSpread = 110;
         const ySpread = 40;
-        const startX = 400;
+        const startX = 200;
         const startY = 50;
 
         if (node.status == NodeState.SUCCESS) {
@@ -529,5 +534,13 @@ class Pawn extends Entity {
 
     getCurrentRange() {
         return this.diameter + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius
+    }
+
+    addToOrganization(pawn) {
+        if (!(pawn instanceof Pawn)) return;
+            
+        if (this.organization.indexOf(pawn) === -1) {
+            this.organization.push(pawn);
+        }
     }
 }
