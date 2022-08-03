@@ -20,4 +20,8 @@ class Goal extends Entity {
     requires() {
         return [];
     }
+
+    canPerformTask(resource) {
+        return true;
+    }
 }

@@ -106,6 +106,15 @@ class TaskPoint extends Entity {
         }
     }
 
+    static canPerformTask(kind, resources) {
+        for(const req of TaskPoint.requirements(kind)) {
+            if (!resources[req] || resources[req] <= 0)
+                return false;
+        }
+
+        return true;
+    }
+
     isWorkedOn(receivedRes) {
         let canCollect = true;
         for(const req of this.req) {

@@ -3,7 +3,8 @@
 
 <head>
     <script type="text/javascript" src="./scripts/p5.min.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/Abstract/ResourceHolder.js"></script>
+    <script type="text/javascript" src="./scripts/Helper/Decision/Case.js"></script>
+    <script type="text/javascript" src="./scripts/Entities/Interface/ResourceHolder.js"></script>
     <script type="text/javascript" src="./scripts/Entities/Entity.js"></script>
     <script type="text/javascript" src="./scripts/Entities/Goal.js"></script>
     <script type="text/javascript" src="./scripts/Entities/TaskPoint.js"></script>
@@ -123,11 +124,11 @@
                     <div id="trial-canvas" class="canvas-container">
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="6" max="200">
+                            <input id="actors-num" type="number" value="1" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="70">
+                            <input id="actors-search" type="number" value="100">
                         </div>
                         <button class="canvas-button start-button">Start</button>
                         <fig>Fig. 1a</fig>
@@ -202,6 +203,12 @@
             </section> -->
         </article>
     </main>
+    <div class="debug-control">
+        <input type="hidden" id="show-tree" value="false">
+        <input type="hidden" id="show-direction" value="false">
+        <input type="hidden" id="show-random-bounds" value="false">
+        <input type="hidden" id="random-to-mouse" value="false">
+    </div>
 </body>
 
 </html>

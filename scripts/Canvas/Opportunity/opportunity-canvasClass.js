@@ -22,6 +22,7 @@ class OpportunityCanvas extends CanvasWithPawns {
     addAPawn(i) {
         const p = super.addAPawn(i);
         this.setPawnOnGrid(p, i);
-        p.setGoal(this.goal);
+        p.tasks.push(this.goal.kind);
+        p.unknownLocations.push(this.goal);
     }
 }

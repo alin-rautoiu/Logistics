@@ -81,12 +81,11 @@ class CanvasWithPawns extends BaseCanvas {
                     this.baseColor = [];
                     this.pg = this.sketch.createGraphics(this.width, this.height);
                     this.redAmount = 0;
-                    this.target = {
-                        x: 0,
-                        y: 0
-                    }
                     this.hasStarted = false;
                     this.setup();
+                    if (this.resources) {
+                        this.resources = [];
+                    }
                 }
             })
         }
@@ -141,6 +140,10 @@ class CanvasWithPawns extends BaseCanvas {
             this.pawns[i].display();
         }
 
+        if(this.sketch.select('#show-tree').value() === "true"){
+            this.pawns[0].displayTree();
+        }
+        
         if (this.sketch.frameCount % 24 == 1) {
             this.pg.loadPixels()
             this.redAmount = 0;
