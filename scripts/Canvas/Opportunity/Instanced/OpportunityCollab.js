@@ -6,15 +6,6 @@ class OpportunityCollab extends OpportunityCanvas {
 
     setup () {
         super.setup();
-        for (let i = 0; i < this.pawns.length; i++) {
-            this.pawns[i].collaborates = true;
-        }
-
-        for (const pawn of this.pawns) {
-            const index = this.pawns.indexOf(pawn);
-            pawn.organization = [].concat(this.pawns);
-            pawn.organization.splice(index, 1);
-        }
     }
 
     draw () {
@@ -23,9 +14,10 @@ class OpportunityCollab extends OpportunityCanvas {
 
     addAPawn(i) {
         super.addAPawn(i);
-        
+
         for (const pawn of this.pawns) {
             const index = this.pawns.indexOf(pawn);
+            pawn.collaborates = true;
             pawn.organization = [].concat(this.pawns);
             pawn.organization.splice(index, 1);
         }
