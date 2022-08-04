@@ -24,4 +24,7 @@ class Goal extends Entity {
     canPerformTask(resource) {
         return true;
     }
+
+    isWorkedOn() {
+    }
 }

@@ -25,6 +25,21 @@ class ResourceCanvasBase extends CanvasWithPawns {
                 p.knownLocations.push(tp);
             }
         }
+
+        for (const res of this.resources) {
+            if (res.lifetime <= 0.0) {
+                this.resources.splice(this.resources.indexOf(res), 1);
+                for (const pawn of this.pawns) {
+                    if (pawn.knownLocations.indexOf(res) !== -1) {
+                        pawn.knownLocations.splice(pawn.knownLocations.indexOf(res), 1)
+                    }
+
+                    if (pawn.unknownLocations.indexOf(res) !== -1) {
+                        pawn.unknownLocations.splice(pawn.unknownLocations.indexOf(res), 1)
+                    }
+                }
+            }
+        }
     }
 
     addAPawn(i) {
@@ -32,6 +47,6 @@ class ResourceCanvasBase extends CanvasWithPawns {
         this.setPawnOnGrid(p, i);
         p.needs = 1;
         p.consumes = true;
-        p.lifetimeDecay = 1;
+        p.lifetimeDecay = 0;
     }
 }

@@ -28,7 +28,7 @@ class TaskPoint extends Entity {
         this.rotation = 0;
         this.r = 7;
         this.workers = [];
-        this.lifetime = 100;
+        this.lifetime = 5000.0;
 
         for(const r of this.req) {
             this.resources.setResource(r, 0.0);
@@ -36,6 +36,7 @@ class TaskPoint extends Entity {
     }
 
     display() {
+        this.lifetime -= this.sketch.deltaTime;
         this.sketch.push();
         switch (this.kind) {
             case 1:

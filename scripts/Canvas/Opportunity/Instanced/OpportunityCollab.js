@@ -20,4 +20,14 @@ class OpportunityCollab extends OpportunityCanvas {
     draw () {
         super.draw();
     }
+
+    addAPawn(i) {
+        super.addAPawn(i);
+        
+        for (const pawn of this.pawns) {
+            const index = this.pawns.indexOf(pawn);
+            pawn.organization = [].concat(this.pawns);
+            pawn.organization.splice(index, 1);
+        }
+    }
 }

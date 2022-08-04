@@ -23,93 +23,104 @@ class Pawn extends Entity {
         this.tasks = [];
         this.needs = 1;
         this.consumes = false;
-        this.hungerMeter = 5000;
-        this.maxHunger = 5000;
+        this.maxHunger = 8000;
+        this.hungerMeter = this.maxHunger;
         this.lifetimeDecay = 0;
         this.organization = [];
 
-        this.decision = new Sequence([
-            new AlwaysSucceed(
-                new Sequence([
-                    new TargetExists(this),
-                    new StopWork(this)
-                ])
-            ),
-            new TickTime(this),
+        this.decisions = [];
+        const stopWork = new AlwaysSucceed(
+            new Sequence([
+                new TargetExists(this),
+                new StopWork(this)
+            ])
+        );
+
+        const mainDecision = new Sequence([
             new Selector([
                 new StillAlive(this),
                 new Die(this)
             ]),
+            new TickTime(this),
             new Selector([
-                new Inverter(new HasToEat(this)),
-                new Selector([
-                    new Sequence([
-                        new Eat(this),
-                        new Replenish(this)]),
-                    new Die(this)
-                ])
-            ]),
-            new Sequence([
-                new HasTask(this),
-                new Selector([
-                    new Sequence([
-                        new Inverter(new IsAtTask(this)),
+                new Sequence([
+                    new Selector([
+                        new Inverter(new HasToEat(this)),
                         new Sequence([
-                            new Selector([
-                                new Sequence([
-                                    new Sequence([
-                                        new Selector([
-                                            new KnowsTaskLocation(this),
-                                            new TaskInRange(this)
-                                        ]),
-                                        new GoToTask(this)
-                                    ]),
-                                    new Selector([
-                                        new CanPerformTask(this),
-                                        new SwitchToTaskRequirement(this)
-                                    ]),
-                                    new Selector([
-                                        new FoodIsCloseEnough(this),
-                                        new Sequence([
-                                            new KnowsFoodLocations(this),
-                                            new GoToFood(this)
-                                        ]),
-                                        new RandomWalk(this)
-                                    ]),
-                                    new GoToTask(this),
-                                    new StopPulse(this)
-                                ]),
-                                new RandomWalk(this)
-                            ]),
-                            new Move(this)
+                            new Eat(this),
+                            new Replenish(this)
                         ])
+                    ]),
+                    new Selector([ // Sa se plimbe daca nu are ce face
+                        new HasTask(this),
+                        new Sequence([
+                            new Feed(this)
+                        ])
+                    ]),
+                    new Discover(this),
+                    new Selector([
+                        new FoodIsCloseEnough(this),
+                        new GoToFood(this)
                     ]),
                     new Sequence([
                         new Selector([
-                            new Inverter(new Collaborates(this)),
-                            new SendCurrentTarget(this)
+                            new CanPerformTask(this),
+                            new SwitchToTaskRequirement(this)
+                        ]),
+                        new Selector([
+                            new Sequence([
+                                    new KnowsTaskLocation(this),
+                                    new StopPulse(this),
+                                    new Selector([
+                                        new Sequence([
+                                            new IsAtTask(this),
+                                            new Sequence([
+                                                new Selector([
+                                                    new Inverter(new Collaborates(this)),
+                                                    new SendCurrentTarget(this)
+                                                ]),
+                                                new PerformWork(this),
+                                                new WorkIsDone(this),
+                                                new FinishTask(this)
+                                            ])
+                                        ]),
+                                        new GoToTask(this)
+                                    ]),
+                                ]),
+                                new Sequence([
+                                    new RandomWalk(this),
+                                    new StartPulse(this)
+                                ])
                         ])
                     ])
-                ])
-            ])
-        ])
+                ]),
+            ]),
+            new Move(this)
+        ]);
+
+        this.decisions.push(stopWork);
+        this.decisions.push(mainDecision);
+    }
+
+    behave() {
+        this.clearTreeState(this.decisions[1]);
+        for (const tree of this.decisions) {
+            tree.run();
+        }
     }
 
     displayTree() {
         this.sketch.push();
         this.sketch.rectMode(this.sketch.CENTER);
-        this.sketch.rect(400, 50, 50, 25);
-        this.sketch.textAlign(this.sketch.CENTER);
-        this.sketch.text(this.decision.name, 400, 25);
-        this.displayBranch(this.decision, 0, 0);
+        this.displayBranch(this.decisions[1], 0, 0);
         this.sketch.pop();
     }
 
     displayBranch(node, offset, depth) {
         const xSpread = 110;
         const ySpread = 40;
-        const startX = 200;
-        const startY = 50;
+        const startX = 300;
+        const startY = -50;
 
         if (node.status == NodeState.SUCCESS) {
             this.sketch.strokeWeight(0);
@@ -159,7 +170,7 @@ class Pawn extends Entity {
             }
 
             newOffset *= 1 / (depth / 3 + 1);
-            
+
             this.displayBranch(node.children[i], offset + newOffset, (depth + 1))
 
             if (node.children[i].status == NodeState.SUCCESS) {
@@ -175,7 +186,7 @@ class Pawn extends Entity {
                 this.sketch.stroke('black');
                 this.sketch.fill('black');
             }
-            
+
             if (node.children[i].ran) {
                 this.sketch.strokeWeight(1);
             } else {
@@ -353,12 +364,23 @@ class Pawn extends Entity {
 
     collect() {
 
+        if (!this.movementTarget) return;
+
         this.movementTarget.isWorkedOn(this.resources);
+
+        if (this.movementTarget instanceof Goal) {
+            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+            return;
+        }
 
         if (this.resources.getAmount(this.movementTarget.kind) >= 20) {
             this.tasks = this.tasks.slice(0, this.tasks.length - 1);
-            this.behavior = 'decide';
         }
+    }
+
+    finishTask() {
+        this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+        this.movementTarget = null;
     }
 
     goToTarget() {
@@ -369,39 +391,6 @@ class Pawn extends Entity {
     }
 
     stop() {
-    }
-
-    behave() {
-
-
-
-        // if (this.target) {
-        //     this.target.workStops();
-        // }
-
-        // this.lifetime -= (this.sketch.deltaTime * this.lifetimeDecay);
-        // this.hungerMeter -= this.consumes ? this.sketch.deltaTime : 0;
-
-        // if (this.lifetime <= 0) {
-        //     this.die();
-        // }
-
-        // if (this.consumes) {
-        //     if (this.hungerMeter <= 0.0) {
-        //         this.resources.consume(this.needs)
-        //             ? this.hungerMeter = this.maxHunger
-        //             : this.die()
-        //     }
-        // }
-
-        
-        // this.isOnHWall = false;
-        // this.isOnVWall = false;
-        
-        this.clearTreeState();
-        this.decision.run();
-
-        // this.eval();
     }
 
     clearTreeState(node) {
@@ -417,7 +406,7 @@ class Pawn extends Entity {
 
         if (!node.children || node.children.length === 0) return;
 
-        for(const child of node.children) {
+        for (const child of node.children) {
             this.clearTreeState(child);
         }
     }
@@ -459,13 +448,16 @@ class Pawn extends Entity {
         if (this.toNotify[other.idx] && !this.toNotify[other.idx].hasBeenNotified) {
             this.toNotify[other.idx].time += this.sketch.deltaTime;
         } else if (this.toNotify[other.idx] && this.toNotify[other.idx].hasBeenNotified) {
-            return;
+            return this.toNotify[other.idx].hasBeenNotified;
         } else {
-            this.toNotify[other.idx] = {};
-            this.toNotify[other.idx].time = 0;
-            this.toNotify[other.idx].hasBeenNotified = false;
-            this.toNotify[other.idx].noiseOff = 0.0;
+            this.toNotify[other.idx] = {
+                time: 0,
+                hasBeenNotified: false,
+                noiseOff: 0.0
+            };
         }
+
+        console.log({this:this.idx, other:other.idx});
 
         this.sketch.push();
         this.sketch.stroke(250, 250, 30, 80);
@@ -495,24 +487,38 @@ class Pawn extends Entity {
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
-            other.receiveTargetPosition(this.movementTarget);
+            other.receiveLocation(this.movementTarget);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
+
+        return this.toNotify[other.idx].hasBeenNotified;
     }
 
     receiveTargetPosition(target) {
+
+        if (!target) return;
+        this.receiveLocation(target);
+        this.movementTarget = target;
+        this.direction = this.movementTarget.position.copy().sub(this.position).normalize();
+    }
+
+    receiveLocation(target) {
 
         if (target instanceof Entity) {
             if (target === undefined || target === null) {
                 return;
             }
-    
-            this.movementTarget = target;
+
             if (this.knownLocations.indexOf(target) == -1) {
                 this.knownLocations.push(target);
             }
-            this.direction = this.movementTarget.position.copy().sub(this.position).normalize();
+            const unknownIndex = this.unknownLocations.indexOf(target);
+            if (unknownIndex != -1) {
+                this.unknownLocations.splice(unknownIndex, 1);
+            }
+
+            return target;
         }
     }
 
@@ -538,7 +544,7 @@ class Pawn extends Entity {
 
     addToOrganization(pawn) {
         if (!(pawn instanceof Pawn)) return;
-            
+
         if (this.organization.indexOf(pawn) === -1) {
             this.organization.push(pawn);
         }
