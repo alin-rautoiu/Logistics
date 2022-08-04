@@ -22,7 +22,8 @@ class ResourceCanvasBase extends CanvasWithPawns {
             const tp = new TaskPoint(this.sketch, this.sketch.random(600), this.sketch.random(300), 1);
             this.resources.push(tp);
             for (let p of this.pawns) {
-                p.knownLocations.push(tp);
+                //p.addNewUnknownLocation(tp);
+                p.receiveLocation(tp);
             }
         }
 
@@ -30,13 +31,7 @@ class ResourceCanvasBase extends CanvasWithPawns {
             if (res.lifetime <= 0.0) {
                 this.resources.splice(this.resources.indexOf(res), 1);
                 for (const pawn of this.pawns) {
-                    if (pawn.knownLocations.indexOf(res) !== -1) {
-                        pawn.knownLocations.splice(pawn.knownLocations.indexOf(res), 1)
-                    }
-
-                    if (pawn.unknownLocations.indexOf(res) !== -1) {
-                        pawn.unknownLocations.splice(pawn.unknownLocations.indexOf(res), 1)
-                    }
+                    pawn.removeLocation(res);
                 }
             }
         }

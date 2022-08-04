@@ -412,6 +412,20 @@ class CanPerformTask extends PawnNode {
     }
 }
 
+class HasEnough extends PawnNode {
+    constructor(pawn) {
+        super(pawn);
+        this.name = "HasEnough";
+    }
+
+    run () {
+        super.run();
+        const currentTask = this.pawn.getCurrentTask();
+        const enough = this.pawn.resources.hasSufficientResource(currentTask);
+        return enough ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+
 class SwitchToTaskRequirement extends PawnNode {
     constructor(pawn) {
         super(pawn);
@@ -457,7 +471,7 @@ class FoodIsCloseEnough extends PawnNode {
                 return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
             })
             .find(l => l.position.copy().sub(this.pawn.position).magSq() <= (remainingDistance * remainingDistance));
-        console.log(closestFood);
+
         if (closestFood) {
             this.pawn.closestFood = closestFood;
             return NodeState.SUCCESS;
@@ -475,7 +489,12 @@ class Feed extends PawnNode {
 
     run () {
         super.run();
-        return this.pawn.consumes ? NodeState.RUNNING : NodeState.FAILURE;
+        if (this.pawn.consumes) {
+            this.pawn.tasks.push(this.pawn.needs);
+            return NodeState.RUNNING;
+        }
+
+        return NodeState.FAILURE;
     }
 }
 
@@ -487,7 +506,11 @@ class GoToFood extends PawnNode {
 
     run () {
         super.run();
-        this.pawn.tasks.push(this.pawn.needs);
+        const currentTask = this.pawn.getCurrentTask();
+        if (currentTask != this.pawn.needs) {
+            this.pawn.tasks.push(this.pawn.needs);
+        }
+
         if (this.pawn.closestFood) {
             this.pawn.receiveLocation(this.pawn.closestFood);
         }
@@ -561,7 +584,6 @@ class SendCurrentTarget extends PawnNode {
         super.run();
         let allNotified = true;
         for (let p of this.pawn.organization) {
-            console.log({curr: this.pawn.idx, not: p.idx});
             allNotified = (this.pawn.notify(p) && allNotified);
         }
 
@@ -602,8 +624,7 @@ class PerformWork extends PawnNode {
         
         if (this.pawn.movementTarget === undefined) return NodeState.FAILURE;
         
-        this.pawn.collect();
-        return this.pawn.movementTarget ? NodeState.RUNNING : NodeState.SUCCESS;
+        return this.pawn.collect() ? NodeState.SUCCESS : NodeState.RUNNING;
     }
 }
 
@@ -642,7 +663,10 @@ class StandBy extends PawnNode {
 
     run () {
         super.run();
-        return NodeState.SUCCESS;
+        if (this.pawn.movementTarget) {
+            this.pawn.movementTarget.workStops();
+        }
+        return NodeState.RUNNING;
     }
 }
 

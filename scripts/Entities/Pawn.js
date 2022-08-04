@@ -23,18 +23,19 @@ class Pawn extends Entity {
         this.tasks = [];
         this.needs = 1;
         this.consumes = false;
-        this.maxHunger = 8000;
+        this.maxHunger = 5000;
         this.hungerMeter = this.maxHunger;
         this.lifetimeDecay = 0;
         this.organization = [];
 
         this.decisions = [];
-        const stopWork = new AlwaysSucceed(
-            new Sequence([
-                new TargetExists(this),
-                new StopWork(this)
-            ])
-        );
+        const stopWork = () => {
+            return new AlwaysSucceed(
+                new Sequence([
+                    new TargetExists(this),
+                    new StopWork(this)
+                ])
+        )};
 
         const mainDecision = new Sequence([
             new Selector([
@@ -53,14 +54,19 @@ class Pawn extends Entity {
                     ]),
                     new Selector([ // Sa se plimbe daca nu are ce face
                         new HasTask(this),
-                        new Sequence([
-                            new Feed(this)
+                        new Selector([
+                            new Feed(this),
+                            new StandBy(this)
                         ])
                     ]),
                     new Discover(this),
                     new Selector([
                         new FoodIsCloseEnough(this),
-                        new GoToFood(this)
+                        new Selector([
+                            new KnowsFoodLocations(this),
+                            new GoToFood(this)
+                        ]),
+                        new RandomWalk(this)
                     ]),
                     new Sequence([
                         new Selector([
@@ -74,14 +80,19 @@ class Pawn extends Entity {
                                     new Selector([
                                         new Sequence([
                                             new IsAtTask(this),
+                                            new Selector([
+                                                new Inverter(new Collaborates(this)),
+                                                new SendCurrentTarget(this)
+                                            ]),
                                             new Sequence([
                                                 new Selector([
-                                                    new Inverter(new Collaborates(this)),
-                                                    new SendCurrentTarget(this)
+                                                    new HasEnough(this),
+                                                    new Sequence([
+                                                        new PerformWork(this),
+                                                        new FinishTask(this)
+                                                    ])
                                                 ]),
-                                                new PerformWork(this),
-                                                new WorkIsDone(this),
-                                                new FinishTask(this)
+                                                new StandBy(this)
                                             ])
                                         ]),
                                         new GoToTask(this)
@@ -98,7 +109,7 @@ class Pawn extends Entity {
             new Move(this)
         ]);
 
-        this.decisions.push(stopWork);
+        this.decisions.push(stopWork());
         this.decisions.push(mainDecision);
     }
 
@@ -120,7 +131,7 @@ class Pawn extends Entity {
         const xSpread = 110;
         const ySpread = 40;
         const startX = 300;
-        const startY = -50;
+        const startY = -150;
 
         if (node.status == NodeState.SUCCESS) {
             this.sketch.strokeWeight(0);
@@ -364,21 +375,26 @@ class Pawn extends Entity {
 
     collect() {
 
-        if (!this.movementTarget) return;
+        if (!this.movementTarget) return false;
 
-        this.movementTarget.isWorkedOn(this.resources);
-
+        
         if (this.movementTarget instanceof Goal) {
             this.tasks = this.tasks.slice(0, this.tasks.length - 1);
-            return;
+            return true;
         }
-
+        
         if (this.resources.getAmount(this.movementTarget.kind) >= 20) {
-            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+            return true;
         }
+        
+        this.movementTarget.isWorkedOn(this.resources);
+        return false;
     }
 
     finishTask() {
+        if (this.movementTarget) {
+            this.movementTarget.workStops();
+        }
         this.tasks = this.tasks.slice(0, this.tasks.length - 1);
         this.movementTarget = null;
     }
@@ -460,13 +476,14 @@ class Pawn extends Entity {
         console.log({this:this.idx, other:other.idx});
 
         this.sketch.push();
-        this.sketch.stroke(250, 250, 30, 80);
+        this.sketch.stroke(250, 250, 30, 90);
         this.sketch.strokeWeight(4);
         this.sketch.noFill();
         const noiseScale = 0.0;
         this.sketch.beginShape();
         this.sketch.curveVertex(this.position.x, this.position.y);
         this.sketch.curveVertex(this.position.x, this.position.y);
+        const communicationSpeed = .2;
 
         for (let i = .05; i <= .95; i += .05) {
             this.toNotify[other.idx].noiseOff += i;
@@ -482,8 +499,8 @@ class Pawn extends Entity {
         this.sketch.endShape();
 
         const directionToTarget = this.getDirectionToTarget(other).normalize();
-        const circleX = this.position.x + directionToTarget.x * this.toNotify[other.idx].time / 10;
-        const circleY = this.position.y + directionToTarget.y * this.toNotify[other.idx].time / 10;
+        const circleX = this.position.x + directionToTarget.x * this.toNotify[other.idx].time * communicationSpeed;
+        const circleY = this.position.y + directionToTarget.y * this.toNotify[other.idx].time * communicationSpeed;
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
@@ -519,6 +536,31 @@ class Pawn extends Entity {
             }
 
             return target;
+        }
+    }
+
+    addNewUnknownLocation(target) {
+        if (target instanceof Entity) {
+            if (target === undefined || target === null) {
+                return;
+            }
+
+            this.unknownLocations.push(target);
+
+            return target;
+        }
+    }
+
+    removeLocation(target) {
+        if (this.knownLocations.indexOf(target) !== -1) {
+            this.knownLocations.splice(this.knownLocations.indexOf(target), 1)
+            if (this.movementTarget === target) {
+                this.movementTarget = null;
+            }
+        }
+
+        if (this.unknownLocations.indexOf(target) !== -1) {
+            this.unknownLocations.splice(this.unknownLocations.indexOf(target), 1)
         }
     }
 
