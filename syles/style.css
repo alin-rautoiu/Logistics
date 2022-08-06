@@ -216,8 +216,10 @@ canvas {
     overflow: hidden;
     animation-name: contract;
     animation-duration: .3s;
-    animation-timing-function: ease-in;
+    animation-timing-function: linear;
     color: rgba(1, 1, 1, 0);
+    background-color: rgba(1, 1, 1, 0);
+    
 }
 
 .read-more.opened .read-more-details {
@@ -225,12 +227,12 @@ canvas {
     width: fit-content;
     height: fit-content;
     padding: 20px;
-    background-color: aliceblue;
     animation-name: expand;
     animation-duration: .3s;
-    animation-timing-function: ease-in;
+    animation-timing-function: linear;
     animation-direction: normal;
     color: rgba(1, 1, 1, 1);
+    background-color: rgba(240, 248, 255, 100);
 }
 
 .display-none {
@@ -250,19 +252,28 @@ canvas {
 @keyframes expand {
     from {
         height: 0px;
+        color: rgba(1, 1, 1, 0);
+        background-color: rgba(1, 1, 1, 0);
     }
 
     to {
         height: 70px;
+        color: rgba(1, 1, 1, .5);
+        background-color: rgba(240, 248, 255, 100);
     }
 }
 
 @keyframes contract {
     from {
         height: 70px;
+        color: rgba(1, 1, 1, .5);
+        background-color: rgba(240, 248, 255, 100);
     }
 
     to {
         height: 0px;
+        color: rgba(1, 1, 1, 0);
+        background-color: rgba(1, 1, 1, 0);
+
     }
 }
