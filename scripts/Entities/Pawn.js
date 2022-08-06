@@ -131,7 +131,7 @@ class Pawn extends Entity {
         const xSpread = 110;
         const ySpread = 40;
         const startX = 300;
-        const startY = -150;
+        const startY = 10;
 
         if (node.status == NodeState.SUCCESS) {
             this.sketch.strokeWeight(0);
@@ -262,40 +262,30 @@ class Pawn extends Entity {
         }
     }
 
-    decide() {
+    collect() {
 
-        if (this.tasks.length === 0) return;
+        if (!(this.movementTarget && this.movementTarget.entity)) return false;
 
-        const currentTask = this.tasks[this.tasks.length - 1];
-        if (this.knownLocations.length === 0 || this.knownLocations.filter(l => l.kind === currentTask).length == 0) {
-            this.behavior = 'random-walk';
-            return;
+        
+        if (this.movementTarget.entity instanceof Goal) {
+            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+            return true;
         }
-
-        let currentRequirement = TaskPoint.requirements(currentTask);
-
-        if (currentRequirement.length === 0) {
-            const goal = this.knownLocations.find(l => l.kind === currentTask);
-            this.receiveTargetPosition(goal);
-            this.behavior = 'go-to-target';
-            return;
+        
+        if (this.resources.getAmount(this.movementTarget.entity.kind) >= 20) {
+            return true;
         }
-
-        if (this.resources.hasSufficientResource(currentRequirement[0])) {
-            const goal = this.knownLocations.find(l => l.kind === currentTask);
-            this.receiveTargetPosition(goal);
-            this.behavior = 'go-to-target';
-            return;
-        }
-
-        if (this.resources.isResourceEmpty(currentRequirement[0])) {
-            this.tasks.push(currentRequirement[0]);
-        }
+        
+        this.movementTarget.entity.work(this);
+        return false;
     }
 
-    move() {
-        const velocity = this.getVelocity();
-        this.position.add(velocity);
+    finishTask() {
+        if (this.movementTarget && this.movementTarget.entity) {
+            this.movementTarget.entity.workStops(this);
+        }
+        this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+        this.movementTarget = null;
     }
 
     getVelocity() {
@@ -320,90 +310,9 @@ class Pawn extends Entity {
         return velocity;
     }
 
-    searchForTarget() {
-        const range = this.pulse
-            ? this.diameter / 2 + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius / 2
-            : this.diameter / 2 + 5 + this.movementTarget.r;
-        const currentTask = this.tasks[this.tasks.length - 1];
-        const found = this.unknownLocations
-            .filter(l => l.kind === currentTask)
-            .sort((l1, l2) => {
-                return l1.position.copy().sub(this.position).magSq() - l2.position.copy().sub(this.position).magSq()
-            })
-            .find(l => l.position.copy().sub(this.position).magSq() < (range * range))
-
-        if (!found || found.length === 0) return;
-
-        this.receiveTargetPosition(found);
-
-        this.pulse = false;
-        this.found = true;
-        if (this.knownLocations.indexOf(this.movementTarget) == -1) {
-            this.knownLocations.push(this.movementTarget);
-            const foundIndex = this.unknownLocations.indexOf(found);
-            this.unknownLocations.splice(foundIndex, 1);
-        }
-
-        if (this.movementTarget.type === 'resource') {
-            this.behavior = 'collect';
-        } else {
-            this.behavior = 'stop';
-        }
-    }
-
     getDirectionToTarget(target) {
         const toTarget = p5.Vector.sub(target.position, this.position);
         return toTarget;
-    }
-
-    randomWalk() {
-        var newX = this.direction.x + this.sketch.random(-.25, .25);
-        var newY = this.direction.y + this.sketch.random(-.25, .25);
-
-        if (this.position.x < 0 || this.position.x > 800) {
-            newX *= -1;
-        }
-
-        if (this.position.y < 0 || this.position.y > 400) {
-            newY *= -1;
-        }
-        this.direction = this.sketch.createVector(newX, newY).normalize();
-
-        this.move();
-        this.searchForTarget()
-    }
-
-    collect() {
-
-        if (!this.movementTarget) return false;
-
-        
-        if (this.movementTarget instanceof Goal) {
-            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
-            return true;
-        }
-        
-        if (this.resources.getAmount(this.movementTarget.kind) >= 20) {
-            return true;
-        }
-        
-        this.movementTarget.isWorkedOn(this.resources);
-        return false;
-    }
-
-    finishTask() {
-        if (this.movementTarget) {
-            this.movementTarget.workStops();
-        }
-        this.tasks = this.tasks.slice(0, this.tasks.length - 1);
-        this.movementTarget = null;
-    }
-
-    goToTarget() {
-        const toTarget = this.getDirectionToTarget(this.movementTarget);
-        this.direction = toTarget.normalize();
-        this.move();
-        this.searchForTarget()
     }
 
     stop() {
@@ -427,39 +336,6 @@ class Pawn extends Entity {
         }
     }
 
-    eval() {
-
-        if (this.consumes && (!this.movementTarget || this.movementTarget.kind !== this.needs)) {
-            const foodLocation = this.knownLocations.filter(l => l.kind === this.needs)[0];
-            if (foodLocation) {
-                const distanceToFood = p5.Vector.sub(foodLocation.position, this.position);
-                const remainingDistance = this.remainingDistance();
-                if (distanceToFood.mag() - 5 >= remainingDistance) {
-                    this.receiveTargetPosition(foodLocation);
-                    this.behavior = 'go-to-target';
-                }
-            }
-        }
-
-        switch (this.behavior) {
-            case 'decide':
-                this.decide();
-                break;
-            case 'random-walk':
-                this.randomWalk();
-                break;
-            case 'go-to-target':
-                this.goToTarget();
-                break;
-            case 'collect':
-                this.collect();
-                break;
-            case 'stop':
-                this.stop();
-                break;
-        }
-    }
-
     notify(other) {
         if (this.toNotify[other.idx] && !this.toNotify[other.idx].hasBeenNotified) {
             this.toNotify[other.idx].time += this.sketch.deltaTime;
@@ -472,8 +348,6 @@ class Pawn extends Entity {
                 noiseOff: 0.0
             };
         }
-
-        console.log({this:this.idx, other:other.idx});
 
         this.sketch.push();
         this.sketch.stroke(250, 250, 30, 90);
@@ -515,9 +389,9 @@ class Pawn extends Entity {
     receiveTargetPosition(target) {
 
         if (!target) return;
-        this.receiveLocation(target);
+        this.receiveLocation(target.Entity);
         this.movementTarget = target;
-        this.direction = this.movementTarget.position.copy().sub(this.position).normalize();
+        this.direction = this.movementTarget.target.copy().sub(this.position).normalize();
     }
 
     receiveLocation(target) {
@@ -554,7 +428,7 @@ class Pawn extends Entity {
     removeLocation(target) {
         if (this.knownLocations.indexOf(target) !== -1) {
             this.knownLocations.splice(this.knownLocations.indexOf(target), 1)
-            if (this.movementTarget === target) {
+            if (this.movementTarget?.entity === target) {
                 this.movementTarget = null;
             }
         }

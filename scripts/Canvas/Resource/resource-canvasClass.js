@@ -6,7 +6,7 @@ class ResourceCanvasBase extends CanvasWithPawns {
 
     setup() {
         super.setup(this.canvasId);
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < this.pawnsNumber; i++) {
             this.addAPawn(i);
         }
     }

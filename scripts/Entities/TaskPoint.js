@@ -28,7 +28,9 @@ class TaskPoint extends Entity {
         this.rotation = 0;
         this.r = 7;
         this.workers = [];
+        this.occupied = false;
         this.lifetime = 5000.0;
+        this.maxWorkers = Number.MIN_SAFE_INTEGER;
 
         for(const r of this.req) {
             this.resources.setResource(r, 0.0);
@@ -116,10 +118,22 @@ class TaskPoint extends Entity {
         return true;
     }
 
-    isWorkedOn(receivedRes) {
-        let canCollect = true;
+    isFree() {
+        return this.workers.length < this.maxWorkers;
+    }
+
+    work(actor) {
+        
+        this.workers.push(actor);
+
+        if (this.occupied && !this.workers[actor.idx]) {
+            return;
+        }
+
+        let canCollect = true; this.workers[actor.idx];
+        const receivedRes = actor.resources;
         for(const req of this.req) {
-            canCollect = canCollect && receivedRes.extractResource(req);
+            canCollect = (canCollect && receivedRes.extractResource(req));
         }
         
         for(const req of this.req) {
@@ -133,10 +147,13 @@ class TaskPoint extends Entity {
         }
         
         this.active = canCollect;
+        this.occupied = !this.active;
     }
 
-    workStops() {
+    workStops(actor) {
         this.active = false;
+        const actorIndex = this.workers.indexOf(actor);
+        this.workers.splice(actorIndex, 1);
     }
 
     drawHex(x, y, r) {

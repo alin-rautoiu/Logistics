@@ -119,7 +119,7 @@ class Action extends Node {
 class TargetExists extends PawnNode {
     constructor(pawn) {
         super(pawn);
-        this.target = pawn.movementTarget;
+        this.target = pawn.movementTarget?.entity;
         this.name = "TargetExists";
     }
 
@@ -132,13 +132,14 @@ class TargetExists extends PawnNode {
 class StopWork extends PawnNode {
     constructor(pawn) {
         super(pawn);
-        this.entity = pawn.movementTarget;
+        this.entity = pawn.movementTarget?.entity;
         this.name = "StopWork";
     }
 
     run () {
         super.run();
-        this.entity.workStops();
+        if (this.entity)
+            this.entity.workStops(this.pawn);
         return NodeState.SUCCESS;
     }
 }
@@ -265,9 +266,9 @@ class IsAtTask extends PawnNode {
 
     run () {
         super.run();
-        const movementTarget = this.pawn.movementTarget;
+        const movementTarget = this.pawn.movementTarget?.entity;
         if (!movementTarget) return NodeState.FAILURE;
-        const distanceSq = this.pawn.movementTarget.position.copy()
+        const distanceSq = this.pawn.movementTarget.target.copy()
             .sub(this.pawn.position)
             .magSq();
             
@@ -393,7 +394,7 @@ class GoToTask extends PawnNode {
                 return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
             })[0];
 
-        this.pawn.receiveTargetPosition(found);
+        this.pawn.receiveTargetPosition(new MovementTarget(found));
         return NodeState.SUCCESS;
     }
 }
@@ -613,6 +614,17 @@ class Move extends PawnNode {
     }
 }
 
+class IsFree extends PawnNode {
+    constructor(pawn){
+        super(pawn);
+        this.name = "IsFree";
+    }
+
+    run () {
+        super.run();
+    }
+}
+
 class PerformWork extends PawnNode {
     constructor(pawn) {
         super(pawn);
@@ -638,7 +650,6 @@ class WorkIsDone extends PawnNode {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
         const enough = this.pawn.resources.hasSufficientResource(currentTask);
-        console.log(enough);
         return enough ? NodeState.SUCCESS : NodeState.RUNNING;
     }
 }
@@ -663,8 +674,8 @@ class StandBy extends PawnNode {
 
     run () {
         super.run();
-        if (this.pawn.movementTarget) {
-            this.pawn.movementTarget.workStops();
+        if (this.pawn.movementTarget?.entity) {
+            this.pawn.movementTarget.entity.workStops(this.pawn);
         }
         return NodeState.RUNNING;
     }

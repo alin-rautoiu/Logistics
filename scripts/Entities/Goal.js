@@ -25,6 +25,6 @@ class Goal extends Entity {
         return true;
     }
 
-    isWorkedOn() {
+    work() {
     }
 }
