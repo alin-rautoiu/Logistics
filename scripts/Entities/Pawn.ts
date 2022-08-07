@@ -1,6 +1,40 @@
 class Pawn extends Entity {
+    diameter: number;
+    speed: number;
+    searchRadius: number;
+    idx: number;
+    direction: any;
+    behavior: string;
+    pulse: boolean;
+    pulsePeriod: number;
+    pg: any;
+    movementTarget: MovementTarget;
+    found: boolean;
+    toNotify: Record<number, any>;
+    resources: ResourceHolder;
+    knownLocations: Goal[];
+    knownFoodLocations: Goal[];
+    unknownLocations: Goal[];
+    tasks: any[];
+    needs: number;
+    consumes: boolean;
+    maxHunger: number;
+    hungerMeter: number;
+    lifetimeDecay: number;
+    organization: Pawn[];
+    decisions: BTNode[];
+    currentRange: number;
+    collaborates: boolean;
+    isOnHWall: any;
+    isOnVWall: any;
+    bounceH: number;
+    bounceV: number;
+    foundPosition: TaskPoint;
+    currentTaskLocations: any;
+    closestFood: any;
+    decision: BTNode;
 
-    constructor(sketch, x = 400, y = 200, diameter = 10, speed, searchRadius, pg, target, idx) {
+    constructor(sketch: any, x = 400, y = 200, diameter = 10, speed: number, searchRadius: number, pg: any, target: any, idx: number) {
         super(sketch, x, y, "Pawn");
         this.diameter = diameter;
         this.speed = speed * 60;
@@ -111,6 +145,10 @@ class Pawn extends Entity {
 
         this.decisions.push(stopWork());
         this.decisions.push(mainDecision);
+        this.currentRange = undefined;
+        this.collaborates = undefined;
+        this.isOnHWall = undefined;
+        this.isOnVWall = undefined;
     }
 
     behave() {
@@ -127,11 +165,11 @@ class Pawn extends Entity {
         this.sketch.pop();
     }
 
-    displayBranch(node, offset, depth) {
+    displayBranch(node: BTNode, offset: number, depth: number) {
         const xSpread = 110;
         const ySpread = 40;
         const startX = 300;
-        const startY = 10;
+        const startY = -50;
 
         if (node.status == NodeState.SUCCESS) {
             this.sketch.strokeWeight(0);
@@ -170,7 +208,7 @@ class Pawn extends Entity {
 
         const childCount = node.children.length;
         for (let i = 0; i < childCount; i++) {
-            let newOffset;
+            let newOffset: number;
 
             if ((childCount % 2 == 1) && i >= Math.floor(childCount / 2)) {
                 newOffset = (i - Math.floor(childCount / 2)) * xSpread
@@ -263,20 +301,22 @@ class Pawn extends Entity {
     }
 
     collect() {
-
+        console.log('collect');
         if (!(this.movementTarget && this.movementTarget.entity)) return false;
 
-        
-        if (this.movementTarget.entity instanceof Goal) {
+        if (this.movementTarget.entity instanceof Goal && !(this.movementTarget.entity instanceof TaskPoint)) {
             this.tasks = this.tasks.slice(0, this.tasks.length - 1);
             return true;
         }
+
+        const taskPoint: TaskPoint = this.movementTarget.entity;
+        console.log(taskPoint);
         
-        if (this.resources.getAmount(this.movementTarget.entity.kind) >= 20) {
+        if (this.resources.getAmount(taskPoint) >= 20) {
             return true;
         }
         
-        this.movementTarget.entity.work(this);
+        taskPoint.work(this);
         return false;
     }
 
@@ -310,15 +350,15 @@ class Pawn extends Entity {
         return velocity;
     }
 
-    getDirectionToTarget(target) {
-        const toTarget = p5.Vector.sub(target.position, this.position);
+    getDirectionToTarget(target: Pawn) {
+        const toTarget = target.position.copy().sub(this.position);
         return toTarget;
     }
 
     stop() {
     }
 
-    clearTreeState(node) {
+    clearTreeState(node: BTNode) {
         if (!node) {
             this.foundPosition = null;
             this.currentTaskLocations = null;
@@ -336,7 +376,7 @@ class Pawn extends Entity {
         }
     }
 
-    notify(other) {
+    notify(other: Pawn) {
         if (this.toNotify[other.idx] && !this.toNotify[other.idx].hasBeenNotified) {
             this.toNotify[other.idx].time += this.sketch.deltaTime;
         } else if (this.toNotify[other.idx] && this.toNotify[other.idx].hasBeenNotified) {
@@ -378,7 +418,7 @@ class Pawn extends Entity {
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
-            other.receiveLocation(this.movementTarget);
+            other.receiveLocation(this.movementTarget.entity);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
@@ -386,17 +426,17 @@ class Pawn extends Entity {
         return this.toNotify[other.idx].hasBeenNotified;
     }
 
-    receiveTargetPosition(target) {
+    receiveTargetPosition(target: MovementTarget) {
 
         if (!target) return;
-        this.receiveLocation(target.Entity);
+        this.receiveLocation(target.entity);
         this.movementTarget = target;
         this.direction = this.movementTarget.target.copy().sub(this.position).normalize();
     }
 
-    receiveLocation(target) {
+    receiveLocation(target: Goal) {
 
-        if (target instanceof Entity) {
+        if (target instanceof Goal) {
             if (target === undefined || target === null) {
                 return;
             }
@@ -413,8 +453,8 @@ class Pawn extends Entity {
         }
     }
 
-    addNewUnknownLocation(target) {
-        if (target instanceof Entity) {
+    addNewUnknownLocation(target: Goal) {
+        if (target instanceof Goal) {
             if (target === undefined || target === null) {
                 return;
             }
@@ -425,7 +465,7 @@ class Pawn extends Entity {
         }
     }
 
-    removeLocation(target) {
+    removeLocation(target: Goal) {
         if (this.knownLocations.indexOf(target) !== -1) {
             this.knownLocations.splice(this.knownLocations.indexOf(target), 1)
             if (this.movementTarget?.entity === target) {
@@ -458,7 +498,7 @@ class Pawn extends Entity {
         return this.diameter + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius
     }
 
-    addToOrganization(pawn) {
+    addToOrganization(pawn: Pawn) {
         if (!(pawn instanceof Pawn)) return;
 
         if (this.organization.indexOf(pawn) === -1) {

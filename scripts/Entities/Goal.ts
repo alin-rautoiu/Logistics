@@ -1,11 +1,13 @@
 class Goal extends Entity {
-    constructor(sketch, x, y, searchArea){
-        super(sketch, x, y, "goal");
+    kind: number;
+
+    constructor(sketch: any, x: any, y: any,  type: string){
+        super(sketch, x, y, type);
         this.kind = 1;
         this.r = 10;
     }
 
-    draw(searchRadius) {
+    draw(searchRadius: any) {
         this.sketch.push();
         this.sketch.stroke('green');
         this.sketch.circle(this.position.x, this.position.y, this.r);
@@ -21,10 +23,10 @@ class Goal extends Entity {
         return [];
     }
 
-    canPerformTask(resource) {
+    canPerformTask(resource: any) {
         return true;
     }
 
-    work() {
+    work(actor: Pawn) {
     }
 }

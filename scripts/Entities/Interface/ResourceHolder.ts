@@ -1,5 +1,8 @@
 class ResourceHolder {
-    constructor(sketch) {
+    sketch: any;
+    resources: {};
+    
+    constructor(sketch: any) {
         this.sketch = sketch;
         this.resources = {};
     }

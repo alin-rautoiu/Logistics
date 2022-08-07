@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "outDir": "./built",
+      "target": "es2015",
+      "removeComments": true,
+      "lib": ["ES2016", "DOM"],
+      "esModuleInterop": true,
+      "preserveConstEnums": true,
+    },
+    // "include": ["./scripts/**/*"],
+    "include": ["./scripts/**/*"]
+  }

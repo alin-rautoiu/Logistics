@@ -1,5 +1,15 @@
-class TaskPoint extends Entity {
-    constructor(sketch, x, y, kind) {
+class TaskPoint extends Goal {
+    resources: ResourceHolder;
+    req: any[];
+    mainColor: any;
+    accentColor: any;
+    rotation: number;
+    workers: Pawn[];
+    occupied: boolean;
+    maxWorkers: number;
+    active: boolean;
+
+    constructor(sketch: any, x: any, y: any, kind: number) {
         super(sketch, x, y, "resource");
         this.kind = kind;
         this.resources = new ResourceHolder(this.sketch);
@@ -76,7 +86,7 @@ class TaskPoint extends Entity {
         return this.req;
     }
 
-    static requirements(kind) {
+    static requirements(kind: any) {
         switch(kind) {
             case 1:
                 return [];
@@ -89,7 +99,7 @@ class TaskPoint extends Entity {
         }
     }
 
-    static color(kind) {
+    static color(kind: number) {
         switch(kind) {
             case 1:
                 return "230, 255, 230";
@@ -102,16 +112,16 @@ class TaskPoint extends Entity {
         }
     }
 
-    static requiredColor(kind) {
+    static requiredColor(kind: any) {
         const reqCols = [];
         for (const req of TaskPoint.requirements(kind)) {
             reqCols.push(TaskPoint.color(req));
         }
     }
 
-    static canPerformTask(kind, resources) {
+    static canPerformTask(kind: any, resources: ResourceHolder) {
         for(const req of TaskPoint.requirements(kind)) {
-            if (!resources[req] || resources[req] <= 0)
+            if (resources.isResourceEmpty(req))
                 return false;
         }
 
@@ -122,7 +132,7 @@ class TaskPoint extends Entity {
         return this.workers.length < this.maxWorkers;
     }
 
-    work(actor) {
+    work(actor: Pawn) {
         
         this.workers.push(actor);
 
@@ -150,13 +160,13 @@ class TaskPoint extends Entity {
         this.occupied = !this.active;
     }
 
-    workStops(actor) {
+    workStops(actor: Pawn) {
         this.active = false;
         const actorIndex = this.workers.indexOf(actor);
         this.workers.splice(actorIndex, 1);
     }
 
-    drawHex(x, y, r) {
+    drawHex(x: number, y: number, r: number) {
         this.sketch.beginShape();
         for(let i = 0; i < 6; i++) {
             this.sketch.vertex(x + Math.sin(i/3 * Math.PI) * r, y + Math.cos(i / 3 * Math.PI) * r);

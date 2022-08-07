@@ -3,20 +3,24 @@
 
 <head>
     <title>Organizations in motion</title>
-    
+
     <meta name="author" content="Alin Răuțoiu">
     <meta name="description" content="An exploration of why people get organized and how organizations fail">
     <meta name="keyword" content="organization, creative coding, p5js">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script type="text/javascript" src="./scripts/p5.min.js"></script>
-    <script type="text/javascript" src="./scripts/Helper/Decision/Case.js"></script>
-    <script type="text/javascript" src="./scripts//Entities/MovementTarget.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/Interface/ResourceHolder.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/Entity.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/Goal.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/TaskPoint.js"></script>
-    <script type="text/javascript" src="./scripts/Entities/Pawn.js"></script>
+    <!-- <script type="text/javascript" src="./scripts/p5.min.js"></script> -->
+    <!-- <script type="text/javascript" src="./built/bundle.js"></script> -->
+    <script src="./node_modules/p5/lib/p5.min.js"></script>
+
+    
+    <script type="text/javascript" src="./built/Helper/Decision/Case.js"></script>
+    <script type="text/javascript" src="./built//Entities/MovementTarget.js"></script>
+    <script type="text/javascript" src="./built/Entities/Interface/ResourceHolder.js"></script>
+    <script type="text/javascript" src="./built/Entities/Entity.js"></script>
+    <script type="text/javascript" src="./built/Entities/Goal.js"></script>
+    <script type="text/javascript" src="./built/Entities/TaskPoint.js"></script>
+    <script type="text/javascript" src="./built/Entities/Pawn.js"></script>
 
     <script type="text/javascript" src="./scripts/Canvas/BaseCanvas.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/CanvasWithPawns.js"></script>
@@ -27,6 +31,7 @@
     <script type="text/javascript" src="./scripts/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
     <script type="text/javascript" src="./scripts/Canvas/Planets/PlanetCanvas.js"></script>
     <link rel="stylesheet" href="./syles/style.css">
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight);
@@ -190,7 +195,7 @@
                         <fig id="fig2a">Fig. 2a</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="6" max="200">
+                            <input id="actors-num" type="number" value="1" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input id="actors-speed" type="number" value="1" step="0.1">
                             <label for="actors-search">Actors' search radius</label>

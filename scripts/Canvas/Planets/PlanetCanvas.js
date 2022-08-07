@@ -1,6 +1,6 @@
 class PlanetCanvas extends BaseCanvas {
-    constructor(sketch, canvas, width, height) {
-        super(sketch, canvas, width, height)
+    constructor(canvasId, width, height) {
+        super(canvasId, width, height)
     }
 
     setup() {
@@ -51,7 +51,7 @@ class PlanetCanvas extends BaseCanvas {
         return {centerX, centerY};
     }
 
-    drawPlanet(centerX, centerY, color, radius, planetRadius, period, moons) {
+    drawPlanet(centerX, centerY, color, radius, planetRadius, period, moons = []) {
         this.drawTrajectory(centerX, centerY, radius);
         const offset = this.drawBody(centerX, centerY, color, radius, planetRadius, period);
         if (moons) {

@@ -1,5 +1,13 @@
-class Node {
-    constructor(children){
+class BTNode {
+
+    children: Array<BTNode>;
+    status: string;
+    depth: number;
+    name: string;
+    ran: boolean;
+    randomY: any;
+
+    constructor(children: Array<BTNode>){
         this.children = children ?? [];
         this.status = "";
         this.depth = 0
@@ -9,18 +17,19 @@ class Node {
 
     run () {
         this.ran = true;
+        return NodeState.RUNNING;
     }
 }
 
-class ControlNode extends Node {
-    constructor(children) {
+class ControlNode extends BTNode {
+    constructor(children: Array<BTNode>) {
         super(children);
         this.depth++;
     }
 }
 
 class Sequence extends ControlNode {
-    constructor(children) {
+    constructor(children: Array<BTNode>) {
         super(children);
         this.name = "Sequence";
     }
@@ -40,8 +49,16 @@ class Sequence extends ControlNode {
     }
 }
 
+class Modifier extends ControlNode {
+    child: BTNode;
+    constructor(child: BTNode) {
+        super([child]);
+        this.child = child;
+    }
+}
+
 class Selector extends ControlNode {
-    constructor(children) {
+    constructor(children: Array<BTNode>) {
         super(children);
         this.name = "Selector";
     }
@@ -61,10 +78,9 @@ class Selector extends ControlNode {
     }
 }
 
-class AlwaysSucceed extends ControlNode {
-    constructor(child) {
-        super([child]);
-        this.child = child;
+class AlwaysSucceed extends Modifier {
+    constructor(child: BTNode) {
+        super(child);
         this.name = "AlwaysSucceed";
     }
 
@@ -77,10 +93,9 @@ class AlwaysSucceed extends ControlNode {
     }
 }
 
-class Inverter extends ControlNode {
-    constructor(child) {
-        super([child]);
-        this.child = child;
+class Inverter extends Modifier {
+    constructor(child: BTNode) {
+        super(child);
         this.name = "Inverter";
     }
 
@@ -99,8 +114,9 @@ class Inverter extends ControlNode {
     }
 }
 
-class PawnNode extends Node {
-    constructor(pawn) {
+class PawnNode extends BTNode {
+    pawn: Pawn;
+    constructor(pawn: Pawn) {
         super(null);
         this.pawn = pawn;
         this.depth++;
@@ -108,16 +124,17 @@ class PawnNode extends Node {
     }
 }
 
-class Action extends Node {
-    constructor(action) {
-        super(null);
-        this.run = action;
-        this.name = "Action";
-    }
-}
+// class Action extends Node {
+//     constructor(action: any) {
+//         super(null);
+//         this.run = action;
+//         this.name = "Action";
+//     }
+// }
 
 class TargetExists extends PawnNode {
-    constructor(pawn) {
+    target: Entity;
+    constructor(pawn: Pawn) {
         super(pawn);
         this.target = pawn.movementTarget?.entity;
         this.name = "TargetExists";
@@ -130,7 +147,8 @@ class TargetExists extends PawnNode {
 }
 
 class StopWork extends PawnNode {
-    constructor(pawn) {
+    entity: Entity;
+    constructor(pawn: Pawn) {
         super(pawn);
         this.entity = pawn.movementTarget?.entity;
         this.name = "StopWork";
@@ -145,7 +163,7 @@ class StopWork extends PawnNode {
 }
 
 class StillAlive extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "StillAlive";
     }
@@ -157,7 +175,7 @@ class StillAlive extends PawnNode {
 }
 
 class Die extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Die";
     }
@@ -170,7 +188,8 @@ class Die extends PawnNode {
 }
 
 class TickTime extends PawnNode {
-    constructor(pawn) {
+    sketch: any;
+    constructor(pawn: Pawn) {
         super(pawn);
         this.sketch = pawn.sketch;
         this.name = "TickTime";
@@ -186,7 +205,7 @@ class TickTime extends PawnNode {
 }
 
 class HasToEat extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "HasToEat";
     }
@@ -198,7 +217,7 @@ class HasToEat extends PawnNode {
 }
 
 class Eat extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Eat";
     }
@@ -210,7 +229,7 @@ class Eat extends PawnNode {
 }
 
 class Replenish extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Replenish";
     }
@@ -223,7 +242,7 @@ class Replenish extends PawnNode {
 }
 
 class HasTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "HasTask";
     }
@@ -235,7 +254,7 @@ class HasTask extends PawnNode {
 }
 
 class Discover extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Discover";
     }
@@ -259,7 +278,7 @@ class Discover extends PawnNode {
 }
 
 class IsAtTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "IsAtTask";
     }
@@ -305,7 +324,7 @@ class IsAtTask extends PawnNode {
 // }
 
 class StopPulse extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "StopPulse";
     }
@@ -318,7 +337,7 @@ class StopPulse extends PawnNode {
 }
 
 class StartPulse extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "StopPulse";
     }
@@ -331,7 +350,7 @@ class StartPulse extends PawnNode {
 }
 
 class CanReachTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "CanReachTask";
     }
@@ -340,10 +359,10 @@ class CanReachTask extends PawnNode {
         super.run();
         const range = this.pawn.currentRange;
         const found = this.pawn.currentTaskLocations
-            .sort((l1, l2) => {
+            .sort((l1: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }, l2: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }) => {
                 return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
             })
-            .find(l => l.position.copy().sub(this.pawn.position).magSq() < (range * range));
+            .find((l: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }) => l.position.copy().sub(this.pawn.position).magSq() < (range * range));
 
         this.pawn.foundPosition = found;
         return found ? NodeState.SUCCESS : NodeState.FAILURE;
@@ -351,7 +370,7 @@ class CanReachTask extends PawnNode {
 }
 
 class KnowsTaskLocation extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "KnowsTaskLocation";
     }
@@ -367,7 +386,7 @@ class KnowsTaskLocation extends PawnNode {
 }
 
 class KnowsTaskRequirement extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "KnowsTaskRequirement";
     }
@@ -379,7 +398,7 @@ class KnowsTaskRequirement extends PawnNode {
 }
 
 class GoToTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "GoToTask";
     }
@@ -400,7 +419,7 @@ class GoToTask extends PawnNode {
 }
 
 class CanPerformTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "CanPerformTask";
     }
@@ -414,7 +433,7 @@ class CanPerformTask extends PawnNode {
 }
 
 class HasEnough extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "HasEnough";
     }
@@ -428,20 +447,20 @@ class HasEnough extends PawnNode {
 }
 
 class SwitchToTaskRequirement extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "SwitchToTaskRequirement";
     }
 
     run () {
         super.run();
-        this.pawn.tasks = this.pawn.tasks.concat(TaskPoint.requirements(this.pawn.tasks[this.pawn.tasks - 1]));
+        this.pawn.tasks = this.pawn.tasks.concat(TaskPoint.requirements(this.pawn.tasks[this.pawn.tasks.length - 1]));
         return NodeState.SUCCESS;
     }
 }
 
 class KnowsFoodLocations extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "KnowsFoodLocations";
     }
@@ -456,7 +475,7 @@ class KnowsFoodLocations extends PawnNode {
 
 
 class FoodIsCloseEnough extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "FoodIsCloseEnough";
     }
@@ -468,10 +487,10 @@ class FoodIsCloseEnough extends PawnNode {
 
         const remainingDistance = this.pawn.remainingDistance();
         const closestFood = this.pawn.knownFoodLocations
-            .sort((l1, l2) => {
+            .sort((l1 : Goal, l2 : Goal) => {
                 return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
             })
-            .find(l => l.position.copy().sub(this.pawn.position).magSq() <= (remainingDistance * remainingDistance));
+            .find((l: Goal) => l.position.copy().sub(this.pawn.position).magSq() <= (remainingDistance * remainingDistance));
 
         if (closestFood) {
             this.pawn.closestFood = closestFood;
@@ -483,7 +502,7 @@ class FoodIsCloseEnough extends PawnNode {
 }
 
 class Feed extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Feed";
     }
@@ -500,7 +519,7 @@ class Feed extends PawnNode {
 }
 
 class GoToFood extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "GoToFood";
     }
@@ -515,12 +534,12 @@ class GoToFood extends PawnNode {
         if (this.pawn.closestFood) {
             this.pawn.receiveLocation(this.pawn.closestFood);
         }
-        return Node.SUCCESS;
+        return NodeState.SUCCESS;
     }
 }
 
 class RandomWalk extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "RandomWalk";
     }
@@ -564,7 +583,7 @@ class RandomWalk extends PawnNode {
 }
 
 class Collaborates extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name= "Collaborates";
     }
@@ -576,7 +595,7 @@ class Collaborates extends PawnNode {
 }
 
 class SendCurrentTarget extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "SendCurrentTarget";
     }
@@ -593,7 +612,7 @@ class SendCurrentTarget extends PawnNode {
 }
 
 class Move extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Move";
     }
@@ -615,18 +634,19 @@ class Move extends PawnNode {
 }
 
 class IsFree extends PawnNode {
-    constructor(pawn){
+    constructor(pawn: Pawn){
         super(pawn);
         this.name = "IsFree";
     }
 
     run () {
         super.run();
+        return NodeState.SUCCESS;
     }
 }
 
 class PerformWork extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "PerformWork";
     }
@@ -641,7 +661,7 @@ class PerformWork extends PawnNode {
 }
 
 class WorkIsDone extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn)
         this.name = "WorkIsDone";
     }
@@ -655,7 +675,7 @@ class WorkIsDone extends PawnNode {
 }
 
 class FinishTask extends PawnNode {
-    constructor(pawn) {
+    constructor(pawn: Pawn) {
         super(pawn)
         this.name = "FinishTask";
     }
@@ -667,7 +687,7 @@ class FinishTask extends PawnNode {
 }
 
 class StandBy extends PawnNode {
-    constructor(pawn){
+    constructor(pawn: Pawn){
         super(pawn);
         this.name = "StandBy";
     }
