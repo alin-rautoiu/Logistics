@@ -6,9 +6,9 @@ class CanvasWithPawns extends BaseCanvas {
         this.pg = null;
         this.redAmount = 0;
 
-        this.pawnsNumberControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-num`);
-        this.pawnsSpeedControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-speed`);
-        this.pawnsSearchControl = document.querySelector(`#${this.canvasId} .canvas-setup #actors-search`);
+        this.pawnsNumberControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-num`);
+        this.pawnsSpeedControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-speed`);
+        this.pawnsSearchControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-search`);
 
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
@@ -58,7 +58,7 @@ class CanvasWithPawns extends BaseCanvas {
 
         this.hasStarted = false;
         const startButton = document.querySelector(`#${this.canvasId} .start-button`);
-
+        this.trailsEnabled = true;
         if (startButton) {
             startButton.addEventListener('click', () => {
                 if (!this.hasStarted) {
@@ -73,13 +73,17 @@ class CanvasWithPawns extends BaseCanvas {
                         canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
                         const link = canvasContainer.dataset.link;
                         const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
-                        linkedCanvasSetup.classList.remove('hidden');
+                        if (linkedCanvasSetup) {
+                            linkedCanvasSetup.classList.remove('hidden');
+                        }
                     }
 
                     startButton.innerHTML = "Start";
                     this.pawns = [];
                     this.baseColor = [];
-                    this.pg = this.sketch.createGraphics(this.width, this.height);
+                    if (this.trailsEnabled) {
+                        this.pg = this.sketch.createGraphics(this.width, this.height);
+                    }
                     this.redAmount = 0;
                     this.hasStarted = false;
                     this.setup();
@@ -89,7 +93,9 @@ class CanvasWithPawns extends BaseCanvas {
                 }
             })
         }
-        this.pg = this.sketch.createGraphics(this.width, this.height);
+        if (this.trailsEnabled) {
+            this.pg = this.sketch.createGraphics(this.width, this.height);
+        }
     }
 
     setup() {
@@ -125,13 +131,18 @@ class CanvasWithPawns extends BaseCanvas {
     draw() {
         super.draw();
         if (!this.hasStarted) {
-            this.pg.background(this.sketch.color(235, 235, 235));
+            if (this.trailsEnabled) {
+                this.pg.background(this.sketch.color(235, 235, 235));
+            }
 
         }
         this.sketch.blendMode(this.sketch.BLEND)
-
-        this.pg.background(this.sketch.color(235, 235, 235, 20));
-        this.sketch.image(this.pg, 0, 0);
+        if (this.trailsEnabled) {
+            this.pg.background(this.sketch.color(235, 235, 235, 20));
+            this.sketch.image(this.pg, 0, 0);
+        } else {
+            this.sketch.background(255);
+        }
 
         for (let i = 0; i < this.pawns.length; i++) {
             if (this.hasStarted) {
@@ -144,19 +155,19 @@ class CanvasWithPawns extends BaseCanvas {
             this.pawns[0].displayTree();
         }
         
-        if (this.sketch.frameCount % 24 == 1) {
-            this.pg.loadPixels()
-            this.redAmount = 0;
-            for (let j = 0; j < 4 * (this.width * this.height); j += 4) {
-                if (this.sketch.frameCount == 1) {
-                    this.baseColor[j] = this.pg.pixels[j];
-                    this.baseColor[j + 1] = 0;
-                    this.baseColor[j + 2] = 0;
-                    this.baseColor[j + 3] = 0;
-                }
+        // if (this.sketch.frameCount % 24 == 1) {
+        //     this.pg.loadPixels()
+        //     this.redAmount = 0;
+        //     for (let j = 0; j < 4 * (this.width * this.height); j += 4) {
+        //         if (this.sketch.frameCount == 1) {
+        //             this.baseColor[j] = this.pg.pixels[j];
+        //             this.baseColor[j + 1] = 0;
+        //             this.baseColor[j + 2] = 0;
+        //             this.baseColor[j + 3] = 0;
+        //         }
 
-                if (this.pg.pixels[j] > this.baseColor[j]) this.redAmount++;
-            }
-        }
+        //         if (this.pg.pixels[j] > this.baseColor[j]) this.redAmount++;
+        //     }
+        // }
     }
 }

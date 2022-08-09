@@ -30,7 +30,8 @@ class BaseCanvas {
     }
 
     draw(){
-        this.sketch.scale(this.scale);
+        //this.sketch.scale(this.scale);
+        // console.log({canvas: this.canvasId, frameRate: this.sketch.frameRate()});
     }
 
     mouseWheel(event) {
