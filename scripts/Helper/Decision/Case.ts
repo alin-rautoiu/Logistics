@@ -1,7 +1,7 @@
 class BTNode {
 
     children: Array<BTNode>;
-    status: string;
+    status: NodeState;
     depth: number;
     name: string;
     ran: boolean;
@@ -9,13 +9,13 @@ class BTNode {
 
     constructor(children: Array<BTNode>){
         this.children = children ?? [];
-        this.status = "";
+        this.status = NodeState.NONE;
         this.depth = 0
         this.name = "Node";
         this.ran = false;
     }
 
-    run () {
+    run() : NodeState {
         this.ran = true;
         return NodeState.RUNNING;
     }
@@ -34,7 +34,7 @@ class Sequence extends ControlNode {
         this.name = "Sequence";
     }
 
-    run() {
+    run () {
         super.run();
         for (const child of this.children) {
             const status = child.run();
@@ -253,6 +253,18 @@ class HasTask extends PawnNode {
     }
 }
 
+class HasFurtherTask extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = "HasTask";
+    }
+
+    run () {
+        super.run();
+        return this.pawn.tasks && this.pawn.tasks.length >= 2 ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+
 class Discover extends PawnNode {
     constructor(pawn: Pawn) {
         super(pawn);
@@ -359,10 +371,12 @@ class CanReachTask extends PawnNode {
         super.run();
         const range = this.pawn.currentRange;
         const found = this.pawn.currentTaskLocations
-            .sort((l1: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }, l2: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }) => {
-                return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
+            .sort((l1: Entity, l2: Entity) => {
+                return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq();
             })
-            .find((l: { position: { copy: () => { (): any; new(): any; sub: { (arg0: any): { (): any; new(): any; magSq: { (): number; new(): any; }; }; new(): any; }; }; }; }) => l.position.copy().sub(this.pawn.position).magSq() < (range * range));
+            .find((l: Entity) => {
+                return l.position.copy().sub(this.pawn.position).magSq() < (range * range);
+            })
 
         this.pawn.foundPosition = found;
         return found ? NodeState.SUCCESS : NodeState.FAILURE;
@@ -409,9 +423,12 @@ class GoToTask extends PawnNode {
         if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) return NodeState.FAILURE;
 
         const found = this.pawn.knownLocations
+            .filter( (l : TaskPoint) => l.isFree(this.pawn))
             .sort((l1, l2) => {
                 return l1.position.copy().sub(this.pawn.position).magSq() - l2.position.copy().sub(this.pawn.position).magSq()
             })[0];
+
+        if (found === null || found === undefined) return NodeState.FAILURE;
 
         this.pawn.receiveTargetPosition(new MovementTarget(found));
         return NodeState.SUCCESS;
@@ -641,7 +658,14 @@ class IsFree extends PawnNode {
 
     run () {
         super.run();
-        return NodeState.SUCCESS;
+        if (this.pawn.movementTarget === undefined) return NodeState.FAILURE;
+        if (this.pawn.movementTarget.entity instanceof TaskPoint) {
+            const tp : TaskPoint = this.pawn.movementTarget.entity;
+            return tp.isFree(this.pawn) ? NodeState.SUCCESS : NodeState.FAILURE;
+        } else {
+            return NodeState.SUCCESS;
+        }
+        
     }
 }
 
@@ -655,7 +679,7 @@ class PerformWork extends PawnNode {
         super.run();
         
         if (this.pawn.movementTarget === undefined) return NodeState.FAILURE;
-        
+
         return this.pawn.collect() ? NodeState.SUCCESS : NodeState.RUNNING;
     }
 }
@@ -695,14 +719,22 @@ class StandBy extends PawnNode {
     run () {
         super.run();
         if (this.pawn.movementTarget?.entity) {
-            this.pawn.movementTarget.entity.workStops(this.pawn);
+            this.pawn.movementTarget.entity.workPauses();
         }
         return NodeState.RUNNING;
     }
 }
 
-const NodeState = {
-    RUNNING: "RUNNING",
-    SUCCESS: "SUCCESS",
-    FAILURE: "FAILURE"
+class Share extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+    }
+
+    run () {
+        return NodeState.FAILURE;
+    }
+}
+
+enum NodeState {
+    RUNNING, SUCCESS, FAILURE, NONE
 }
