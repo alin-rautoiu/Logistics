@@ -54,6 +54,20 @@ section {
     -webkit-mask-repeat: no-repeat;
 }
 
+@media (max-width:1920px) {
+    .cover .canvas-wrapper canvas {
+        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+}
+
+@media (max-width:1280px) {
+    .cover .canvas-wrapper canvas {
+        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    }
+}
+
 .canvas-wrapper {
     align-items: center;
     transition: all 1s ease-in-out;
