@@ -1,21 +1,21 @@
 class ResourceHolder {
     sketch: any;
-    resources: {};
+    resources: Map<number, number>;
     
     constructor(sketch: any) {
         this.sketch = sketch;
-        this.resources = {};
+        this.resources = new Map<number, number>();
     }
 
-    hasSufficientResource(kind) {
+    hasSufficientResource(kind: number) : boolean {
         return this.resources[kind] && this.resources[kind].amount >= 20;
     }
 
-    isResourceEmpty(kind) {
+    isResourceEmpty(kind: number) :boolean {
         return !this.resources[kind] || this.resources[kind].amount < 0.1
     }
 
-    collectResource(kind) {
+    collectResource(kind: number) {
         if (this.resources[kind]) {
             this.resources[kind].amount += 0.2;
         } else {
@@ -26,7 +26,7 @@ class ResourceHolder {
         return true;
     }
 
-    extractResource(kind, amm = .2) {
+    extractResource(kind: number, amm = .2) {
         if(!this.resources[kind] || this.isResourceEmpty(kind)) return false;
 
         this.resources[kind].amount -= amm;
@@ -34,7 +34,7 @@ class ResourceHolder {
         return true;
     }
 
-    consume(kind) {
+    consume(kind: number) {
         if(!this.resources[kind] || this.isResourceEmpty(kind)) return false;
 
         this.resources[kind].amount -= 10.0;
@@ -42,11 +42,11 @@ class ResourceHolder {
         return true;
     }
 
-    getAmount(kind) {
+    getAmount(kind: number) {
         return this.resources[kind] ? this.resources[kind].amount : 0.0;
     }
 
-    display(position, offset) {
+    display(position: Vector, offset) {
         let i = 0;
         for(let key of Object.keys(this.resources)) {
             const req = this.resources[key];
@@ -61,7 +61,7 @@ class ResourceHolder {
         }
     }
 
-    setResource(kind, amount) {
+    setResource(kind: number, amount: number) {
         this.resources[kind] = {kind: kind, amount: amount}
     }
 }

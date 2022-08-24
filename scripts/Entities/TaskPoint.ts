@@ -9,7 +9,7 @@ class TaskPoint extends Goal {
     maxWorkers: number;
     active: boolean;
 
-    constructor(sketch: any, x: any, y: any, kind: number) {
+    constructor(sketch: any, x: number, y: number, kind: number) {
         super(sketch, x, y, "resource");
         this.kind = kind;
         this.resources = new ResourceHolder(this.sketch);
@@ -40,7 +40,7 @@ class TaskPoint extends Goal {
         this.workers = [];
         this.occupied = false;
         this.lifetime = 5000.0;
-        this.maxWorkers = Number.MIN_SAFE_INTEGER;
+        this.maxWorkers = 1;
 
         for(const r of this.req) {
             this.resources.setResource(r, 0.0);
@@ -86,7 +86,7 @@ class TaskPoint extends Goal {
         return this.req;
     }
 
-    static requirements(kind: any) {
+    static requirements(kind: number) : number[] {
         switch(kind) {
             case 1:
                 return [];
@@ -102,24 +102,39 @@ class TaskPoint extends Goal {
     static color(kind: number) {
         switch(kind) {
             case 1:
-                return "230, 255, 230";
+                return "rgb(230, 255, 230)";
             case 2:
-                return "230, 230, 255";
+                return "rgb(230, 230, 255)";
             case 3:
                 return 'green';
             case 4:
-                return "20, 180, 180";
+                return "rgb(20, 180, 180)";
         }
     }
 
-    static requiredColor(kind: any) {
+    static colorAccent(kind: number) {
+        switch(kind) {
+            case 1:
+                return "rgb(25, 180, 25)";
+            case 2:
+                return "rgb(25, 25, 180)";
+            case 3:
+                return 'green';
+            case 4:
+                return "rgb(20, 180, 180)";
+        }
+    }
+
+    static requiredColor(kind: number) {
         const reqCols = [];
         for (const req of TaskPoint.requirements(kind)) {
             reqCols.push(TaskPoint.color(req));
         }
+
+        return reqCols;
     }
 
-    static canPerformTask(kind: any, resources: ResourceHolder) {
+    static canPerformTask(kind: number, resources: ResourceHolder) : boolean {
         for(const req of TaskPoint.requirements(kind)) {
             if (resources.isResourceEmpty(req))
                 return false;
@@ -128,13 +143,14 @@ class TaskPoint extends Goal {
         return true;
     }
 
-    isFree() {
-        return this.workers.length < this.maxWorkers;
+    isFree(actor: Pawn) :boolean {
+        return this.workers.indexOf(actor) !== -1 || this.workers.length < this.maxWorkers;
     }
 
     work(actor: Pawn) {
-        
-        this.workers.push(actor);
+        if (this.workers.indexOf(actor) == -1)
+            this.workers.push(actor);
+
 
         if (this.occupied && !this.workers[actor.idx]) {
             return;
@@ -164,6 +180,10 @@ class TaskPoint extends Goal {
         this.active = false;
         const actorIndex = this.workers.indexOf(actor);
         this.workers.splice(actorIndex, 1);
+    }
+
+    workPauses() {
+        this.active = false;
     }
 
     drawHex(x: number, y: number, r: number) {

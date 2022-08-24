@@ -13,23 +13,25 @@
     <!-- <script type="text/javascript" src="./built/bundle.js"></script> -->
     <script src="./node_modules/p5/lib/p5.min.js"></script>
 
-    
+
     <script type="text/javascript" src="./built/Helper/Decision/Case.js"></script>
-    <script type="text/javascript" src="./built//Entities/MovementTarget.js"></script>
-    <script type="text/javascript" src="./built/Entities/Interface/ResourceHolder.js"></script>
+    <script type="text/javascript" src="./built//Targets/MovementTarget.js"></script>
+    <script type="text/javascript" src="./built//Targets/Task.js"></script>
+    <script type="text/javascript" src="./built/Entities/ResourceHolder.js"></script>
     <script type="text/javascript" src="./built/Entities/Entity.js"></script>
     <script type="text/javascript" src="./built/Entities/Goal.js"></script>
     <script type="text/javascript" src="./built/Entities/TaskPoint.js"></script>
     <script type="text/javascript" src="./built/Entities/Pawn.js"></script>
 
-    <script type="text/javascript" src="./scripts/Canvas/BaseCanvas.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/CanvasWithPawns.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/opportunity-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityNonCollab.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Resource/resource-canvasClass.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
-    <script type="text/javascript" src="./scripts/Canvas/Planets/PlanetCanvas.js"></script>
+    <script type="text/javascript" src="./built/Canvas/BaseCanvas.js"></script>
+    <script type="text/javascript" src="./built/Canvas/CanvasWithPawns.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Opportunity/opportunity-canvasClass.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Opportunity/Instanced/OpportunityNonCollab.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Resource/resource-canvasClass.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
     <link rel="stylesheet" href="./syles/style.css">
 
     <script>
@@ -38,6 +40,7 @@
             new OpportunityNonCollab('trial-canvas');
             new OpportunityCollab('trial-canvas-2');
             new ResourceCanvas1('resource-canvas-1');
+            new ResourceCanvas2('resource-canvas-2');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -137,11 +140,11 @@
                     <div id="trial-canvas" class="canvas-container">
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="6" max="200">
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
-                            <input id="actors-speed" type="number" value="1" step="0.1">
+                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="70">
+                            <input class="actors-search" type="number" value="70">
                         </div>
                         <button class="canvas-button start-button">Start</button>
                         <fig>Fig. 1a</fig>
@@ -155,11 +158,11 @@
                         <fig id="fig1b">Fig. 1b</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="6" max="200">
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
-                            <input id="actors-speed" type="number" value="1" step="0.1">
+                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="70">
+                            <input class="actors-search" type="number" value="70">
                         </div>
                         <button class="canvas-button start-button">Start</button>
                     </div>
@@ -189,20 +192,57 @@
                     </div>
                 </div>
                 <h3>Resource pooling</h3>
+                <p>Actors are pursuing opportunities in according to their needs. When their needs aren't met after a
+                    period of time, they expire. As before, we can think of this from the literal and prosaic, such as
+                    animals dying from lack of food, to the more complex, such as employees quitting a job if they don't
+                    find the tasks they're given stimulating enough. </p>
                 <div class="canvas-wrapper">
                     <div id="resource-canvas-1" class="canvas-container">
                         <button class="canvas-button start-button">Start</button>
                         <fig id="fig2a">Fig. 2a</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input id="actors-num" type="number" value="1" max="200">
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
-                            <input id="actors-speed" type="number" value="1" step="0.1">
+                            <input class="actors-speed" type="number" min="0" value="0" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input id="actors-search" type="number" value="70">
+                            <input class="actors-search" type="number" value="70">
                         </div>
                     </div>
                 </div>
+                <div>
+                    <p>You can retry the experiment. There is even a slight possibility that all the independent
+                        actors in the first canvas will reach their destination before any in the second one.
+                    </p>
+                </div>
+                <p>The actors will satisfy their needs by acting on task points.<span class="read-more"><span
+                    class="read-more-open"></span><span class="read-more-details display-none"><span>In this
+                        case the task points disappear after a period of time to simulate scarcity. The actors
+                        are also aware of the task points' position, they don't need to discover them of the
+                        board at this point.</span>
+                    </span></span>They will go to the nearest free task point and perform some kind of work on it,
+                    gaining the means to satisfy their needs, up to a limit. We can imagine this to be a solitary prey
+                    animal or a freelancer jumping from gig to gig.</p>
+                <div class="canvas-wrapper has-more">
+                    <div id="resource-canvas-2" class="canvas-container">
+                        <button class="canvas-button start-button">Start</button>
+                        <fig id="fig2a">Fig. 2b</fig>
+                        <div class="canvas-setup hidden">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="1" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
+                            <label for="actors-search">Actors' search radius</label>
+                            <input class="actors-search" type="number" value="70">
+                        </div>
+                    </div>
+                    <div class="canvas-discussion">
+                        <div class="canvas-discussion-to-be-expanded">
+                            <p>This creates a very competitive environment.</p>
+                        </div>
+                    </div>
+                </div>
+                <p></p>
                 <h3>Skills transfer</h3>
             </section>
             <!-- <section>
@@ -217,7 +257,7 @@
         </article>
     </main>
     <div class="debug-control">
-        <input type="hidden" id="show-tree" value="false">
+        <input type="hidden" id="show-tree" value="true">
         <input type="hidden" id="show-direction" value="false">
         <input type="hidden" id="show-random-bounds" value="false">
         <input type="hidden" id="random-to-mouse" value="false">

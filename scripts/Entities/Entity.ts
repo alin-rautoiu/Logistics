@@ -1,5 +1,5 @@
 class Entity {
-    position: any;
+    position: Vector;
     type: any;
     sketch: any;
     r: number;
@@ -20,5 +20,8 @@ class Entity {
     }
 
     workStops(pawn: Pawn) {
+    }
+    
+    workPauses() {
     }
 }

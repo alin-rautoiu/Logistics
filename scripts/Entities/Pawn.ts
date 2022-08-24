@@ -3,7 +3,7 @@ class Pawn extends Entity {
     speed: number;
     searchRadius: number;
     idx: number;
-    direction: any;
+    direction: Vector;
     behavior: string;
     pulse: boolean;
     pulsePeriod: number;
@@ -15,7 +15,7 @@ class Pawn extends Entity {
     knownLocations: Goal[];
     knownFoodLocations: Goal[];
     unknownLocations: Goal[];
-    tasks: any[];
+    tasks: Task[];
     needs: number;
     consumes: boolean;
     maxHunger: number;
@@ -33,13 +33,17 @@ class Pawn extends Entity {
     currentTaskLocations: any;
     closestFood: any;
     decision: BTNode;
+    frameRate: any;
+    taskIndex: number;
 
     constructor(sketch: any, x = 400, y = 200, diameter = 10, speed: number, searchRadius: number, pg: any, target: any, idx: number) {
         super(sketch, x, y, "Pawn");
+        this.frameRate = 60
         this.diameter = diameter;
-        this.speed = speed * 60;
+        this.speed = speed * this.frameRate;
         this.searchRadius = searchRadius;
         this.idx = idx;
+        this.taskIndex = 0;
 
         this.direction = this.sketch.createVector(this.sketch.random(-1, 1), this.sketch.random(-1, 1)).normalize();
         this.behavior = 'decide';
@@ -57,7 +61,7 @@ class Pawn extends Entity {
         this.tasks = [];
         this.needs = 1;
         this.consumes = false;
-        this.maxHunger = 5000;
+        this.maxHunger = 20000;
         this.hungerMeter = this.maxHunger;
         this.lifetimeDecay = 0;
         this.organization = [];
@@ -66,85 +70,114 @@ class Pawn extends Entity {
         const stopWork = () => {
             return new AlwaysSucceed(
                 new Sequence([
-                    new TargetExists(this),
-                    new StopWork(this)
+                    new TargetExists(this)
                 ])
         )};
 
-        const mainDecision = new Sequence([
+        let sendPosition = new Sequence([
+            new Collaborates(this),
+            new SendLastPosition(this)
+        ]);
+
+        let share = new Sequence([
+            new Collaborates(this),
+            new CanShare(this),
             new Selector([
-                new StillAlive(this),
-                new Die(this)
+                new IsSharing(this),
+                new StartSharing(this)
             ]),
-            new TickTime(this),
+            // new GoToTask(this),
+            // new Share(this),
+            // new FinishTask(this)
+        ])
+
+        let eat = new Sequence([
+            new HasToEat(this),
+            new Eat(this),
+            new Replenish(this)
+        ]);
+
+        let move = new Sequence([
+            new StillAlive(this),
+            new HasTask(this),
+            new Inverter(new Receives(this)),
+            new Inverter(new IsAtTask(this)),
+            new Move(this)
+        ])
+
+        const die = new Selector([
+            new StillAlive(this),
+            new Sequence([
+                new Die(this),
+                new StopPulse(this)
+            ])
+        ]);
+
+        const search = 
             new Selector([
                 new Sequence([
-                    new Selector([
-                        new Inverter(new HasToEat(this)),
-                        new Sequence([
-                            new Eat(this),
-                            new Replenish(this)
-                        ])
-                    ]),
-                    new Selector([ // Sa se plimbe daca nu are ce face
-                        new HasTask(this),
-                        new Selector([
-                            new Feed(this),
-                            new StandBy(this)
-                        ])
-                    ]),
-                    new Discover(this),
-                    new Selector([
-                        new FoodIsCloseEnough(this),
-                        new Selector([
-                            new KnowsFoodLocations(this),
-                            new GoToFood(this)
-                        ]),
-                        new RandomWalk(this)
-                    ]),
+                    new Inverter(new KnowsTaskLocation(this)),
                     new Sequence([
-                        new Selector([
-                            new CanPerformTask(this),
-                            new SwitchToTaskRequirement(this)
-                        ]),
-                        new Selector([
-                            new Sequence([
-                                    new KnowsTaskLocation(this),
-                                    new StopPulse(this),
-                                    new Selector([
-                                        new Sequence([
-                                            new IsAtTask(this),
-                                            new Selector([
-                                                new Inverter(new Collaborates(this)),
-                                                new SendCurrentTarget(this)
-                                            ]),
-                                            new Sequence([
-                                                new Selector([
-                                                    new HasEnough(this),
-                                                    new Sequence([
-                                                        new PerformWork(this),
-                                                        new FinishTask(this)
-                                                    ])
-                                                ]),
-                                                new StandBy(this)
-                                            ])
-                                        ]),
-                                        new GoToTask(this)
-                                    ]),
-                                ]),
-                                new Sequence([
-                                    new RandomWalk(this),
-                                    new StartPulse(this)
-                                ])
-                        ])
-                    ])
+                        new RandomWalk(this),
+                        new StartPulse(this)
+                    ]),
                 ]),
+                new StopPulse(this)
+            ]);
+
+        const feed = new Sequence([
+            new Inverter(new HasTask(this)),
+            new Selector([
+                new Feed(this),
+                new StandBy(this)
+            ])
+        ]);
+
+        const canReachTask = new Selector([
+            new FoodIsCloseEnough(this),
+            new Selector([
+                new KnowsFoodLocations(this),
+                new GoToFood(this)
             ]),
-            new Move(this)
+            new RandomWalk(this)
+        ])
+
+        let mainDecision = new Sequence([
+            new StillAlive(this),
+            new TickTime(this),
+            new Sequence([
+                new Discover(this),
+                new Sequence([
+                    new HasTask(this),
+                    new Selector([
+                        new CanPerformTask(this),
+                        new SwitchToTaskRequirement(this)
+                    ]),
+                    new Selector([
+                        new Sequence([
+                            new IsAtTask(this),
+                            new IsFree(this),
+                            new Sequence([
+                                    new PerformWork(this),
+                                    new FinishTask(this)
+                                ])
+                        ]),
+                        new GoToTask(this)
+                    ])
+                ])
+            ]),
         ]);
 
         this.decisions.push(stopWork());
+        this.decisions.push(sendPosition);
+        this.decisions.push(eat);
+        this.decisions.push(die);
+        this.decisions.push(search);
+        this.decisions.push(feed);
+        this.decisions.push(canReachTask);
+        this.decisions.push(share);
         this.decisions.push(mainDecision);
+        this.decisions.push(move);
         this.currentRange = undefined;
         this.collaborates = undefined;
         this.isOnHWall = undefined;
@@ -161,15 +194,11 @@ class Pawn extends Entity {
     displayTree() {
         this.sketch.push();
         this.sketch.rectMode(this.sketch.CENTER);
-        this.displayBranch(this.decisions[1], 0, 0);
+        this.displayBranch(this.decisions[1], {x: 300, y: 10}, 0, Math.PI / 2);
         this.sketch.pop();
     }
 
-    displayBranch(node: BTNode, offset: number, depth: number) {
-        const xSpread = 110;
-        const ySpread = 40;
-        const startX = 300;
-        const startY = -50;
+    displayBranch(node: BTNode, parent: Coordinates, depth: number, angle: number) {
 
         if (node.status == NodeState.SUCCESS) {
             this.sketch.strokeWeight(0);
@@ -199,28 +228,26 @@ class Pawn extends Entity {
         } else {
             this.sketch.textSize(5);
         }
-        this.sketch.text(node.name, startX + offset, startY + ySpread * depth + node.randomY);
+        this.sketch.text(node.name, parent.x, parent.y);
         if (!node.children || node.children.length === 0) {
-            //this.sketch.rect(400 + offset, 50 + 30 *  depth, 50, 25);
-            //this.sketch.fill('black');
             return;
         }
 
         const childCount = node.children.length;
+        const length = 60;
         for (let i = 0; i < childCount; i++) {
-            let newOffset: number;
 
-            if ((childCount % 2 == 1) && i >= Math.floor(childCount / 2)) {
-                newOffset = (i - Math.floor(childCount / 2)) * xSpread
-            } else {
-                newOffset = i < Math.floor(childCount / 2)
-                    ? (i - Math.floor(childCount / 2)) * xSpread
-                    : (i + 1 - Math.floor(childCount / 2)) * xSpread
-            }
+            const degDiff = childCount <= 1 
+                ? angle
+                : (this.sketch.map(i, 0, childCount - 1, 
+                    Math.min(Math.PI,  Math.PI * 3/4 + childCount * Math.PI / 16 ), 
+                    Math.max(0, 1/4 * Math.PI - childCount * Math.PI / 16 )));
 
-            newOffset *= 1 / (depth / 3 + 1);
+            const leafX = Math.cos(degDiff) * length;
+            const leafY = Math.sin(degDiff) * length * 1.2;
+            const thisCoord = {x: leafX + parent.x, y: leafY + parent.y};
 
-            this.displayBranch(node.children[i], offset + newOffset, (depth + 1))
+            this.displayBranch(node.children[i], thisCoord, depth + 1, degDiff)
 
             if (node.children[i].status == NodeState.SUCCESS) {
                 this.sketch.strokeWeight(0);
@@ -243,7 +270,8 @@ class Pawn extends Entity {
                 this.sketch.fill('grey');
                 this.sketch.strokeWeight(.3);
             }
-            this.sketch.line(startX + offset, startY + ySpread * depth + node.randomY, startX + offset + newOffset, startY + ySpread * (depth + 1) + node.children[i].randomY)
+
+            this.sketch.line(parent.x, parent.y, thisCoord.x, thisCoord.y);
         }
     }
 
@@ -277,17 +305,29 @@ class Pawn extends Entity {
 
         if (this.pulse) {
             const range = this.getCurrentRange();
-            this.pg.strokeWeight(this.sketch.map(range, this.diameter + 5 + this.searchRadius, this.diameter + 5, 0.1, 4));
-            this.pg.stroke('red');
-            this.pg.noFill();
-            this.pg.ellipse(this.position.x, this.position.y, range, range);
+            if (this.pg) {
+                this.pg.strokeWeight(this.sketch.map(range, this.diameter + 5 + this.searchRadius, this.diameter + 5, 0.1, 4));
+                this.pg.stroke('red');
+                this.pg.noFill();
+                this.pg.ellipse(this.position.x, this.position.y, range, range);
+            }
             this.pulsePeriod += this.sketch.deltaTime / 500;
         } else {
-            this.pg.noStroke();
-            this.pg.fill('red');
-            this.pg.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
+            if (this.pg) {
+                this.pg.noStroke();
+                this.pg.fill('red');
+                this.pg.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
+            }
         }
 
+        this.sketch.pop();
+
+        this.sketch.push();
+        this.sketch.text(this.taskIndex, this.position.x + 5, this.position.y + - 10);
+        for(let i = 0; i < this.tasks.length; i++) {
+            const task = this.tasks[i];
+            this.sketch.text(task.direction, this.position.x + 10, this.position.y + i * 10);
+        }
         this.sketch.pop();
 
         if (this.sketch.select('#show-direction').value() === "true" && this.sketch.keyIsDown(84)) {
@@ -296,36 +336,114 @@ class Pawn extends Entity {
             this.sketch.text(`x:${this.position.x.toFixed(2)}, y:${this.position.y.toFixed(2)}`, this.position.x + 10, this.position.y + 10);
             this.sketch.text(`lifetime:${this.lifetime}`, this.position.x + 10, this.position.y + 20);
             this.sketch.text(`hunger:${this.hungerMeter}`, this.position.x + 10, this.position.y + 30);
+
+            this.sketch.pop();
+        }
+        
+        this.sketch.text(this.behavior, this.position.x - 10, this.position.y + 20);
+        if (this.movementTarget) {
+            this.sketch.push();
+            this.sketch.stroke(0, 50);
+            this.sketch.line(this.position.x, this.position.y, this.movementTarget.target.x, this.movementTarget.target.y);
             this.sketch.pop();
         }
     }
 
-    collect() {
-        console.log('collect');
+    move() {
+        const velocity = this.getVelocity();
+        this.isOnHWall = this.position.x <= 0 || this.position.x >= 800;
+        this.isOnVWall = this.position.y <= 0 || this.position.y >= 400;
+        this.position.add(velocity);
+
+        const constrainedX = this.sketch.constrain(this.position.x, 0, 800);
+        const constrainedY = this.sketch.constrain(this.position.y, 0, 400);
+
+        this.position = this.sketch.createVector(constrainedX, constrainedY);
+        this.behavior = 'move';
+    }
+
+    collect() : boolean {
+
         if (!(this.movementTarget && this.movementTarget.entity)) return false;
+        const entity : Entity = this.movementTarget.entity;
 
-        if (this.movementTarget.entity instanceof Goal && !(this.movementTarget.entity instanceof TaskPoint)) {
-            this.tasks = this.tasks.slice(0, this.tasks.length - 1);
-            return true;
+        this.behavior = 'collect';
+
+        if (entity instanceof TaskPoint) {
+            const taskPoint : TaskPoint = entity;
+
+            taskPoint.work(this);
+            if (this.resources.hasSufficientResource(taskPoint.kind)) {
+                return true;
+            }
+
+            this.sketch.push();
+            this.sketch.strokeWeight(1);
+            this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
+            this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
+            this.sketch.pop();
+            return false;
         }
 
-        const taskPoint: TaskPoint = this.movementTarget.entity;
-        console.log(taskPoint);
-        
-        if (this.resources.getAmount(taskPoint) >= 20) {
+        const task = this.getCurrentTask();
+
+        if (entity instanceof Pawn) {
+            if (task.direction == TaskDirection.GIVE) {
+                const other : Pawn = entity;
+                this.transfer(other);
+                this.behavior = 'feed';
+                if (other.resources.hasSufficientResource(other.needs) || this.resources.getAmount(other.needs) <= 0.01) {
+                    
+                    return true;
+                }
+                return false;
+            } else if (task.direction == TaskDirection.RECEIVE) {
+                this.behavior = 'receive';
+                return false;
+            }
+        }
+
+        if (entity instanceof Goal) {
+            //this.tasks = this.tasks.slice(0, this.tasks.length - 1);
             return true;
         }
-        
-        taskPoint.work(this);
-        return false;
+    }
+
+    transfer(other: Pawn) {
+        const otherTask = other.getCurrentTask();
+        if (!otherTask) return;
+        other.resources.collectResource(otherTask.kind);
+        this.resources.extractResource(otherTask.kind)
+        this.sketch.push();
+        this.sketch.strokeWeight(2);
+        this.sketch.stroke(TaskPoint.colorAccent(otherTask.kind));
+        this.sketch.line(this.position.x, this.position.y, other.position.x, other.position.y);
+        this.sketch.pop();
     }
 
     finishTask() {
         if (this.movementTarget && this.movementTarget.entity) {
             this.movementTarget.entity.workStops(this);
         }
-        this.tasks = this.tasks.slice(0, this.tasks.length - 1);
+        const currentTask = this.getCurrentTask();
+        if (currentTask.direction === TaskDirection.GIVE)  {
+            const other = this.movementTarget?.entity as Pawn;
+            if (other) {
+                //other.taskIndex++;
+                other.removeCurrentTask();
+                other.movementTarget = null;
+            }
+        }
+        //this.taskIndex++;
+        this.removeCurrentTask()
         this.movementTarget = null;
+        this.behavior = 'wait';
+    }
+
+    removeCurrentTask() {
+        const currentTask = this.getCurrentTask();
+        const currentTaskIndex = this.tasks.indexOf(currentTask);
+        this.tasks.splice(currentTaskIndex, 1);
     }
 
     getVelocity() {
@@ -342,7 +460,8 @@ class Pawn extends Entity {
             : 1;
         this.bounceH = bounceH;
         this.bounceV = bounceV;
-        const velocity = this.sketch.createVector(this.direction.x * this.speed / 60 * bounceH, this.direction.y * this.speed / 60 * bounceV);
+        const frameRate = this.frameRate;
+        const velocity = this.sketch.createVector(this.direction.x * this.speed / frameRate * bounceH, this.direction.y * this.speed / frameRate * bounceV);
         if (this.sketch.select('#show-direction').value() === "true") {
             this.sketch.stroke('black');
             this.sketch.line(this.position.x, this.position.y, this.position.x + velocity.x * 30, this.position.y + velocity.y * 30);
@@ -376,7 +495,7 @@ class Pawn extends Entity {
         }
     }
 
-    notify(other: Pawn) {
+    notify(other: Pawn, location: Entity) : boolean {
         if (this.toNotify[other.idx] && !this.toNotify[other.idx].hasBeenNotified) {
             this.toNotify[other.idx].time += this.sketch.deltaTime;
         } else if (this.toNotify[other.idx] && this.toNotify[other.idx].hasBeenNotified) {
@@ -418,7 +537,7 @@ class Pawn extends Entity {
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
-            other.receiveLocation(this.movementTarget.entity);
+            other.receiveLocation(location);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
@@ -434,7 +553,7 @@ class Pawn extends Entity {
         this.direction = this.movementTarget.target.copy().sub(this.position).normalize();
     }
 
-    receiveLocation(target: Goal) {
+    receiveLocation(target: Entity) {
 
         if (target instanceof Goal) {
             if (target === undefined || target === null) {
@@ -484,14 +603,19 @@ class Pawn extends Entity {
     }
 
     remainingDistance() {
-        const velocity = this.getVelocity().mag() / 60;
+        const frameRate = this.frameRate;
+        const velocity = this.getVelocity().mag() / 30;
         const portions = Math.floor(this.resources.getAmount(this.needs) / 5);
         return portions > 1 ? velocity * (this.hungerMeter + (portions - 1) * this.maxHunger) : velocity * this.hungerMeter;
     }
 
-    getCurrentTask() {
-        if (this.tasks && this.tasks.length > 0)
-            return this.tasks[this.tasks.length - 1];
+    getCurrentTask() : Task {
+        if (this.tasks && this.tasks.length >= 1)
+        {
+            const receiveTask : Task = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
+            return receiveTask ? receiveTask : this.tasks[0];
+        }
+        return null;
     }
 
     getCurrentRange() {
@@ -504,5 +628,23 @@ class Pawn extends Entity {
         if (this.organization.indexOf(pawn) === -1) {
             this.organization.push(pawn);
         }
+    }
+
+    hasEnough() : boolean {
+        const currentTask = this.getCurrentTask();
+        if (currentTask) {
+            const enough = this.resources.hasSufficientResource(currentTask.kind);
+            return enough;
+        }
+
+        return true;
+    }
+
+    sortByDistance(l1: Entity, l2: Entity) {
+        return l1.position.copy().sub(this.position).magSq() - l2.position.copy().sub(this.position).magSq();
+    }
+
+    findInRange(l: Entity, range : number = 10): boolean {
+        return l.position.copy().sub(this.position).magSq() < range * range;
     }
 }

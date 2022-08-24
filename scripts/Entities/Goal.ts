@@ -1,12 +1,12 @@
 class Goal extends Entity {
     kind: number;
-
+    
     constructor(sketch: any, x: any, y: any,  type: string){
         super(sketch, x, y, type);
         this.kind = 1;
         this.r = 10;
     }
-
+    
     draw(searchRadius: any) {
         this.sketch.push();
         this.sketch.stroke('green');
@@ -19,14 +19,21 @@ class Goal extends Entity {
         this.sketch.pop();
     }
 
+    isFree(actor: Pawn) {
+        return true;
+    }
+    
     requires() {
         return [];
     }
-
+    
     canPerformTask(resource: any) {
         return true;
     }
-
+    
     work(actor: Pawn) {
+    }
+
+    workPauses() {
     }
 }

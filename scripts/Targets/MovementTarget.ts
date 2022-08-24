@@ -1,9 +1,9 @@
 class MovementTarget {
     target: any;
-    entity: Goal;
+    entity: Entity;
     expected: number;
     
-    constructor(entity: Goal, expected: number = -1) {
+    constructor(entity: Entity, expected: number = -1) {
         this.target = entity.position;
         this.entity = entity;
         this.expected = expected;
