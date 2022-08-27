@@ -197,8 +197,18 @@ class TickTime extends PawnNode {
 
     run() {
         super.run();
+
+        if (this.pawn.pauses && !this.pawn.paused) {
+            this.pawn.timeSincePause += this.pawn.sketch.deltaTime;
+        }
+
         this.pawn.lifetime -= (this.sketch.deltaTime * this.pawn.lifetimeDecay);
-        this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
+        if (this.pawn.paused) {
+            this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
+        } else {
+            this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
+        }
+        
 
         return NodeState.SUCCESS;
     }
@@ -815,7 +825,7 @@ class Share extends PawnNode {
             if (!other)
                 return NodeState.FAILURE;
 
-            if (this.pawn.resources.getAmount(this.pawn.needs) <= 5 || other.resources.getAmount(this.pawn.needs) >= 15) {
+            if (this.pawn.resources.getAmount(this.pawn.needs) <= 10 || other.resources.getAmount(this.pawn.needs) >= 20) {
                 return NodeState.SUCCESS;
             }
 
@@ -839,10 +849,13 @@ class CanShare extends PawnNode {
         const found = this.pawn.organization
             .filter((p: Pawn) =>
                 p.behavior !== "dead"
-                && !p.hasEnough()
-                && (p.getCurrentTask().kind != p.needs
+                && p.resources.getAmount(p.needs) <= 5
+                && (p.getCurrentTask() == null 
+                    || p.getCurrentTask().kind != p.needs
                     || p.behavior != 'collect'))
             .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
+
+        if (found && this.pawn.resources.getAmount(found.needs) <= 10) return NodeState.FAILURE;
 
         return found && canShare && this.pawn.consumes ? NodeState.SUCCESS : NodeState.FAILURE;
     }
@@ -888,6 +901,60 @@ class StartSharing extends PawnNode {
             return NodeState.SUCCESS;
         }
         return NodeState.FAILURE;
+    }
+}
+
+class CanWalk extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = "CanWalk"
+    }
+
+    run(): NodeState {
+        super.run();
+
+        return this.pawn.speed > 0 ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+
+
+class IsActive extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = "IsActive";
+    }
+
+    run(): NodeState {
+        return this.pawn.pauses
+            ? this.pawn.paused || this.pawn.timeSincePause >= this.pawn.pauseInterval 
+                ? NodeState.FAILURE 
+                : NodeState.SUCCESS
+            : NodeState.SUCCESS;
+    }
+}
+
+class Pause extends PawnNode {
+    constructor(pawn: Pawn){
+        super(pawn);
+        this.name = "Pause"
+    }
+
+    run(): NodeState {
+        super.run();
+        return this.pawn.pause() ? NodeState.RUNNING : NodeState.SUCCESS;
+    }
+}
+
+class UnPause extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = "Unpaused";
+    }
+
+    run(): NodeState {
+        super.run();
+        this.pawn.unpause();
+        return NodeState.SUCCESS;
     }
 }
 

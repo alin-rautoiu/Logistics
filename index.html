@@ -55,6 +55,28 @@
                 })
             })
 
+            const resourceListener = document.querySelector('#resource-canvas-wrapper-3');
+            const resourceCallback = (mutationList, observer) => {
+
+                for (const mutation of mutationList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        setTimeout(() => {
+                            if (resourceListener.classList.contains('expanded')) {
+                                document.querySelectorAll('#resource-canvas-wrapper-3 .canvas-discussion-to-be-expanded *').forEach(item => item.classList.add('visible'));
+                            }
+                        }, 2000);
+                    }
+                }
+            }
+
+            document.querySelector('#toggle-actor-pause').addEventListener('change', () => {
+                document.querySelectorAll('#resource-canvas-2 .canvas-setup .hidden').forEach(element => element.classList.remove('hidden'));
+                document.querySelectorAll('#resource-canvas-3 .canvas-setup .hidden').forEach(element => element.classList.remove('hidden'));
+            })
+
+            const resourceObserver = new MutationObserver(resourceCallback);
+            resourceObserver.observe(resourceListener, { attributes: true });
+
             const canvases = Array.from(document.querySelectorAll('.canvas-wrapper'));
             let canScroll = true;
             canvases.filter(c => c.querySelector('.zoomable') != null).forEach((c) => {
@@ -140,7 +162,7 @@
                 </p>
                 <div class="canvas-wrapper">
                     <div id="trial-canvas" class="canvas-container">
-                        <div class="canvas-setup hidden">
+                        <div class="canvas-setup hidden right-side">
                             <label for="actors-num">Number of actors</label>
                             <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
@@ -208,61 +230,77 @@
                             <label for="actors-speed">Actors' speed</label>
                             <input class="actors-speed" type="number" min="0" value="0" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
-                            <input class="actors-search" type="number" value="70">
+                            <input class="actors-search" type="hidden" value="70">
+                            <input class="resource-frequency" type="hidden" min="0" value="0" step="1">
                         </div>
                     </div>
                 </div>
-                <div>
-                    <p>You can retry the experiment. There is even a slight possibility that all the independent
-                        actors in the first canvas will reach their destination before any in the second one.
-                    </p>
-                </div>
                 <p>The actors will satisfy their needs by acting on task points.<span class="read-more"><span
-                    class="read-more-open"></span><span class="read-more-details display-none"><span>In this
-                        case the task points disappear after a period of time to simulate scarcity. The actors
-                        are also aware of the task points' position, they don't need to discover them of the
-                        board at this point.</span>
-                    </span></span>They will go to the nearest free task point and perform some kind of work on it,
+                            class="read-more-open"></span><span class="read-more-details display-none"><span>In this
+                                case the task points disappear after a period of time to simulate scarcity. The actors
+                                are also aware of the task points' position, they don't need to discover them of the
+                                board at this point.</span>
+                        </span></span>They will go to the nearest free task point and perform some kind of work on it,
                     gaining the means to satisfy their needs, up to a limit. We can imagine this to be a solitary prey
                     animal or a freelancer jumping from gig to gig.</p>
-                <div class="canvas-wrapper has-more">
+                <div class="canvas-wrapper">
                     <div id="resource-canvas-2" class="canvas-container">
                         <button class="canvas-button start-button">Start</button>
                         <fig id="fig2a">Fig. 2b</fig>
-                        <div class="canvas-setup hidden">
+                        <div class="canvas-setup hidden right-side">
                             <label for="actors-num">Number of actors</label>
                             <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input class="actors-speed" type="number" min="0" value="2" step="0.1">
-                            <label for="actors-search">Actors' search radius</label>
-                            <input class="actors-search" type="number" value="70">
+                            <!-- <label for="actors-search">Actors' search radius</label> -->
+                            <input class="actors-search" type="hidden" value="70">
+                            <label for="actors-speed">Actors' "hunger"</label>
+                            <input class="actors-speed" type="number" min="0" value="6000" step="10">
+                            <label for="resource-frequency">Resource frequency</label>
+                            <input class="resource-frequency" type="number" min="0" value="3" step="1">
+                            <!-- <label class="hidden" for="actors-with-paused">Actors pause</label>
+                            <input class="actors-with-paused hidden" type="checkbox"> -->
+                            <label class="hidden" for="actors-pause-duration">Pause duration</label>
+                            <input class="actors-pause-duration hidden" type="number" min="0" value="5000" step="10">
+                            <label class="hidden" for="actors-pause-duration">Pause duration</label>
+                            <input class="actors-pause-interval hidden" type="number" min="0" value="10000" step="10">
+                        </div>
+                    </div>
+                </div>
+                <P>This creates a very competitive environment. But what if the learn to share?</P>
+                <div class="canvas-wrapper has-more" id="resource-canvas-wrapper-3" data-link="resource-canvas-2">
+                    <div id="resource-canvas-3" class="canvas-container">
+                        <button class="canvas-button start-button">Start</button>
+                        <fig id="fig2a">Fig. 3b</fig>
+                        <div class="canvas-setup hidden four-lines">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
+                            <!-- <label for="actors-search">Actors' search radius</label> -->
+                            <input class="actors-search" type="hidden" value="70">
+                            <label for="actors-hunger">Actors' "hunger"</label>
+                            <input class="actors-hunger" type="number" min="0" value="6000" step="10">
+                            <label for="resource-frequency">Resource frequency</label>
+                            <input class="resource-frequency" type="number" min="0" value="3" step="1">
+                            <!-- <label class="hidden" for="actors-with-paused">Actors pause</label>
+                            <input class="actors-with-paused hidden" type="checkbox"> -->
+                            <label class="hidden" for="actors-pause-duration">Pause duration</label>
+                            <input class="actors-pause-duration hidden" type="number" min="0" value="5000" step="10">
+                            <label class="hidden" for="actors-pause-duration">Pause duration</label>
+                            <input class="actors-pause-interval hidden" type="number" min="0" value="10000" step="10">
                         </div>
                     </div>
                     <div class="canvas-discussion">
                         <div class="canvas-discussion-to-be-expanded">
-                            <p>This creates a very competitive environment.</p>
+                            <p>Even uncoordinated actors inside an organization tend to make better use of a scarce
+                                resource through sharing, instead of monopolizing it.</p>
+                            <p>This allows for more complex behaviors. Let us make the reasonable assumption that actors
+                                cannot be active all the time. <label class="hidden" for="toggle-actor-pause">Toggle
+                                    actor pause</label><input id="toggle-actor-pause" class="hidden radio-check"
+                                    type="checkbox"> </p>
                         </div>
                     </div>
-                </div>
-                <P>But what if the learn to share?</P>
-                <div class="canvas-wrapper has-more">
-                    <div id="resource-canvas-3" class="canvas-container">
-                        <button class="canvas-button start-button">Start</button>
-                        <fig id="fig2a">Fig. 3b</fig>
-                        <div class="canvas-setup hidden">
-                            <label for="actors-num">Number of actors</label>
-                            <input class="actors-num" type="number" min="1" value="6" max="200">
-                            <label for="actors-speed">Actors' speed</label>
-                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
-                            <label for="actors-search">Actors' search radius</label>
-                            <input class="actors-search" type="number" value="70">
-                        </div>
-                    </div>
-                    <!-- <div class="canvas-discussion">
-                        <div class="canvas-discussion-to-be-expanded">
-                            <p>This creates a very competitive environment.</p>
-                        </div>
-                    </div> -->
                 </div>
                 <p></p>
                 <h3>Skills transfer</h3>
@@ -278,7 +316,7 @@
             </section> -->
             <section>
                 <h2>Further reading</h2>
-                <img src="./resources/imgs/danny.jpg" >
+                <img src="./resources/imgs/danny.jpg">
             </section>
         </article>
     </main>

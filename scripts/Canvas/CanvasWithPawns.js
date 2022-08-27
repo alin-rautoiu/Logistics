@@ -9,10 +9,14 @@ class CanvasWithPawns extends BaseCanvas {
         this.pawnsNumberControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-num`);
         this.pawnsSpeedControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-speed`);
         this.pawnsSearchControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-search`);
+        this.pawnsHungerControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-hunger`);
+        
 
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
         this.pawnsSearch = this.pawnsSearchControl.value;
+        this.pawnsHunger = this.pawnsHungerControl?.value ?? 6000;
+
 
         this.numCols = 0;
         this.numRows = 0;
@@ -56,46 +60,60 @@ class CanvasWithPawns extends BaseCanvas {
             this.draw();
         })
 
+        if(this.pawnsHungerControl) {
+            this.pawnsHungerControl.addEventListener('change', () => {
+                this.pawnsHunger = this.pawnsHungerControl.value;
+                for (const pawn of this.pawns) {
+                    pawn.maxHunger = this.pawnsHunger;
+                    pawn.hungerMeter = pawn.hungerMeter >= this.pawnsHunger ? this.pawnsHunger : this.hungerMeter;
+                }
+            })
+        }
+
         this.hasStarted = false;
-        const startButton = document.querySelector(`#${this.canvasId} .start-button`);
+        this.startButton = document.querySelector(`#${this.canvasId} .start-button`);
         this.trailsEnabled = true;
-        if (startButton) {
-            startButton.addEventListener('click', () => {
+        if (this.startButton) {
+            this.startButton.addEventListener('click', () => {
                 if (!this.hasStarted) {
                     this.sketch.loop();
                     this.hasStarted = true;
-                    startButton.innerHTML = "Restart";
+                    this.startButton.innerHTML = "Restart";
                 } else {
 
-                    const canvasContainer = startButton.parentElement.parentElement;
-                    if (canvasContainer.classList.contains('has-more')) {
-                        canvasContainer.classList.add('expanded');
-                        canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
-                        const link = canvasContainer.dataset.link;
-                        const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
-                        if (linkedCanvasSetup) {
-                            linkedCanvasSetup.classList.remove('hidden');
-                        }
-                    }
-
-                    startButton.innerHTML = "Start";
-                    this.pawns = [];
-                    this.baseColor = [];
-                    if (this.trailsEnabled) {
-                        this.pg = this.sketch.createGraphics(this.width, this.height);
-                    }
-                    this.redAmount = 0;
-                    this.hasStarted = false;
-                    this.setup();
-                    if (this.resources) {
-                        this.resources = [];
-                    }
+                    this.restart();
                 }
             })
         }
         if (this.trailsEnabled) {
             this.pg = this.sketch.createGraphics(this.width, this.height);
         }
+    }
+
+    restart() {
+        const canvasContainer = this.startButton.parentElement.parentElement;
+        if (canvasContainer.classList.contains('has-more')) {
+            canvasContainer.classList.add('expanded');
+            canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
+            const link = canvasContainer.dataset.link;
+            const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
+            if (linkedCanvasSetup) {
+                linkedCanvasSetup.classList.remove('hidden');
+            }
+        }
+
+        this.startButton.innerHTML = "Start";
+        this.pawns = [];
+        this.baseColor = [];
+        if (this.trailsEnabled) {
+            this.pg = this.sketch.createGraphics(this.width, this.height);
+        }
+        this.redAmount = 0;
+        this.hasStarted = false;
+        if (this.resources) {
+            this.resources = [];
+        }
+        this.setup();
     }
 
     setup() {
@@ -106,10 +124,12 @@ class CanvasWithPawns extends BaseCanvas {
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
         this.pawnsSearch = this.pawnsSearchControl.value;
+        this.pawnsHunger = this.pawnsHungerControl?.value ?? 6000;
     }
 
     addAPawn(i, x, y) {
         const p = this.createPawn(i ?? this.pawns.length, x ,y);
+        p.maxHunger = this.pawnsHunger;
         this.pawns.push(p);
         return p;
     }
@@ -134,8 +154,8 @@ class CanvasWithPawns extends BaseCanvas {
             if (this.trailsEnabled) {
                 this.pg.background(this.sketch.color(235, 235, 235));
             }
-
         }
+
         this.sketch.blendMode(this.sketch.BLEND)
         if (this.trailsEnabled) {
             this.pg.background(this.sketch.color(235, 235, 235, 20));
@@ -152,7 +172,9 @@ class CanvasWithPawns extends BaseCanvas {
         }
 
         if(this.sketch.select('#show-tree').value() === "true"){
-            this.pawns[0].displayTree();
+            if (this.hasStarted) {
+                this.pawns[0].displayTree();
+            }
         }
         
         // if (this.sketch.frameCount % 24 == 1) {

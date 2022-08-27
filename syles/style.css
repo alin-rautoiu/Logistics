@@ -151,12 +151,17 @@ canvas {
     z-index: 10;
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: start;
     justify-content: center;
     width: fit-content;
     height: fit-content;
     opacity: 1;
     transition: transform .5s .5s ease-in-out, opacity 1s ease-in-out, left .5s ease-in-out;
+}
+
+.canvas-setup input {
+    margin-right: 10px;
 }
 
 @media (min-width:1200px) {
@@ -167,8 +172,20 @@ canvas {
 }
 
 @media (min-width:1920px){
+
+    .canvas-setup.right-side {
+        left: auto;
+        right: -200px;
+    }
+
     .expanded .canvas-setup {
+        max-height: 180px;
         transform: translateY(-180px) translateX(200px);
+    }
+
+    .expanded .canvas-setup.four-lines {
+        max-height: 200px;
+        transform: translateY(-200px) translateX(200px);
     }
 }
 
@@ -256,6 +273,21 @@ canvas {
     animation-direction: normal;
     color: rgba(1, 1, 1, 1);
     background-color: rgba(240, 248, 255, 100);
+}
+
+.hidden {
+    opacity: 0;
+    height: 0;
+    width: 0;
+    transition: opacity 0.3s linear;
+    pointer-events: none;
+}
+
+.hidden.visible {
+    opacity: 1;
+    pointer-events: all;
+    width: auto;
+    height: auto;
 }
 
 .display-none {

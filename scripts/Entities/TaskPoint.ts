@@ -179,7 +179,9 @@ class TaskPoint extends Goal {
     workStops(actor: Pawn) {
         this.active = false;
         const actorIndex = this.workers.indexOf(actor);
-        this.workers.splice(actorIndex, 1);
+        if (actor.collaborates) {
+            this.workers.splice(actorIndex, 1);
+        }
     }
 
     workPauses() {
