@@ -31,6 +31,7 @@
     <script type="text/javascript" src="./built/Canvas/Resource/resource-canvasClass.js"></script>
     <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
     <link rel="stylesheet" href="./syles/style.css">
 
@@ -41,6 +42,7 @@
             new OpportunityCollab('trial-canvas-2');
             new ResourceCanvas1('resource-canvas-1');
             new ResourceCanvas2('resource-canvas-2');
+            new ResourceCanvas3('resource-canvas-3');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -229,7 +231,7 @@
                         <fig id="fig2a">Fig. 2b</fig>
                         <div class="canvas-setup hidden">
                             <label for="actors-num">Number of actors</label>
-                            <input class="actors-num" type="number" min="1" value="1" max="200">
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
                             <label for="actors-speed">Actors' speed</label>
                             <input class="actors-speed" type="number" min="0" value="2" step="0.1">
                             <label for="actors-search">Actors' search radius</label>
@@ -241,6 +243,26 @@
                             <p>This creates a very competitive environment.</p>
                         </div>
                     </div>
+                </div>
+                <P>But what if the learn to share?</P>
+                <div class="canvas-wrapper has-more">
+                    <div id="resource-canvas-3" class="canvas-container">
+                        <button class="canvas-button start-button">Start</button>
+                        <fig id="fig2a">Fig. 3b</fig>
+                        <div class="canvas-setup hidden">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="6" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="2" step="0.1">
+                            <label for="actors-search">Actors' search radius</label>
+                            <input class="actors-search" type="number" value="70">
+                        </div>
+                    </div>
+                    <!-- <div class="canvas-discussion">
+                        <div class="canvas-discussion-to-be-expanded">
+                            <p>This creates a very competitive environment.</p>
+                        </div>
+                    </div> -->
                 </div>
                 <p></p>
                 <h3>Skills transfer</h3>
@@ -254,10 +276,14 @@
             <section>
                 <h2>4. Towards autonomous autopoetic organizations</h2>
             </section> -->
+            <section>
+                <h2>Further reading</h2>
+                <img src="./resources/imgs/danny.jpg" >
+            </section>
         </article>
     </main>
     <div class="debug-control">
-        <input type="hidden" id="show-tree" value="true">
+        <input type="hidden" id="show-tree" value="false">
         <input type="hidden" id="show-direction" value="false">
         <input type="hidden" id="show-random-bounds" value="false">
         <input type="hidden" id="random-to-mouse" value="false">
