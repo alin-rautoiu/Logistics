@@ -5,11 +5,13 @@ class ResourceCanvasBase extends CanvasWithPawns {
         this.resourceFrequencyControl = document.querySelector(`#${this.canvasId} .canvas-setup .resource-frequency`);
         this.pauseDurationControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-pause-duration`)
         this.pauseIntervalControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-pause-interval`)
+        this.immovableActorsControl = document.querySelector('#immovable-actors');
         
         this.resourcesFrequency = this.resourceFrequencyControl?.value ?? 3;
         this.pauseDuration = this.pauseDurationControl?.value ?? 5000;
         this.pauseInterval = this.pauseIntervalControl?.value ?? 10000;
         this.pawnsCanPause = false;
+        this.immovablePawns = this.immovableActorsControl?.value ?? 0;
         
 
         this.toggleActorPauseControl = document.querySelector(`#toggle-actor-pause`);
@@ -47,6 +49,28 @@ class ResourceCanvasBase extends CanvasWithPawns {
                 }
             })
         }
+
+        if (this.immovableActorsControl) {
+            this.immovableActorsControl.addEventListener('change', () => {
+                this.immovablePawns = Number.parseInt(this.immovableActorsControl.value);
+                for(let i = 0; i < this.immovablePawns; i++) {
+                    this.pawns[i].speed = 0;
+                }
+                for(let i = this.immovablePawns; i < this.pawnsNumber; i++) {
+                    this.pawns[i].speed = this.pawnsSpeed * 60;
+                }
+            })
+        }
+
+        this.pawnsSpeedControl.addEventListener('change', () => {
+            this.immovablePawns = Number.parseInt(this.immovableActorsControl.value);
+                for(let i = 0; i < this.immovablePawns; i++) {
+                    this.pawns[i].speed = 0;
+                }
+                for(let i = this.immovablePawns; i < this.pawnsNumber; i++) {
+                    this.pawns[i].speed = this.pawnsSpeed * 60;
+                }
+        })
 
     }
 
@@ -97,5 +121,11 @@ class ResourceCanvasBase extends CanvasWithPawns {
         p.timeSincePause = p.pauseInterval * Math.random();
         p.pauseDuration = this.pauseDuration;
         p.pauseInterval = this.pauseInterval;
+        if (i < this.immovablePawns) {
+            p.speed = 0;
+        } else {
+            p.speed = this.pawnsSpeed * 60;
+        }
+        return p;
     }
 }

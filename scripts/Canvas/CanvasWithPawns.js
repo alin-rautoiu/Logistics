@@ -33,7 +33,7 @@ class CanvasWithPawns extends BaseCanvas {
         this.pawnsSpeedControl.addEventListener('change', () => {
             this.pawnsSpeed = this.pawnsSpeedControl.value;
             for (const pawn of this.pawns) {
-                pawn.speed = this.pawnsSpeed;
+                pawn.speed = this.pawnsSpeed * 60;
             }
         })
 
@@ -93,12 +93,14 @@ class CanvasWithPawns extends BaseCanvas {
     restart() {
         const canvasContainer = this.startButton.parentElement.parentElement;
         if (canvasContainer.classList.contains('has-more')) {
-            canvasContainer.classList.add('expanded');
-            canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
-            const link = canvasContainer.dataset.link;
-            const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
-            if (linkedCanvasSetup) {
-                linkedCanvasSetup.classList.remove('hidden');
+            if (!canvasContainer.classList.contains('expanded')) {
+                canvasContainer.classList.add('expanded');
+                canvasContainer.querySelector('.canvas-setup').classList.remove('hidden');
+                const link = canvasContainer.dataset.link;
+                const linkedCanvasSetup = document.querySelector(`#${link} .canvas-setup`);
+                if (linkedCanvasSetup) {
+                    linkedCanvasSetup.classList.remove('hidden');
+                }
             }
         }
 

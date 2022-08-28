@@ -60,11 +60,16 @@
 
                 for (const mutation of mutationList) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                        setTimeout(() => {
-                            if (resourceListener.classList.contains('expanded')) {
-                                document.querySelectorAll('#resource-canvas-wrapper-3 .canvas-discussion-to-be-expanded *').forEach(item => item.classList.add('visible'));
-                            }
-                        }, 2000);
+                        if (resourceListener.classList.contains('expanded')) {
+                            setTimeout(() => {
+                                document.querySelector('#toggle-actor-pause').classList.add('visible');
+                                document.querySelector('[for=toggle-actor-pause]').classList.add('visible');
+                                setTimeout(() => {
+                                    document.querySelector('#immovable-actors-paragraph').classList.add('visible');
+                                    document.querySelector('#immovable-actors').value = 1;
+                                }, 8000);
+                            }, 2000);
+                        }
                     }
                 }
             }
@@ -74,8 +79,17 @@
                 document.querySelectorAll('#resource-canvas-3 .canvas-setup .hidden').forEach(element => element.classList.remove('hidden'));
             })
 
+
+            document.querySelector("#immovable-actors").addEventListener('change', (event) => {
+                const immovablePawns = event.target.value;
+                if (Number.parseInt(immovablePawns) === 1) {
+                    document.querySelector('[for=immovable-actors]').innerHTML = "actor is";
+                } else {
+                    document.querySelector('[for=immovable-actors]').innerHTML = "actors are";
+                }
+            })
             const resourceObserver = new MutationObserver(resourceCallback);
-            resourceObserver.observe(resourceListener, { attributes: true });
+            resourceObserver.observe(resourceListener, { attributes: true, childList: false });
 
             const canvases = Array.from(document.querySelectorAll('.canvas-wrapper'));
             let canScroll = true;
@@ -299,6 +313,9 @@
                                 cannot be active all the time. <label class="hidden" for="toggle-actor-pause">Toggle
                                     actor pause</label><input id="toggle-actor-pause" class="hidden radio-check"
                                     type="checkbox"> </p>
+                            <p class="hidden" id="immovable-actors-paragraph">Or that <input type="number" id="immovable-actors"
+                                    value="0" min="0" step="1"> <label for="immovable-actors">actor is</label> always
+                                immovable.</p>
                         </div>
                     </div>
                 </div>
