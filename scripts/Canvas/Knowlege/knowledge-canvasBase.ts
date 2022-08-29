@@ -1,7 +1,9 @@
 class KnowledgeCanvasBase extends CanvasWithPawns {
+    resourceDecay: number;
     constructor(canvasId: any) {
         super(canvasId);
         this.resources = [];
+        this.resourceDecay = 0;
     }
 
     setup() {
@@ -16,8 +18,8 @@ class KnowledgeCanvasBase extends CanvasWithPawns {
 
     addResources() {
         for (let i = 0; i < 3; i++) {
-            const tp = new TaskPoint(this.sketch, this.sketch.random(600) + 100, this.sketch.random(300) + 50, 1);
-            tp.lifetimeDecay = 0;
+            const tp = new TaskPoint(this.sketch, this.sketch.random(600) + 100, this.sketch.random(300) + 50, 1, this);
+            tp.lifetimeDecay = this.resourceDecay;
             this.resources.push(tp);
         }
     }

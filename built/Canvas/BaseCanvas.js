@@ -34,4 +34,18 @@ class BaseCanvas {
             return;
         this.scale += .1 * Math.sign(event.wheelDeltaY);
     }
+    removeResource(resource) {
+        if (this.resources) {
+            const resIndex = this.resources.indexOf(resource);
+            this.resources.splice(resIndex, 1);
+            if (this.pawns) {
+                for (const pawn of this.pawns) {
+                    const unknownIdx = pawn.unknownLocations.indexOf(resource);
+                    if (unknownIdx != -1) {
+                        pawn.unknownLocations.splice(unknownIdx, 1);
+                    }
+                }
+            }
+        }
+    }
 }

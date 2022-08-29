@@ -1,5 +1,5 @@
 class TaskPoint extends Goal {
-    constructor(sketch, x, y, kind) {
+    constructor(sketch, x, y, kind, canvas) {
         super(sketch, x, y, "resource");
         this.kind = kind;
         this.resources = new ResourceHolder(this.sketch);
@@ -25,18 +25,24 @@ class TaskPoint extends Goal {
                 this.accentColor = this.sketch.color(20, 180, 180);
                 break;
         }
+        this.lifetimeDecay = 0;
         this.rotation = 0;
         this.r = 12;
         this.workers = [];
         this.occupied = false;
         this.lifetime = 5000.0;
         this.maxWorkers = 1;
+        this.canvas = canvas;
         for (const r of this.req) {
             this.resources.setResource(r, 0.0);
         }
     }
     display() {
         this.lifetime -= this.lifetimeDecay;
+        if (this.lifetime <= 0 && this.canvas) {
+            this.canvas.removeResource(this);
+            this.removed = true;
+        }
         this.sketch.push();
         switch (this.kind) {
             case 1:

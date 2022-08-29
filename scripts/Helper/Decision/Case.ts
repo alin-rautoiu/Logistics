@@ -321,11 +321,6 @@ class IsAtTask extends PawnNode {
         const movementTarget = this.pawn.movementTarget?.entity;
         if (!movementTarget) {
             return NodeState.FAILURE;
-            // if (currentTask.direction === TaskDirection.GIVE) {
-            //     return NodeState.SUCCESS;
-            // } else {
-            //     return NodeState.FAILURE;
-            // }
         }
         const distanceSq = this.pawn.movementTarget.target.copy()
             .sub(this.pawn.position)
@@ -637,7 +632,6 @@ class RandomWalk extends PawnNode {
     run() {
         super.run();
         this.pawn.pulse = true;
-        this.pawn.movementTarget = null;
         if (this.pawn.sketch.select('#random-to-mouse').value() === "true") {
             const sk = this.pawn.sketch;
             this.pawn.direction = sk.createVector(sk.mouseX, sk.mouseY).sub(this.pawn.position).normalize();
@@ -728,7 +722,7 @@ class IsFree extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
-        if (currentTask.direction !== TaskDirection.EXTRACT)
+        if (currentTask && currentTask.direction !== TaskDirection.EXTRACT)
             return NodeState.SUCCESS;
 
         if (this.pawn.movementTarget === null || this.pawn.movementTarget === undefined) return NodeState.FAILURE;
@@ -978,6 +972,37 @@ class SearchOtherTask extends PawnNode {
         }
         this.pawn.movementTarget = null;
         return NodeState.FAILURE;
+    }
+}
+
+class TaskStillExists extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = 'TaskStillExists';
+    }
+
+    run(): NodeState {
+        super.run();
+        const currentTask = this.pawn.getCurrentTask();
+        if (!currentTask) return NodeState.FAILURE;
+
+        switch(currentTask.direction){
+            case TaskDirection.EXTRACT:
+                const goal = currentTask.movementTarget?.entity as Goal;
+                
+                if (!goal) return NodeState.FAILURE;
+                if (goal.removed) {
+                    this.pawn.removeLocation(goal)
+                    return NodeState.FAILURE;
+                }
+
+                return NodeState.SUCCESS;
+            case TaskDirection.GIVE:
+                const other = currentTask.movementTarget?.entity as Pawn;
+                return other && other.behavior !== 'dead' ? NodeState.SUCCESS : NodeState.FAILURE;
+            case TaskDirection.RECEIVE:
+                return NodeState.SUCCESS;
+        }
     }
 }
 

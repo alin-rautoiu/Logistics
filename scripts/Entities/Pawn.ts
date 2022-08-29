@@ -186,6 +186,10 @@ class Pawn extends Entity {
                         new Sequence([
                             new IsAtTask(this),
                             new Selector([
+                                new TaskStillExists(this),
+                                new FinishTask(this)
+                            ]),
+                            new Selector([
                                 new IsFree(this),
                                 new SearchOtherTask(this),
                                 new RandomWalk(this)

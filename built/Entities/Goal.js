@@ -3,6 +3,7 @@ class Goal extends Entity {
         super(sketch, x, y, type);
         this.kind = 1;
         this.r = 10;
+        this.removed = false;
     }
     draw(searchRadius) {
         this.sketch.push();

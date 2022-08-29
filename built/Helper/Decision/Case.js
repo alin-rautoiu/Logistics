@@ -493,7 +493,6 @@ class RandomWalk extends PawnNode {
     run() {
         super.run();
         this.pawn.pulse = true;
-        this.pawn.movementTarget = null;
         if (this.pawn.sketch.select('#random-to-mouse').value() === "true") {
             const sk = this.pawn.sketch;
             this.pawn.direction = sk.createVector(sk.mouseX, sk.mouseY).sub(this.pawn.position).normalize();
@@ -566,7 +565,7 @@ class IsFree extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
-        if (currentTask.direction !== TaskDirection.EXTRACT)
+        if (currentTask && currentTask.direction !== TaskDirection.EXTRACT)
             return NodeState.SUCCESS;
         if (this.pawn.movementTarget === null || this.pawn.movementTarget === undefined)
             return NodeState.FAILURE;
@@ -769,6 +768,35 @@ class SearchOtherTask extends PawnNode {
         }
         this.pawn.movementTarget = null;
         return NodeState.FAILURE;
+    }
+}
+class TaskStillExists extends PawnNode {
+    constructor(pawn) {
+        super(pawn);
+        this.name = 'TaskStillExists';
+    }
+    run() {
+        var _a, _b;
+        super.run();
+        const currentTask = this.pawn.getCurrentTask();
+        if (!currentTask)
+            return NodeState.FAILURE;
+        switch (currentTask.direction) {
+            case TaskDirection.EXTRACT:
+                const goal = (_a = currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.entity;
+                if (!goal)
+                    return NodeState.FAILURE;
+                if (goal.removed) {
+                    this.pawn.removeLocation(goal);
+                    return NodeState.FAILURE;
+                }
+                return NodeState.SUCCESS;
+            case TaskDirection.GIVE:
+                const other = (_b = currentTask.movementTarget) === null || _b === void 0 ? void 0 : _b.entity;
+                return other && other.behavior !== 'dead' ? NodeState.SUCCESS : NodeState.FAILURE;
+            case TaskDirection.RECEIVE:
+                return NodeState.SUCCESS;
+        }
     }
 }
 var NodeState;

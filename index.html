@@ -36,6 +36,7 @@
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-2.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-4.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -51,6 +52,7 @@
             new KnowledgeCanvas1('knowledge-reproduction-canvas-1');
             new KnowledgeCanvas2('knowledge-reproduction-canvas-2');
             new KnowledgeCanvas3('knowledge-reproduction-canvas-3');
+            new KnowledgeCanvas4('knowledge-reproduction-canvas-4');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -408,12 +410,45 @@
                         </div>
                     </div>
                 </div>
-                <p>This kind of social spreading of information, where the group acts as a storage of knowledge isn't unique to humans. For example, there's a well known <a title="Grudge-Holding Crows Pass on Their Anger to Family and Friends" href="https://www.discovermagazine.com/planet-earth/grudge-holding-crows-pass-on-their-anger-to-family-and-friends">experiment</a> of crows distributing among the flock information about researchers whom they perceive to be dangerous.</p>
+                <p>This kind of social spreading of information, where the group acts as a storage of knowledge isn't
+                    unique to humans. For example, there's a well known <a
+                        title="Grudge-Holding Crows Pass on Their Anger to Family and Friends"
+                        href="https://www.discovermagazine.com/planet-earth/grudge-holding-crows-pass-on-their-anger-to-family-and-friends">experiment</a>
+                    of crows distributing among the flock information about researchers whom they perceive to be
+                    dangerous.</p>
+            </section>
+            <section>
+                <h2>2. How organizations fail</h2>
+                <h3>Faulty communication</h3>
+                <p>Up to this point we've modeled the communication between actors as lossless and consistent. There are
+                    many environments where this is not the case. Let us consider a situation where the identified
+                    opportunities are not stable.</p>
+                    <div class="canvas-wrapper">
+                        <div id="knowledge-reproduction-canvas-4" class="canvas-container">
+                            <button type="button" class="canvas-button start-button">Start</button>
+                            <fig id="fig3a">Fig. 3c</fig>
+                            <div class="canvas-setup hidden four-lines">
+                                <label for="actors-num">Number of actors</label>
+                                <input class="actors-num" type="number" min="1" value="1" max="200">
+                                <label for="actors-speed">Actors' speed</label>
+                                <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                                <!-- <label for="actors-search">Actors' search radius</label> -->
+                                <input class="actors-search" type="hidden" value="70">
+                                <label for="actors-hunger">Actors' "hunger"</label>
+                                <input class="actors-hunger" type="number" min="0" value="60000" step="10">
+                                <label for="resource-frequency">Resource frequency</label>
+                                <input class="resource-frequency" type="number" min="0" value="3" step="1">
+                                <label class="hidden" for="actors-with-paused">Actors pause</label>
+                                <input class="actors-with-paused hidden" type="checkbox">
+                                <label for="actors-pause-duration">Pause duration</label>
+                                <input class="actors-pause-duration" type="number" min="0" value="5000" step="10">
+                                <label for="actors-pause-interval">Pause interval</label>
+                                <input class="actors-pause-interval" type="number" min="0" value="10000" step="10">
+                            </div>
+                        </div>
+                    </div>
             </section>
             <!-- 
-            <section>
-                <h2>2. How organizations fail.</h2>
-            </section>
             <section>
                 <h2>3. No room to breath</h2>
             </section>
