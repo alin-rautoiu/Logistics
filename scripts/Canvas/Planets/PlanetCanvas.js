@@ -24,7 +24,7 @@ class PlanetCanvas extends BaseCanvas {
 
     drawSun() {
         this.sketch.push();
-        this.sketch.fill("yellow")
+        this.sketch.fill("#ffc900")
         this.sketch.noStroke();
         this.sketch.circle(this.centerX, this.centerY, 300);
         this.sketch.pop();

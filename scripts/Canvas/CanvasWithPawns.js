@@ -78,7 +78,7 @@ class CanvasWithPawns extends BaseCanvas {
                 if (!this.hasStarted) {
                     this.sketch.loop();
                     this.hasStarted = true;
-                    this.startButton.innerHTML = "Restart";
+                    this.startButton.innerHTML = "Reset";
                 } else {
 
                     this.restart();
@@ -105,6 +105,9 @@ class CanvasWithPawns extends BaseCanvas {
         }
 
         this.startButton.innerHTML = "Start";
+        for(let pawn of this.pawns) {
+            pawn = null;
+        }
         this.pawns = [];
         this.baseColor = [];
         if (this.trailsEnabled) {
@@ -119,7 +122,6 @@ class CanvasWithPawns extends BaseCanvas {
     }
 
     setup() {
-        this.pawns = [];
         const sqrSz = Math.sqrt((this.width * this.height) / this.pawnsNumber);
         this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
         this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
@@ -137,7 +139,7 @@ class CanvasWithPawns extends BaseCanvas {
     }
 
     createPawn(idx, x = this.width / 2, y = this.height / 2){
-        return new Pawn(this.sketch, x, y, 10, this.pawnsSpeed, this.pawnsSearch, this.pg, this.target, idx);
+        return new Pawn(this.sketch, x, y, 16, this.pawnsSpeed, this.pawnsSearch, this.pg, this.target, idx);
     }
 
     setPawnOnGrid(pawn, idx, randomScale = 10) {
@@ -154,13 +156,17 @@ class CanvasWithPawns extends BaseCanvas {
         super.draw();
         if (!this.hasStarted) {
             if (this.trailsEnabled) {
-                this.pg.background(this.sketch.color(235, 235, 235));
+                //this.pg.background(this.sketch.color(235, 235, 235));
+                this.pg.background('rgb(233, 230, 221)');
             }
         }
 
         this.sketch.blendMode(this.sketch.BLEND)
         if (this.trailsEnabled) {
-            this.pg.background(this.sketch.color(235, 235, 235, 20));
+            //this.pg.background(this.sketch.color(235, 235, 235, 20));
+            this.pg.background(this.sketch.color(233, 230, 221, 20));
+
+            //this.pg.background('rgba(243, 237, 226, 20)');
             this.sketch.image(this.pg, 0, 0);
         } else {
             this.sketch.background(255);

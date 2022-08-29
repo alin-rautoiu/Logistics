@@ -36,7 +36,7 @@ class TaskPoint extends Goal {
                 break;
         }
         this.rotation = 0;
-        this.r = 7;
+        this.r = 12;
         this.workers = [];
         this.occupied = false;
         this.lifetime = 5000.0;
@@ -48,7 +48,7 @@ class TaskPoint extends Goal {
     }
 
     display() {
-        this.lifetime -= this.sketch.deltaTime;
+        this.lifetime -= this.lifetimeDecay;
         this.sketch.push();
         switch (this.kind) {
             case 1:
@@ -179,7 +179,8 @@ class TaskPoint extends Goal {
     workStops(actor: Pawn) {
         this.active = false;
         const actorIndex = this.workers.indexOf(actor);
-        if (actor.collaborates) {
+        if (actorIndex < 0) return;
+        if (actor.collaborates || actor.behavior === 'dead') {
             this.workers.splice(actorIndex, 1);
         }
     }

@@ -55,7 +55,7 @@ class ResourceHolder {
             this.sketch.push();
             this.sketch.noStroke();
             this.sketch.fill(color);
-            this.sketch.rect(position.x - offset, position.y - offset / 2 - 10 * (i + 1), req.amount, 5);
+            this.sketch.rect(position.x - 10, position.y - offset / 2 - 10 * (i + 1), req.amount, 5);
             this.sketch.pop();
             i++;
         }

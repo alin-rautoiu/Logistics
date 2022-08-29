@@ -6,9 +6,11 @@
 body {
     font-family: 'Raleway';
     z-index: 2;
+    background-color: #f8f8ff;
 }
 
 p {
+    font-size: 1em;
     margin-bottom: 0.5em;
     margin-top: 0.5em;
 }
@@ -34,6 +36,12 @@ section {
     max-width: 800px;
 }
 
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .cover {
     height: 200px;
     position: relative;
@@ -57,23 +65,23 @@ section {
 .cover .canvas-wrapper canvas {
     filter: none;
     z-index: 1;
-    mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
-    -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 14%, rgba(0, 0, 0, 0.25) 14.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
     mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
 }
 
 @media (max-width:1920px) {
     .cover .canvas-wrapper canvas {
-        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
-        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.25) 15.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
     }
 }
 
 @media (max-width:1600px) {
     .cover .canvas-wrapper canvas {
-        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
-        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
+        -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.05) 19%, rgba(0, 0, 0, 0.25) 19.1%,  rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0) 100%);
     }
 }
 

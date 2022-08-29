@@ -428,7 +428,7 @@ class KnowsTaskLocation extends PawnNode {
         }
 
         const found = this.pawn.knownLocations
-            .filter(l => l.kind === currentTask.kind);
+            .filter(l => l.kind === currentTask.kind && l.isFree(this.pawn));
         this.pawn.currentTaskLocations = found;
         return found && found.length >= 1 ? NodeState.SUCCESS : NodeState.FAILURE;
     }
@@ -490,9 +490,8 @@ class GoToTask extends PawnNode {
                 const taskPoint = found.movementTarget?.entity as TaskPoint;
                 if (taskPoint) {
                     taskPoint.workStops(this.pawn);
-                    found.movementTarget = new MovementTarget(this.pawn);
                 }
-                //found.taskIndex++;
+                found.movementTarget = new MovementTarget(this.pawn);
             }
 
             this.pawn.receiveTargetPosition(new MovementTarget(found));
@@ -618,7 +617,7 @@ class GoToFood extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
-        if (currentTask.kind != this.pawn.needs) {
+        if (currentTask && currentTask.kind != this.pawn.needs) {
             this.pawn.tasks.push(new Task(TaskDirection.EXTRACT, this.pawn.needs));
         }
 
@@ -692,13 +691,15 @@ class SendLastPosition extends PawnNode {
 
     run() {
         super.run();
-
-        const lastLocation = this.pawn.knownLocations[this.pawn.knownLocations.length - 1];
-        if (!lastLocation) return NodeState.FAILURE;
         let allNotified = true;
 
-        for (let p of this.pawn.organization.filter(p => p.knownLocations.indexOf(lastLocation as Goal) === -1)) {
-            allNotified = (this.pawn.notify(p, lastLocation) && allNotified);
+        
+        if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) return NodeState.FAILURE;
+
+        for(const location of this.pawn.knownLocations) {
+            for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location as Goal) === -1)) {
+                allNotified = (this.pawn.notify(p, location) && allNotified);
+            }
         }
 
         return allNotified ? NodeState.SUCCESS : NodeState.RUNNING;
@@ -955,6 +956,28 @@ class UnPause extends PawnNode {
         super.run();
         this.pawn.unpause();
         return NodeState.SUCCESS;
+    }
+}
+
+class SearchOtherTask extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = 'SearchOtherTask';
+    }
+
+    run(): NodeState {
+        super.run();
+        
+        if (!this.pawn.movementTarget) {
+            return NodeState.FAILURE;
+        }
+        const found = this.pawn.knownLocations.find(l => l.kind && l !== this.pawn.movementTarget.entity);
+        if (found) {
+            this.pawn.movementTarget.entity = found;
+            return NodeState.SUCCESS;
+        }
+        this.pawn.movementTarget = null;
+        return NodeState.FAILURE;
     }
 }
 
