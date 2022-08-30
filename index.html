@@ -291,7 +291,9 @@
                         </div>
                     </div>
                 </div>
-                <P>This creates a very competitive environment. But what if the learn to share?</P>
+                <P>This creates a very competitive environment. But what if the learn to share? If an actor has a
+                    surplus, it'll try to identify the nearest member of its organization lacking the resource it needs
+                    and impart to it half of what it acquired.</P>
                 <div class="canvas-wrapper has-more" id="resource-canvas-wrapper-3" data-link="resource-canvas-2">
                     <div id="resource-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -422,31 +424,44 @@
                 <h3>Faulty communication</h3>
                 <p>Up to this point we've modeled the communication between actors as lossless and consistent. There are
                     many environments where this is not the case. Let us consider a situation where the identified
-                    opportunities are not stable.</p>
-                    <div class="canvas-wrapper">
-                        <div id="knowledge-reproduction-canvas-4" class="canvas-container">
-                            <button type="button" class="canvas-button start-button">Start</button>
-                            <fig id="fig3a">Fig. 3c</fig>
-                            <div class="canvas-setup hidden four-lines">
-                                <label for="actors-num">Number of actors</label>
-                                <input class="actors-num" type="number" min="1" value="1" max="200">
-                                <label for="actors-speed">Actors' speed</label>
-                                <input class="actors-speed" type="number" min="0" value="1" step="0.1">
-                                <!-- <label for="actors-search">Actors' search radius</label> -->
-                                <input class="actors-search" type="hidden" value="70">
-                                <label for="actors-hunger">Actors' "hunger"</label>
-                                <input class="actors-hunger" type="number" min="0" value="60000" step="10">
-                                <label for="resource-frequency">Resource frequency</label>
-                                <input class="resource-frequency" type="number" min="0" value="3" step="1">
-                                <label class="hidden" for="actors-with-paused">Actors pause</label>
-                                <input class="actors-with-paused hidden" type="checkbox">
-                                <label for="actors-pause-duration">Pause duration</label>
-                                <input class="actors-pause-duration" type="number" min="0" value="5000" step="10">
-                                <label for="actors-pause-interval">Pause interval</label>
-                                <input class="actors-pause-interval" type="number" min="0" value="10000" step="10">
-                            </div>
+                    opportunities are not stable, but instead expire. The actors will not only pursue expired
+                    opportunities that they previously encountered, but they'll distribute this poisoned knowledge to
+                    new
+                    members who'll themselves waste time checking for an expired opportunity.</p>
+                <div class="canvas-wrapper">
+                    <div id="knowledge-reproduction-canvas-4" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig id="fig3a">Fig. 4a</fig>
+                        <div class="canvas-setup hidden four-lines">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="1" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <!-- <label for="actors-search">Actors' search radius</label> -->
+                            <input class="actors-search" type="hidden" value="70">
+                            <label for="actors-hunger">Actors' "hunger"</label>
+                            <input class="actors-hunger" type="number" min="0" value="60000" step="10">
+                            <label for="resource-frequency">Resource frequency</label>
+                            <input class="resource-frequency" type="number" min="0" value="3" step="1">
+                            <label class="hidden" for="actors-with-paused">Actors pause</label>
+                            <input class="actors-with-paused hidden" type="checkbox">
+                            <label for="actors-pause-duration">Pause duration</label>
+                            <input class="actors-pause-duration" type="number" min="0" value="5000" step="10">
+                            <label for="actors-pause-interval">Pause interval</label>
+                            <input class="actors-pause-interval" type="number" min="0" value="10000" step="10">
                         </div>
                     </div>
+                </div>
+                <p>There's also a symmetric phenomena, where the opportunities are stable but the transmitted
+                    information gets corrupted. For the actor this might appear identical, arriving at what they
+                    presumed to be an opportunity and finding nothing actionable, but it's distinct enough to warrant a
+                    separate representation.</p>
+                <p>Especially considering that this kind of noisy communication can have multiple causes: itself a
+                    feature of the environment (a noisy medium or a medium poorly suited for the chosen communication
+                    channel), a poor communication protocol or poorly using the communication protocol. Demonstrating
+                    how each of these factors affect the communication between actors is outside the scope of this
+                    project, but I hope it can at least help you consider how they all factor in and especially how very
+                    different problems might create very similar problematic results.    </p>
             </section>
             <!-- 
             <section>

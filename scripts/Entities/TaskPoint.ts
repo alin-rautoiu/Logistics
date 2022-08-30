@@ -51,31 +51,42 @@ class TaskPoint extends Goal {
         }
     }
 
+    displayRemoved() {
+        this.sketch.push();
+        this.sketch.stroke('rgba(0,0,0,0.2)');
+        this.sketch.fill('rgba(0,0,0,0.2)');
+        this.drawHex(this.position.x, this.position.y, this.r);
+        this.sketch.pop();
+    }
+
     display() {
         this.lifetime -= this.lifetimeDecay;
-        if (this.lifetime <= 0 && this.canvas) {
+        if (!this.removed && this.lifetime <= 0 && this.canvas) {
             this.canvas.removeResource(this);
             this.removed = true;
         }
+
         this.sketch.push();
         switch (this.kind) {
-            case 1:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 2:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 3:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 4:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-        }
+                case 1:
+                    this.sketch.stroke(this.accentColor);
+                    this.sketch.fill(this.mainColor);
+                    break;
+                case 2:
+                    this.sketch.stroke(this.accentColor);
+                    this.sketch.fill(this.mainColor);
+                    break;
+                case 3:
+                    this.sketch.stroke(this.accentColor);
+                    this.sketch.fill(this.mainColor);
+                    break;
+                case 4:
+                    this.sketch.stroke(this.accentColor);
+                    this.sketch.fill(this.mainColor);
+                    break;
+            }
+        
+
 
         if (this.active) {
             this.rotation += 0.1;
@@ -85,9 +96,9 @@ class TaskPoint extends Goal {
         this.sketch.rotate(this.rotation);
         this.sketch.translate(-this.position.x, -this.position.y);
         this.drawHex(this.position.x, this.position.y, this.r);
-        this.sketch.pop();
         this.sketch.text(this.kind, this.position.y - 10);
         this.resources.display(this.position, this.r + 4);
+        this.sketch.pop();
     }
 
     requires() {

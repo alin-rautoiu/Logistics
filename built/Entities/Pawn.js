@@ -125,9 +125,10 @@ class Pawn extends Entity {
                             new Selector([
                                 new IsFree(this),
                                 new SearchOtherTask(this),
-                                new RandomWalk(this)
+                                new AlwaysFail(new RandomWalk(this))
                             ]),
                             new Sequence([
+                                new IsAtTask(this),
                                 new PerformWork(this),
                                 new FinishTask(this),
                             ])
@@ -350,19 +351,6 @@ class Pawn extends Entity {
             return false;
         const entity = this.movementTarget.entity;
         this.behavior = 'collect';
-        if (entity instanceof TaskPoint) {
-            const taskPoint = entity;
-            taskPoint.work(this);
-            if (this.resources.hasSufficientResource(taskPoint.kind)) {
-                return true;
-            }
-            this.sketch.push();
-            this.sketch.strokeWeight(1);
-            this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
-            this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
-            this.sketch.pop();
-            return false;
-        }
         const task = this.getCurrentTask();
         if (entity instanceof Pawn) {
             const other = entity;
@@ -382,6 +370,26 @@ class Pawn extends Entity {
                 }
                 return true;
             }
+        }
+        if (entity instanceof TaskPoint) {
+            const taskPoint = entity;
+            if (taskPoint.removed)
+                return true;
+            taskPoint.work(this);
+            if (this.resources.hasSufficientResource(taskPoint.kind)) {
+                return true;
+            }
+            if (this.behavior !== 'receive') {
+                this.sketch.push();
+                this.sketch.strokeWeight(1);
+                this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
+                this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
+                this.sketch.pop();
+                if (this.position.copy().sub(taskPoint.position.copy()).mag() > 40) {
+                    console.log(taskPoint);
+                }
+            }
+            return false;
         }
         if (entity instanceof Goal) {
             return true;

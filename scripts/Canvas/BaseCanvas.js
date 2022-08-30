@@ -3,7 +3,7 @@ class BaseCanvas {
         this.canvasId = canvasId;
         this.width = Math.min(width, window.innerWidth - 30);
         this.height = height;
-
+        this.removedResources = [];
         var sketch = (s) => {
             s.setup = () => {
                 this.canvas = s.select(`#${this.canvasId} canvas`) ?? s.createCanvas(this.width, this.height);
@@ -44,6 +44,7 @@ class BaseCanvas {
         if (this.resources)  {
             const resIndex = this.resources.indexOf(resource);
             this.resources.splice(resIndex, 1);
+            this.removedResources.push(resource);
             if (this.pawns) {
                 for(const pawn of this.pawns) {
                     const unknownIdx = pawn.unknownLocations.indexOf(resource);

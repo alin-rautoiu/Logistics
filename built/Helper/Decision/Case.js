@@ -73,6 +73,18 @@ class AlwaysSucceed extends Modifier {
         return NodeState.SUCCESS;
     }
 }
+class AlwaysFail extends Modifier {
+    constructor(child) {
+        super(child);
+        this.name = "AlwaysSucceed";
+    }
+    run() {
+        super.run();
+        this.child.run();
+        this.status = NodeState.FAILURE;
+        return NodeState.FAILURE;
+    }
+}
 class Inverter extends Modifier {
     constructor(child) {
         super(child);
@@ -258,8 +270,8 @@ class IsAtTask extends PawnNode {
         if (!movementTarget) {
             return NodeState.FAILURE;
         }
-        const distanceSq = this.pawn.movementTarget.target.copy()
-            .sub(this.pawn.position)
+        const distanceSq = movementTarget.position.copy()
+            .sub(this.pawn.position.copy())
             .magSq();
         const atTask = distanceSq <= (movementTarget.r + this.pawn.diameter + 2.5) * (movementTarget.r + this.pawn.diameter + 2.5);
         return atTask ? NodeState.SUCCESS : NodeState.FAILURE;
@@ -345,6 +357,8 @@ class GoToTask extends PawnNode {
         if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0)
             return NodeState.FAILURE;
         const currentTask = this.pawn.getCurrentTask();
+        if (!currentTask)
+            return NodeState.FAILURE;
         if (currentTask.direction === TaskDirection.EXTRACT) {
             const found = this.pawn.knownLocations
                 .filter((l) => l.isFree(this.pawn))

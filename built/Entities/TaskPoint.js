@@ -37,9 +37,16 @@ class TaskPoint extends Goal {
             this.resources.setResource(r, 0.0);
         }
     }
+    displayRemoved() {
+        this.sketch.push();
+        this.sketch.stroke('rgba(0,0,0,0.2)');
+        this.sketch.fill('rgba(0,0,0,0.2)');
+        this.drawHex(this.position.x, this.position.y, this.r);
+        this.sketch.pop();
+    }
     display() {
         this.lifetime -= this.lifetimeDecay;
-        if (this.lifetime <= 0 && this.canvas) {
+        if (!this.removed && this.lifetime <= 0 && this.canvas) {
             this.canvas.removeResource(this);
             this.removed = true;
         }
@@ -69,9 +76,9 @@ class TaskPoint extends Goal {
         this.sketch.rotate(this.rotation);
         this.sketch.translate(-this.position.x, -this.position.y);
         this.drawHex(this.position.x, this.position.y, this.r);
-        this.sketch.pop();
         this.sketch.text(this.kind, this.position.y - 10);
         this.resources.display(this.position, this.r + 4);
+        this.sketch.pop();
     }
     requires() {
         return this.req;

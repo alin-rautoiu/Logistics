@@ -11,7 +11,7 @@ class KnowledgeCanvas4 extends KnowledgeCanvasBase {
         this.resources.push(tp);
         this.addPawns();
         for(const  pawn of this.pawns) {
-            pawn.lifetimeDecay = 1;
+            pawn.lifetimeDecay = 3;
             pawn.collaborates = true;
         }
 

@@ -81,7 +81,7 @@ class ResourceCanvasBase extends CanvasWithPawns {
         if (!this.hasStarted)
             return;
         if (this.resourcesFrequency !== 0 && this.sketch.frameCount % Math.floor((600 / this.resourcesFrequency)) === 0) {
-            const tp = new TaskPoint(this.sketch, this.sketch.random(600) + 100, this.sketch.random(300) + 50, 1);
+            const tp = new TaskPoint(this.sketch, this.sketch.random(600) + 100, this.sketch.random(300) + 50, 1, this);
             tp.lifetimeDecay = 10;
             this.resources.push(tp);
             for (let p of this.pawns) {

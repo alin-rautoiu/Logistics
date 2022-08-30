@@ -26,9 +26,13 @@ class KnowledgeCanvasBase extends CanvasWithPawns {
 
     draw() {
         super.draw();
-
+        if (!this.hasStarted) return;
         for (const res of this.resources) {
             res.display();
+        }
+
+        for (const res of this.removedResources) {
+            res.displayRemoved();
         }
     }
 
@@ -42,7 +46,7 @@ class KnowledgeCanvasBase extends CanvasWithPawns {
         p.needs = 1;
         p.consumes = true;
         p.maxHunger = Number.MAX_SAFE_INTEGER;
-        for (const res of this.resources) {
+        for (const res of this.resources.filter(r => !r.removed)) {
             p.addNewUnknownLocation(res);
         }
     }

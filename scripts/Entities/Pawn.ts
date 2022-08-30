@@ -94,7 +94,8 @@ class Pawn extends Entity {
                 new Sequence([
                     new TargetExists(this)
                 ])
-        )};
+            )
+        };
 
         let sendPosition = new Sequence([
             new StillAlive(this),
@@ -140,7 +141,7 @@ class Pawn extends Entity {
             ])
         ]);
 
-        const search = 
+        const search =
             new Selector([
                 new Sequence([
                     new StillAlive(this),
@@ -192,12 +193,13 @@ class Pawn extends Entity {
                             new Selector([
                                 new IsFree(this),
                                 new SearchOtherTask(this),
-                                new RandomWalk(this)
+                                new AlwaysFail(new RandomWalk(this))
                             ]),
                             new Sequence([
-                                    new PerformWork(this),
-                                    new FinishTask(this),
-                                ])
+                                new IsAtTask(this),
+                                new PerformWork(this),
+                                new FinishTask(this),
+                            ])
                         ]),
                         new Sequence([
                             new CanWalk(this),
@@ -236,7 +238,7 @@ class Pawn extends Entity {
     displayTree() {
         this.sketch.push();
         this.sketch.rectMode(this.sketch.CENTER);
-        this.displayBranch(this.decisions[9], {x: 300, y: 10}, 0, Math.PI / 2);
+        this.displayBranch(this.decisions[9], { x: 300, y: 10 }, 0, Math.PI / 2);
         this.sketch.pop();
     }
 
@@ -279,15 +281,15 @@ class Pawn extends Entity {
         const length = 60;
         for (let i = 0; i < childCount; i++) {
 
-            const degDiff = childCount <= 1 
+            const degDiff = childCount <= 1
                 ? angle
-                : (this.sketch.map(i, 0, childCount - 1, 
-                    Math.min(Math.PI,  Math.PI * 3/4 + childCount * Math.PI / 16 ), 
-                    Math.max(0, 1/4 * Math.PI - childCount * Math.PI / 16 )));
+                : (this.sketch.map(i, 0, childCount - 1,
+                    Math.min(Math.PI, Math.PI * 3 / 4 + childCount * Math.PI / 16),
+                    Math.max(0, 1 / 4 * Math.PI - childCount * Math.PI / 16)));
 
             const leafX = Math.cos(degDiff) * length;
             const leafY = Math.sin(degDiff) * length * 1.2;
-            const thisCoord = {x: leafX + parent.x, y: leafY + parent.y};
+            const thisCoord = { x: leafX + parent.x, y: leafY + parent.y };
 
             this.displayBranch(node.children[i], thisCoord, depth + 1, degDiff)
 
@@ -359,10 +361,10 @@ class Pawn extends Entity {
         if (this.lifetimeDecay > 0.001) {
             this.sketch.push();
             this.sketch.fill('rgba(70, 180, 70, 0.4)')
-            const maxHeight : number = 1.5 * this.diameter;
-            const heightLoss : number = 1.5 * this.diameter * this.lifetime / this.maxLifetime;
-            const yPosition : number = this.position.y - (1.5 * this.diameter / 2) + maxHeight - heightLoss;
-            this.sketch.rect(this.position.x - this.diameter , yPosition, 3, heightLoss);
+            const maxHeight: number = 1.5 * this.diameter;
+            const heightLoss: number = 1.5 * this.diameter * this.lifetime / this.maxLifetime;
+            const yPosition: number = this.position.y - (1.5 * this.diameter / 2) + maxHeight - heightLoss;
+            this.sketch.rect(this.position.x - this.diameter, yPosition, 3, heightLoss);
             this.sketch.pop();
         }
 
@@ -385,12 +387,12 @@ class Pawn extends Entity {
 
         this.sketch.pop();
 
-        
+
         if (this.sketch.select('#show-direction').value() === "true") {
-            
+
             this.sketch.push();
             this.sketch.text(this.taskIndex, this.position.x + 5, this.position.y + - 10);
-            for(let i = 0; i < this.tasks.length; i++) {
+            for (let i = 0; i < this.tasks.length; i++) {
                 const task = this.tasks[i];
                 this.sketch.text(task.direction, this.position.x + 10, this.position.y + i * 10);
             }
@@ -429,33 +431,16 @@ class Pawn extends Entity {
         this.behavior = 'move';
     }
 
-    collect() : boolean {
+    collect(): boolean {
 
         if (!(this.movementTarget && this.movementTarget.entity)) return false;
-        const entity : Entity = this.movementTarget.entity;
+        const entity: Entity = this.movementTarget.entity;
 
         this.behavior = 'collect';
-
-        if (entity instanceof TaskPoint) {
-            const taskPoint : TaskPoint = entity;
-
-            taskPoint.work(this);
-            if (this.resources.hasSufficientResource(taskPoint.kind)) {
-                return true;
-            }
-
-            this.sketch.push();
-            this.sketch.strokeWeight(1);
-            this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
-            this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
-            this.sketch.pop();
-            return false;
-        }
-
         const task = this.getCurrentTask();
 
         if (entity instanceof Pawn) {
-            const other : Pawn = entity;
+            const other: Pawn = entity;
             if (task.direction == TaskDirection.GIVE) {
                 this.transfer(other);
                 this.behavior = 'feed';
@@ -471,6 +456,31 @@ class Pawn extends Entity {
                 }
                 return true;
             }
+        }
+
+
+        if (entity instanceof TaskPoint) {
+            const taskPoint: TaskPoint = entity;
+            if (taskPoint.removed) return true;
+
+            taskPoint.work(this);
+            if (this.resources.hasSufficientResource(taskPoint.kind)) {
+                return true;
+            }
+
+            if (this.behavior !== 'receive') {
+                this.sketch.push();
+                this.sketch.strokeWeight(1);
+                this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
+                this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
+                this.sketch.pop();
+
+                if (this.position.copy().sub(taskPoint.position.copy()).mag() > 40) {
+                    console.log(taskPoint);
+                }
+            }
+
+            return false;
         }
 
         if (entity instanceof Goal) {
@@ -497,13 +507,13 @@ class Pawn extends Entity {
         }
 
         const currentTask = this.getCurrentTask();
-        if (currentTask && currentTask.direction === TaskDirection.GIVE)  {
+        if (currentTask && currentTask.direction === TaskDirection.GIVE) {
             const other = this.movementTarget?.entity as Pawn;
             if (other) {
                 other.removeCurrentTask();
             }
         }
-        
+
         this.removeCurrentTask()
         this.behavior = 'wait';
     }
@@ -563,7 +573,7 @@ class Pawn extends Entity {
         }
     }
 
-    notify(other: Pawn, location: Entity) : boolean {
+    notify(other: Pawn, location: Entity): boolean {
         if (this.toNotify[other.idx] && !this.toNotify[other.idx].hasBeenNotified) {
             this.toNotify[other.idx].time += this.sketch.deltaTime;
         } else if (this.toNotify[other.idx] && this.toNotify[other.idx].hasBeenNotified) {
@@ -670,7 +680,7 @@ class Pawn extends Entity {
         }
     }
 
-    pause() : boolean {
+    pause(): boolean {
         this.finishTask();
         this.behavior = "paused";
         this.paused = true;
@@ -691,7 +701,7 @@ class Pawn extends Entity {
         this.finishTask();
         this.behavior = 'dead';
 
-        for(const tp of this.knownLocations) {
+        for (const tp of this.knownLocations) {
             tp.workStops(this);
         }
         this.pulse = false;
@@ -703,10 +713,9 @@ class Pawn extends Entity {
         return portions > 1 ? velocity * (this.hungerMeter + (portions - 1) * this.maxHunger) : velocity * this.hungerMeter;
     }
 
-    getCurrentTask() : Task {
-        if (this.tasks && this.tasks.length >= 1)
-        {
-            const receiveTask : Task = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
+    getCurrentTask(): Task {
+        if (this.tasks && this.tasks.length >= 1) {
+            const receiveTask: Task = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
             return receiveTask ? receiveTask : this.tasks[0];
         }
         return null;
@@ -724,7 +733,7 @@ class Pawn extends Entity {
         }
     }
 
-    hasEnough() : boolean {
+    hasEnough(): boolean {
         const currentTask = this.getCurrentTask();
         if (currentTask) {
             const enough = this.resources.hasSufficientResource(currentTask.kind);
@@ -738,7 +747,7 @@ class Pawn extends Entity {
         return l1.position.copy().sub(this.position).magSq() - l2.position.copy().sub(this.position).magSq();
     }
 
-    findInRange(l: Entity, range : number = 10): boolean {
+    findInRange(l: Entity, range: number = 10): boolean {
         return l.position.copy().sub(this.position).magSq() < range * range;
     }
 }
