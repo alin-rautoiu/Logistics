@@ -17,6 +17,10 @@ class Entity {
         this.lifetimeDecay = 0;
     }
 
+    isFree(pawn: Pawn): boolean {
+        return true;
+    }
+
     hover(r: number) {
         return this.position.copy().sub(this.sketch.createVector(this.sketch.mouseX, this.sketch.mouseY)).mag() <= r;
     }

@@ -39,6 +39,8 @@ class Pawn extends Entity {
     pauseInterval: number;
     paused: boolean;
     timePaused: number;
+    noiseScale: number;
+    potentialLocations: MovementTarget[];
 
     public get movementTarget() {
         const currentTask = this.getCurrentTask();
@@ -51,6 +53,11 @@ class Pawn extends Entity {
             this.direction = target.target.copy().sub(this.position).normalize();
         }
         currentTask.movementTarget = target;
+    }
+
+    public get destination() {
+        const currentTask = this.getCurrentTask();
+        return currentTask?.movementTarget?.target;
     }
 
     constructor(sketch: any, x = 400, y = 200, diameter = 18, speed: number, searchRadius: number, pg: any, target: any, idx: number) {
@@ -87,6 +94,8 @@ class Pawn extends Entity {
         this.pauseInterval = 10000;
         this.timeSincePause = 0;
         this.timePaused = 0;
+        this.noiseScale = 0.0;
+        this.potentialLocations = [];
 
         this.decisions = [];
         const stopWork = () => {
@@ -186,6 +195,7 @@ class Pawn extends Entity {
                     new Selector([
                         new Sequence([
                             new IsAtTask(this),
+                            new IsTaskAtTarget(this),
                             new Selector([
                                 new TaskStillExists(this),
                                 new FinishTask(this)
@@ -238,7 +248,7 @@ class Pawn extends Entity {
     displayTree() {
         this.sketch.push();
         this.sketch.rectMode(this.sketch.CENTER);
-        this.displayBranch(this.decisions[9], { x: 300, y: 10 }, 0, Math.PI / 2);
+        this.displayBranch(this.decisions[8], { x: 300, y: 10 }, 0, Math.PI / 2);
         this.sketch.pop();
     }
 
@@ -408,6 +418,14 @@ class Pawn extends Entity {
 
             this.sketch.text(this.behavior, this.position.x - 10, this.position.y - 20);
             this.sketch.pop();
+
+
+            for(const ul of this.potentialLocations) {
+                this.sketch.push();
+                this.sketch.stroke('blue');
+                this.sketch.line(this.position.x, this.position.y, ul.target.x, ul.target.y);
+                this.sketch.pop();
+            }
 
             if (this.movementTarget) {
                 this.sketch.push();
@@ -590,7 +608,6 @@ class Pawn extends Entity {
         this.sketch.stroke(250, 250, 30, 90);
         this.sketch.strokeWeight(4);
         this.sketch.noFill();
-        const noiseScale = 0.0;
         this.sketch.beginShape();
         this.sketch.curveVertex(this.position.x, this.position.y);
         this.sketch.curveVertex(this.position.x, this.position.y);
@@ -600,8 +617,8 @@ class Pawn extends Entity {
             this.toNotify[other.idx].noiseOff += i;
             const cpx = (this.position.x * (1 - i) + other.position.x * i);
             const cpy = (this.position.y * (1 - i) + other.position.y * i);
-            const noiseX = (this.sketch.noise(cpx) - .5) * noiseScale;
-            const noiseY = (this.sketch.noise(cpy) - .5) * noiseScale;
+            const noiseX = (this.sketch.noise(cpx) - .5) * this.noiseScale;
+            const noiseY = (this.sketch.noise(cpy) - .5) * this.noiseScale;
             this.sketch.curveVertex(cpx + noiseX, cpy + noiseY);
         }
 
@@ -612,10 +629,12 @@ class Pawn extends Entity {
         const directionToTarget = this.getDirectionToTarget(other).normalize();
         const circleX = this.position.x + directionToTarget.x * this.toNotify[other.idx].time * communicationSpeed;
         const circleY = this.position.y + directionToTarget.y * this.toNotify[other.idx].time * communicationSpeed;
+        
         this.sketch.circle(circleX, circleY, 5);
+        
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
-            other.receiveLocation(location);
+            other.receivePotentialLocation(location);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
@@ -628,6 +647,26 @@ class Pawn extends Entity {
         if (!target) return;
         this.receiveLocation(target.entity);
         this.movementTarget = target;
+    }
+
+    receivePotentialLocation(target: Entity) {
+        if (target === undefined || target === null) {
+            return;
+        }
+
+        if (target instanceof Goal) {
+
+            const noise = this.sketch.createVector((Math.random() * 10 * this.noiseScale) -  5 * this.noiseScale, (Math.random() * 5 * this.noiseScale) -  2.5 * this.noiseScale) as Vector;
+            const noisyPosition = target.position.copy().add(noise);
+            this.potentialLocations.push(new MovementTarget(target, target.kind, noisyPosition));
+
+            const unknownIndex = this.unknownLocations.indexOf(target);
+            if (unknownIndex != -1) {
+                this.unknownLocations.splice(unknownIndex, 1);
+            }
+            
+            return target;
+        }
     }
 
     receiveLocation(target: Entity) {
@@ -645,11 +684,6 @@ class Pawn extends Entity {
             if (unknownIndex != -1) {
                 this.unknownLocations.splice(unknownIndex, 1);
             }
-
-            // const currentTask = this.getCurrentTask();
-            // if (currentTask && currentTask.kind === target.kind && currentTask.movementTarget == null) {
-            //     currentTask.movementTarget = new MovementTarget(target, currentTask.kind);
-            // }
 
             return target;
         }

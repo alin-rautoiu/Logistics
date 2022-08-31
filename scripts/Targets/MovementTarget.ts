@@ -3,8 +3,8 @@ class MovementTarget {
     entity: Entity;
     expected: number;
     
-    constructor(entity: Entity, expected: number = -1) {
-        this.target = entity?.position;
+    constructor(entity: Entity, expected: number = -1, target?: Vector) {
+        this.target = target ?? entity?.position;
         this.entity = entity;
         this.expected = expected;
     }

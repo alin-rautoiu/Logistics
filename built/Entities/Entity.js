@@ -8,6 +8,9 @@ class Entity {
         this.maxLifetime = this.lifetime;
         this.lifetimeDecay = 0;
     }
+    isFree(pawn) {
+        return true;
+    }
     hover(r) {
         return this.position.copy().sub(this.sketch.createVector(this.sketch.mouseX, this.sketch.mouseY)).mag() <= r;
     }

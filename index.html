@@ -37,6 +37,7 @@
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-2.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-4.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-5.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -53,6 +54,7 @@
             new KnowledgeCanvas2('knowledge-reproduction-canvas-2');
             new KnowledgeCanvas3('knowledge-reproduction-canvas-3');
             new KnowledgeCanvas4('knowledge-reproduction-canvas-4');
+            new KnowledgeCanvas5('knowledge-reproduction-canvas-5');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -364,7 +366,7 @@
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-2" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
-                        <fig id="fig3a">Fig. 3b</fig>
+                        <fig id="fig3b">Fig. 3b</fig>
                         <div class="canvas-setup hidden four-lines">
                             <label for="actors-num">Number of actors</label>
                             <input class="actors-num" type="number" min="1" value="1" max="200">
@@ -391,7 +393,7 @@
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
-                        <fig id="fig3a">Fig. 3c</fig>
+                        <fig id="fig3c">Fig. 3c</fig>
                         <div class="canvas-setup hidden four-lines">
                             <label for="actors-num">Number of actors</label>
                             <input class="actors-num" type="number" min="1" value="1" max="200">
@@ -431,7 +433,7 @@
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-4" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
-                        <fig id="fig3a">Fig. 4a</fig>
+                        <fig id="fig4a">Fig. 4a</fig>
                         <div class="canvas-setup hidden four-lines">
                             <label for="actors-num">Number of actors</label>
                             <input class="actors-num" type="number" min="1" value="1" max="200">
@@ -461,7 +463,31 @@
                     channel), a poor communication protocol or poorly using the communication protocol. Demonstrating
                     how each of these factors affect the communication between actors is outside the scope of this
                     project, but I hope it can at least help you consider how they all factor in and especially how very
-                    different problems might create very similar problematic results.    </p>
+                    different problems might create very similar problematic results.</p>
+                    <div class="canvas-wrapper">
+                        <div id="knowledge-reproduction-canvas-5" class="canvas-container">
+                            <button type="button" class="canvas-button start-button">Start</button>
+                            <fig id="fig4b">Fig. 4b</fig>
+                            <div class="canvas-setup hidden four-lines">
+                                <label for="actors-num">Number of actors</label>
+                                <input class="actors-num" type="number" min="1" value="1" max="200">
+                                <label for="actors-speed">Actors' speed</label>
+                                <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                                <!-- <label for="actors-search">Actors' search radius</label> -->
+                                <input class="actors-search" type="hidden" value="70">
+                                <label for="actors-hunger">Actors' "hunger"</label>
+                                <input class="actors-hunger" type="number" min="0" value="60000" step="10">
+                                <label for="resource-frequency">Resource frequency</label>
+                                <input class="resource-frequency" type="number" min="0" value="3" step="1">
+                                <label class="hidden" for="actors-with-paused">Actors pause</label>
+                                <input class="actors-with-paused hidden" type="checkbox">
+                                <label for="actors-pause-duration">Pause duration</label>
+                                <input class="actors-pause-duration" type="number" min="0" value="5000" step="10">
+                                <label for="actors-pause-interval">Pause interval</label>
+                                <input class="actors-pause-interval" type="number" min="0" value="10000" step="10">
+                            </div>
+                        </div>
+                    </div>
             </section>
             <!-- 
             <section>

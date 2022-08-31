@@ -223,7 +223,7 @@ class TickTime extends PawnNode {
         } else {
             this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
         }
-        
+
 
         return NodeState.SUCCESS;
     }
@@ -337,12 +337,37 @@ class IsAtTask extends PawnNode {
         if (!movementTarget) {
             return NodeState.FAILURE;
         }
-        const distanceSq = movementTarget.position.copy()
+
+        const distanceSq = this.pawn.movementTarget.target.copy()
             .sub(this.pawn.position.copy())
             .magSq();
 
         const atTask = distanceSq <= (movementTarget.r + this.pawn.diameter + 2.5) * (movementTarget.r + this.pawn.diameter + 2.5);
         return atTask ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+
+class IsTaskAtTarget extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = "IsTaskAtTarget";
+    }
+
+    run(): NodeState {
+        super.run();
+
+        if (this.pawn.movementTarget && 
+            (this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x <= 0.01
+            && this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y <= 0.01)) {
+            return NodeState.SUCCESS;
+        } else {
+            const idx = this.pawn.potentialLocations.indexOf(this.pawn.movementTarget);
+            if (idx >= 0){
+                this.pawn.potentialLocations.splice(idx, 1);
+                this.pawn.addNewUnknownLocation(this.pawn.movementTarget.entity as Goal);
+            }
+            return NodeState.FAILURE;
+        }
     }
 }
 
@@ -438,9 +463,14 @@ class KnowsTaskLocation extends PawnNode {
         }
 
         const found = this.pawn.knownLocations
-            .filter(l => l.kind === currentTask.kind && l.isFree(this.pawn));
+            .find(l => l.kind === currentTask.kind && l.isFree(this.pawn));
         this.pawn.currentTaskLocations = found;
-        return found && found.length >= 1 ? NodeState.SUCCESS : NodeState.FAILURE;
+        if (!found) {
+            const potential = this.pawn.potentialLocations
+                .find(l =>  (l.entity as Goal).kind === currentTask.kind && (l.entity as Goal).isFree(this.pawn));
+            return potential ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+        return found ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 
@@ -465,7 +495,7 @@ class GoToTask extends PawnNode {
     run() {
         super.run();
 
-        if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) return NodeState.FAILURE;
+        if ((!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) && (!this.pawn.potentialLocations || this.pawn.potentialLocations.length === 0)) return NodeState.FAILURE;
 
         const currentTask = this.pawn.getCurrentTask();
         if (!currentTask) return NodeState.FAILURE;
@@ -475,7 +505,18 @@ class GoToTask extends PawnNode {
                 .filter((l: TaskPoint) => l.isFree(this.pawn))
                 .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
 
-            if (found === null || found === undefined) return NodeState.FAILURE;
+            if (!found) {
+                const potentialLocation = this.pawn.potentialLocations
+                    .filter((l: MovementTarget) => l.entity.isFree(this.pawn))
+                    .sort((l1, l2) => this.pawn.sortByDistance(l1.entity, l2.entity))[0];
+
+                if (potentialLocation) {
+                    this.pawn.movementTarget = potentialLocation;
+                    return NodeState.SUCCESS;
+                }
+
+                return NodeState.FAILURE;
+            }
 
             this.pawn.receiveTargetPosition(new MovementTarget(found));
             return NodeState.SUCCESS;
@@ -489,10 +530,9 @@ class GoToTask extends PawnNode {
                 .sort((l1, l2) => l1.resources.getAmount(l1.needs) == l2.resources.getAmount(l2.needs)
                     ? this.pawn.sortByDistance(l1, l2)
                     : l1.resources.getAmount(l1.needs) - l2.resources.getAmount(l2.needs)
-                    )[0];
+                )[0];
 
-            if (found === null || found === undefined) {
-                //this.pawn.taskIndex++;
+            if (!found) {
                 return NodeState.SUCCESS;
             }
             const otherTask = found.getCurrentTask();
@@ -703,12 +743,18 @@ class SendLastPosition extends PawnNode {
         super.run();
         let allNotified = true;
 
-        
+
         if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) return NodeState.FAILURE;
 
-        for(const location of this.pawn.knownLocations) {
+        for (const location of this.pawn.knownLocations) {
             for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location as Goal) === -1)) {
                 allNotified = (this.pawn.notify(p, location) && allNotified);
+            }
+        }
+
+        for (const location of this.pawn.potentialLocations) {
+            for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location.entity as Goal) === -1)) {
+                allNotified = (this.pawn.notify(p, location.entity) && allNotified);
             }
         }
 
@@ -861,7 +907,7 @@ class CanShare extends PawnNode {
             .filter((p: Pawn) =>
                 p.behavior !== "dead"
                 && p.resources.getAmount(p.needs) <= 5
-                && (p.getCurrentTask() == null 
+                && (p.getCurrentTask() == null
                     || p.getCurrentTask().kind != p.needs
                     || p.behavior != 'collect'))
             .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
@@ -937,15 +983,15 @@ class IsActive extends PawnNode {
 
     run(): NodeState {
         return this.pawn.pauses
-            ? this.pawn.paused || this.pawn.timeSincePause >= this.pawn.pauseInterval 
-                ? NodeState.FAILURE 
+            ? this.pawn.paused || this.pawn.timeSincePause >= this.pawn.pauseInterval
+                ? NodeState.FAILURE
                 : NodeState.SUCCESS
             : NodeState.SUCCESS;
     }
 }
 
 class Pause extends PawnNode {
-    constructor(pawn: Pawn){
+    constructor(pawn: Pawn) {
         super(pawn);
         this.name = "Pause"
     }
@@ -977,7 +1023,7 @@ class SearchOtherTask extends PawnNode {
 
     run(): NodeState {
         super.run();
-        
+
         if (!this.pawn.movementTarget) {
             return NodeState.FAILURE;
         }
@@ -1002,10 +1048,10 @@ class TaskStillExists extends PawnNode {
         const currentTask = this.pawn.getCurrentTask();
         if (!currentTask) return NodeState.FAILURE;
 
-        switch(currentTask.direction){
+        switch (currentTask.direction) {
             case TaskDirection.EXTRACT:
                 const goal = currentTask.movementTarget?.entity as Goal;
-                
+
                 if (!goal) return NodeState.FAILURE;
                 if (goal.removed) {
                     this.pawn.removeLocation(goal)

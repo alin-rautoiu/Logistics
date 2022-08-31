@@ -32,6 +32,8 @@ class Pawn extends Entity {
         this.pauseInterval = 10000;
         this.timeSincePause = 0;
         this.timePaused = 0;
+        this.noiseScale = 0.0;
+        this.potentialLocations = [];
         this.decisions = [];
         const stopWork = () => {
             return new AlwaysSucceed(new Sequence([
@@ -118,6 +120,7 @@ class Pawn extends Entity {
                     new Selector([
                         new Sequence([
                             new IsAtTask(this),
+                            new IsTaskAtTarget(this),
                             new Selector([
                                 new TaskStillExists(this),
                                 new FinishTask(this)
@@ -167,6 +170,11 @@ class Pawn extends Entity {
         }
         currentTask.movementTarget = target;
     }
+    get destination() {
+        var _a;
+        const currentTask = this.getCurrentTask();
+        return (_a = currentTask === null || currentTask === void 0 ? void 0 : currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.target;
+    }
     behave() {
         this.decisions.forEach(element => {
             this.clearTreeState(element);
@@ -178,7 +186,7 @@ class Pawn extends Entity {
     displayTree() {
         this.sketch.push();
         this.sketch.rectMode(this.sketch.CENTER);
-        this.displayBranch(this.decisions[9], { x: 300, y: 10 }, 0, Math.PI / 2);
+        this.displayBranch(this.decisions[8], { x: 300, y: 10 }, 0, Math.PI / 2);
         this.sketch.pop();
     }
     displayBranch(node, parent, depth, angle) {
@@ -328,6 +336,12 @@ class Pawn extends Entity {
             }
             this.sketch.text(this.behavior, this.position.x - 10, this.position.y - 20);
             this.sketch.pop();
+            for (const ul of this.potentialLocations) {
+                this.sketch.push();
+                this.sketch.stroke('blue');
+                this.sketch.line(this.position.x, this.position.y, ul.target.x, ul.target.y);
+                this.sketch.pop();
+            }
             if (this.movementTarget) {
                 this.sketch.push();
                 this.sketch.stroke(0, 50);
@@ -485,7 +499,6 @@ class Pawn extends Entity {
         this.sketch.stroke(250, 250, 30, 90);
         this.sketch.strokeWeight(4);
         this.sketch.noFill();
-        const noiseScale = 0.0;
         this.sketch.beginShape();
         this.sketch.curveVertex(this.position.x, this.position.y);
         this.sketch.curveVertex(this.position.x, this.position.y);
@@ -494,8 +507,8 @@ class Pawn extends Entity {
             this.toNotify[other.idx].noiseOff += i;
             const cpx = (this.position.x * (1 - i) + other.position.x * i);
             const cpy = (this.position.y * (1 - i) + other.position.y * i);
-            const noiseX = (this.sketch.noise(cpx) - .5) * noiseScale;
-            const noiseY = (this.sketch.noise(cpy) - .5) * noiseScale;
+            const noiseX = (this.sketch.noise(cpx) - .5) * this.noiseScale;
+            const noiseY = (this.sketch.noise(cpy) - .5) * this.noiseScale;
             this.sketch.curveVertex(cpx + noiseX, cpy + noiseY);
         }
         this.sketch.curveVertex(other.position.x, other.position.y);
@@ -507,7 +520,7 @@ class Pawn extends Entity {
         this.sketch.circle(circleX, circleY, 5);
         const circlePosition = this.sketch.createVector(circleX, circleY);
         if (circlePosition.sub(other.position).magSq() <= (other.diameter * other.diameter)) {
-            other.receiveLocation(location);
+            other.receivePotentialLocation(location);
             this.toNotify[other.idx].hasBeenNotified = true;
         }
         this.sketch.pop();
@@ -518,6 +531,21 @@ class Pawn extends Entity {
             return;
         this.receiveLocation(target.entity);
         this.movementTarget = target;
+    }
+    receivePotentialLocation(target) {
+        if (target === undefined || target === null) {
+            return;
+        }
+        if (target instanceof Goal) {
+            const noise = this.sketch.createVector((Math.random() * 10 * this.noiseScale) - 5 * this.noiseScale, (Math.random() * 5 * this.noiseScale) - 2.5 * this.noiseScale);
+            const noisyPosition = target.position.copy().add(noise);
+            this.potentialLocations.push(new MovementTarget(target, target.kind, noisyPosition));
+            const unknownIndex = this.unknownLocations.indexOf(target);
+            if (unknownIndex != -1) {
+                this.unknownLocations.splice(unknownIndex, 1);
+            }
+            return target;
+        }
     }
     receiveLocation(target) {
         if (target === undefined || target === null) {

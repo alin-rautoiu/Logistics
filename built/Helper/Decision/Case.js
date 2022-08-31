@@ -270,11 +270,33 @@ class IsAtTask extends PawnNode {
         if (!movementTarget) {
             return NodeState.FAILURE;
         }
-        const distanceSq = movementTarget.position.copy()
+        const distanceSq = this.pawn.movementTarget.target.copy()
             .sub(this.pawn.position.copy())
             .magSq();
         const atTask = distanceSq <= (movementTarget.r + this.pawn.diameter + 2.5) * (movementTarget.r + this.pawn.diameter + 2.5);
         return atTask ? NodeState.SUCCESS : NodeState.FAILURE;
+    }
+}
+class IsTaskAtTarget extends PawnNode {
+    constructor(pawn) {
+        super(pawn);
+        this.name = "IsTaskAtTarget";
+    }
+    run() {
+        super.run();
+        if (this.pawn.movementTarget &&
+            (this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x <= 0.01
+                && this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y <= 0.01)) {
+            return NodeState.SUCCESS;
+        }
+        else {
+            const idx = this.pawn.potentialLocations.indexOf(this.pawn.movementTarget);
+            if (idx >= 0) {
+                this.pawn.potentialLocations.splice(idx, 1);
+                this.pawn.addNewUnknownLocation(this.pawn.movementTarget.entity);
+            }
+            return NodeState.FAILURE;
+        }
     }
 }
 class StopPulse extends PawnNode {
@@ -331,9 +353,14 @@ class KnowsTaskLocation extends PawnNode {
             return NodeState.SUCCESS;
         }
         const found = this.pawn.knownLocations
-            .filter(l => l.kind === currentTask.kind && l.isFree(this.pawn));
+            .find(l => l.kind === currentTask.kind && l.isFree(this.pawn));
         this.pawn.currentTaskLocations = found;
-        return found && found.length >= 1 ? NodeState.SUCCESS : NodeState.FAILURE;
+        if (!found) {
+            const potential = this.pawn.potentialLocations
+                .find(l => l.entity.kind === currentTask.kind && l.entity.isFree(this.pawn));
+            return potential ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+        return found ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 class KnowsTaskRequirement extends PawnNode {
@@ -354,7 +381,7 @@ class GoToTask extends PawnNode {
     run() {
         var _a;
         super.run();
-        if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0)
+        if ((!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) && (!this.pawn.potentialLocations || this.pawn.potentialLocations.length === 0))
             return NodeState.FAILURE;
         const currentTask = this.pawn.getCurrentTask();
         if (!currentTask)
@@ -363,8 +390,16 @@ class GoToTask extends PawnNode {
             const found = this.pawn.knownLocations
                 .filter((l) => l.isFree(this.pawn))
                 .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
-            if (found === null || found === undefined)
+            if (!found) {
+                const potentialLocation = this.pawn.potentialLocations
+                    .filter((l) => l.entity.isFree(this.pawn))
+                    .sort((l1, l2) => this.pawn.sortByDistance(l1.entity, l2.entity))[0];
+                if (potentialLocation) {
+                    this.pawn.movementTarget = potentialLocation;
+                    return NodeState.SUCCESS;
+                }
                 return NodeState.FAILURE;
+            }
             this.pawn.receiveTargetPosition(new MovementTarget(found));
             return NodeState.SUCCESS;
         }
@@ -377,7 +412,7 @@ class GoToTask extends PawnNode {
                 .sort((l1, l2) => l1.resources.getAmount(l1.needs) == l2.resources.getAmount(l2.needs)
                 ? this.pawn.sortByDistance(l1, l2)
                 : l1.resources.getAmount(l1.needs) - l2.resources.getAmount(l2.needs))[0];
-            if (found === null || found === undefined) {
+            if (!found) {
                 return NodeState.SUCCESS;
             }
             const otherTask = found.getCurrentTask();
@@ -555,6 +590,11 @@ class SendLastPosition extends PawnNode {
         for (const location of this.pawn.knownLocations) {
             for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location) === -1)) {
                 allNotified = (this.pawn.notify(p, location) && allNotified);
+            }
+        }
+        for (const location of this.pawn.potentialLocations) {
+            for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location.entity) === -1)) {
+                allNotified = (this.pawn.notify(p, location.entity) && allNotified);
             }
         }
         return allNotified ? NodeState.SUCCESS : NodeState.RUNNING;
