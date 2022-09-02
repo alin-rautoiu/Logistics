@@ -39,6 +39,7 @@ class KnowledgeCanvasBase extends CanvasWithPawns {
         p.needs = 1;
         p.consumes = true;
         p.maxHunger = Number.MAX_SAFE_INTEGER;
+        p.hungerMeter = Number.MAX_SAFE_INTEGER;
         for (const res of this.resources.filter(r => !r.removed)) {
             p.addNewUnknownLocation(res);
         }

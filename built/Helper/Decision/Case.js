@@ -244,7 +244,7 @@ class Discover extends PawnNode {
         this.pawn.currentRange = range;
         const locations = this.pawn
             .unknownLocations
-            .filter(l => this.pawn.findInRange(l, range));
+            .filter(l => this.pawn.findInRange(l.position, range));
         for (const loc of locations) {
             this.pawn.receiveLocation(loc);
         }
@@ -285,8 +285,9 @@ class IsTaskAtTarget extends PawnNode {
     run() {
         super.run();
         if (this.pawn.movementTarget &&
-            (this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x <= 0.01
-                && this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y <= 0.01)) {
+            (Math.abs(this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x) <= 0.01
+                && Math.abs(this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y) <= 0.01)) {
+            this.pawn.receiveTargetPosition(new MovementTarget(this.pawn.movementTarget.entity));
             return NodeState.SUCCESS;
         }
         else {
@@ -294,6 +295,7 @@ class IsTaskAtTarget extends PawnNode {
             if (idx >= 0) {
                 this.pawn.potentialLocations.splice(idx, 1);
                 this.pawn.addNewUnknownLocation(this.pawn.movementTarget.entity);
+                this.pawn.movementTarget = null;
             }
             return NodeState.FAILURE;
         }
@@ -329,13 +331,8 @@ class CanReachTask extends PawnNode {
     run() {
         super.run();
         const range = this.pawn.currentRange;
-        const found = this.pawn.currentTaskLocations
-            .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))
-            .find((l) => {
-            return this.pawn.findInRange(l, range);
-        });
-        this.pawn.foundPosition = found;
-        return found ? NodeState.SUCCESS : NodeState.FAILURE;
+        const target = this.pawn.movementTarget.target;
+        return target && this.pawn.findInRange(target, range) ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 class KnowsTaskLocation extends PawnNode {
@@ -495,7 +492,7 @@ class FoodIsCloseEnough extends PawnNode {
         const remainingDistance = this.pawn.remainingDistance();
         const closestFood = this.pawn.knownFoodLocations
             .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))
-            .find((l) => this.pawn.findInRange(l, remainingDistance));
+            .find((l) => this.pawn.findInRange(l.position, remainingDistance));
         if (closestFood) {
             this.pawn.closestFood = closestFood;
             return NodeState.SUCCESS;
@@ -564,6 +561,7 @@ class RandomWalk extends PawnNode {
         this.pawn.direction = this.pawn.direction
             .add(this.pawn.sketch.createVector(xd, yd))
             .normalize();
+        this.pawn.movementTarget = null;
         return NodeState.SUCCESS;
     }
 }
@@ -585,6 +583,7 @@ class SendLastPosition extends PawnNode {
     run() {
         super.run();
         let allNotified = true;
+        let allNotifiedUnkw = true;
         if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0)
             return NodeState.FAILURE;
         for (const location of this.pawn.knownLocations) {
@@ -594,10 +593,10 @@ class SendLastPosition extends PawnNode {
         }
         for (const location of this.pawn.potentialLocations) {
             for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location.entity) === -1)) {
-                allNotified = (this.pawn.notify(p, location.entity) && allNotified);
+                allNotifiedUnkw = (this.pawn.notify(p, location.entity) && allNotifiedUnkw);
             }
         }
-        return allNotified ? NodeState.SUCCESS : NodeState.RUNNING;
+        return allNotified && allNotifiedUnkw ? NodeState.SUCCESS : NodeState.RUNNING;
     }
 }
 class Move extends PawnNode {
@@ -712,7 +711,7 @@ class CanShare extends PawnNode {
     }
     run() {
         super.run();
-        let canShare = this.pawn.organization.length > 1;
+        let canShare = this.pawn.shares && this.pawn.organization.length > 1;
         const found = this.pawn.organization
             .filter((p) => p.behavior !== "dead"
             && p.resources.getAmount(p.needs) <= 5

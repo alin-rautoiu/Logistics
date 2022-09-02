@@ -76,6 +76,18 @@ class CanvasWithPawns extends BaseCanvas {
             this.pg = this.sketch.createGraphics(this.width, this.height);
         }
     }
+    bindControl(control, property, onPawn, pawnProperty) {
+        if (control) {
+            control.addEventListener("change", () => {
+                this[property] = control.value;
+                if (onPawn) {
+                    for (const pawn of this.pawns) {
+                        pawn[pawnProperty] = this[property];
+                    }
+                }
+            });
+        }
+    }
     restart() {
         const canvasContainer = this.startButton.parentElement.parentElement;
         if (canvasContainer.classList.contains('has-more')) {

@@ -305,7 +305,7 @@ class Discover extends PawnNode {
 
         const locations = this.pawn
             .unknownLocations
-            .filter(l => this.pawn.findInRange(l, range));
+            .filter(l => this.pawn.findInRange(l.position, range));
 
         for (const loc of locations) {
             this.pawn.receiveLocation(loc)
@@ -357,14 +357,16 @@ class IsTaskAtTarget extends PawnNode {
         super.run();
 
         if (this.pawn.movementTarget && 
-            (this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x <= 0.01
-            && this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y <= 0.01)) {
+            (Math.abs(this.pawn.movementTarget.entity.position.x - this.pawn.movementTarget.target.x) <= 0.01
+            && Math.abs(this.pawn.movementTarget.entity.position.y - this.pawn.movementTarget.target.y) <= 0.01)) {
+                this.pawn.receiveTargetPosition(new MovementTarget(this.pawn.movementTarget.entity));
             return NodeState.SUCCESS;
         } else {
             const idx = this.pawn.potentialLocations.indexOf(this.pawn.movementTarget);
             if (idx >= 0){
                 this.pawn.potentialLocations.splice(idx, 1);
                 this.pawn.addNewUnknownLocation(this.pawn.movementTarget.entity as Goal);
+                this.pawn.movementTarget = null;
             }
             return NodeState.FAILURE;
         }
@@ -433,14 +435,9 @@ class CanReachTask extends PawnNode {
     run() {
         super.run();
         const range = this.pawn.currentRange;
-        const found = this.pawn.currentTaskLocations
-            .sort((l1: Entity, l2: Entity) => this.pawn.sortByDistance(l1, l2))
-            .find((l: Entity) => {
-                return this.pawn.findInRange(l, range);
-            })
+        const target = this.pawn.movementTarget.target;
 
-        this.pawn.foundPosition = found;
-        return found ? NodeState.SUCCESS : NodeState.FAILURE;
+        return target && this.pawn.findInRange(target, range) ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 
@@ -631,7 +628,7 @@ class FoodIsCloseEnough extends PawnNode {
         const remainingDistance = this.pawn.remainingDistance();
         const closestFood = this.pawn.knownFoodLocations
             .sort((l1: Entity, l2: Entity) => this.pawn.sortByDistance(l1, l2))
-            .find((l: Goal) => this.pawn.findInRange(l, remainingDistance));
+            .find((l: Goal) => this.pawn.findInRange(l.position, remainingDistance));
 
         if (closestFood) {
             this.pawn.closestFood = closestFood;
@@ -716,7 +713,7 @@ class RandomWalk extends PawnNode {
         this.pawn.direction = this.pawn.direction
             .add(this.pawn.sketch.createVector(xd, yd))
             .normalize();
-
+        this.pawn.movementTarget = null;
         return NodeState.SUCCESS;
     }
 }
@@ -742,6 +739,7 @@ class SendLastPosition extends PawnNode {
     run() {
         super.run();
         let allNotified = true;
+        let allNotifiedUnkw = true;
 
 
         if (!this.pawn.knownLocations || this.pawn.knownLocations.length === 0) return NodeState.FAILURE;
@@ -754,11 +752,11 @@ class SendLastPosition extends PawnNode {
 
         for (const location of this.pawn.potentialLocations) {
             for (let p of this.pawn.organization.filter(p => p.behavior !== 'dead' && p.knownLocations.indexOf(location.entity as Goal) === -1)) {
-                allNotified = (this.pawn.notify(p, location.entity) && allNotified);
+                allNotifiedUnkw = (this.pawn.notify(p, location.entity) && allNotifiedUnkw);
             }
         }
 
-        return allNotified ? NodeState.SUCCESS : NodeState.RUNNING;
+        return allNotified  && allNotifiedUnkw ? NodeState.SUCCESS : NodeState.RUNNING;
     }
 }
 
@@ -901,7 +899,7 @@ class CanShare extends PawnNode {
 
     run() {
         super.run();
-        let canShare: boolean = this.pawn.organization.length > 1;
+        let canShare: boolean = this.pawn.shares && this.pawn.organization.length > 1;
 
         const found = this.pawn.organization
             .filter((p: Pawn) =>

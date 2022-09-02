@@ -15,4 +15,5 @@ interface CanvasWithPawns {
     addAPawn(i: number, x?:number, y?: number): Pawn;
     setPawnOnGrid(pawn: Pawn, idx: number, randomScale: number): void;
     draw(): void;
+    bindProperty(control: any, property: string, onPawn?: boolean, pawnProperty?: string)
 }

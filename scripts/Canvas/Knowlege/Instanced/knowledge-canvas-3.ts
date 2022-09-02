@@ -17,6 +17,7 @@ class KnowledgeCanvas3 extends KnowledgeCanvasBase {
             pawn.collaborates = true;
             pawn.organization = [].concat(this.pawns);
             pawn.organization.splice(index, 1);
+            pawn.shares = false;
         }
     }
 
@@ -33,7 +34,7 @@ class KnowledgeCanvas3 extends KnowledgeCanvasBase {
         const p = super.addAPawn(i, x, y);
         this.activatePawn(p);
         p.collaborates = true;
-
+        p.shares = false;
         for (const pawn of this.pawns) {
             const index = this.pawns.indexOf(pawn);
             pawn.collaborates = true;

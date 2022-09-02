@@ -41,6 +41,8 @@ class Pawn extends Entity {
     timePaused: number;
     noiseScale: number;
     potentialLocations: MovementTarget[];
+    shares: boolean;
+    showPath: any;
 
     public get movementTarget() {
         const currentTask = this.getCurrentTask();
@@ -52,7 +54,9 @@ class Pawn extends Entity {
         if (target) {
             this.direction = target.target.copy().sub(this.position).normalize();
         }
-        currentTask.movementTarget = target;
+        if (currentTask) {
+            currentTask.movementTarget = target;
+        }
     }
 
     public get destination() {
@@ -60,7 +64,7 @@ class Pawn extends Entity {
         return currentTask?.movementTarget?.target;
     }
 
-    constructor(sketch: any, x = 400, y = 200, diameter = 18, speed: number, searchRadius: number, pg: any, target: any, idx: number) {
+    constructor(sketch: any, x = 400, y = 200, diameter = 18, speed: number, searchRadius: number, pg: any, target: any, idx: number, shares?: boolean) {
         super(sketch, x, y, "Pawn");
         this.frameRate = 60
         this.diameter = diameter;
@@ -96,6 +100,7 @@ class Pawn extends Entity {
         this.timePaused = 0;
         this.noiseScale = 0.0;
         this.potentialLocations = [];
+        this.shares = shares ?? true;
 
         this.decisions = [];
         const stopWork = () => {
@@ -203,10 +208,11 @@ class Pawn extends Entity {
                             new Selector([
                                 new IsFree(this),
                                 new SearchOtherTask(this),
-                                new AlwaysFail(new RandomWalk(this))
+                                new RandomWalk(this)
                             ]),
                             new Sequence([
                                 new IsAtTask(this),
+                                new IsTaskAtTarget(this),
                                 new PerformWork(this),
                                 new FinishTask(this),
                             ])
@@ -225,7 +231,9 @@ class Pawn extends Entity {
         this.decisions.push(eat);
         this.decisions.push(die);
         this.decisions.push(search);
-        this.decisions.push(share);
+        if (this.shares) {
+            this.decisions.push(share);
+        }
         this.decisions.push(feed);
         this.decisions.push(canReachTask);
         this.decisions.push(mainDecision);
@@ -354,7 +362,7 @@ class Pawn extends Entity {
         this.sketch.ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
         this.resources.display(this.position, this.diameter);
 
-        if (this.consumes) {
+        if (this.consumes && this.hungerMeter <= 1000000) {
             this.sketch.fill('#F5A5D7');
             this.sketch.arc(this.position.x, this.position.y, this.diameter, this.diameter, - Math.PI / 4, - Math.PI / 4 - Math.PI * 2 * this.hungerMeter / this.maxHunger);
         }
@@ -420,12 +428,12 @@ class Pawn extends Entity {
             this.sketch.pop();
 
 
-            for(const ul of this.potentialLocations) {
-                this.sketch.push();
-                this.sketch.stroke('blue');
-                this.sketch.line(this.position.x, this.position.y, ul.target.x, ul.target.y);
-                this.sketch.pop();
-            }
+            // for(const ul of this.potentialLocations) {
+            //     this.sketch.push();
+            //     this.sketch.stroke('blue');
+            //     this.sketch.line(this.position.x, this.position.y, ul.target.x, ul.target.y);
+            //     this.sketch.pop();
+            // }
 
             if (this.movementTarget) {
                 this.sketch.push();
@@ -433,6 +441,30 @@ class Pawn extends Entity {
                 this.sketch.line(this.position.x, this.position.y, this.movementTarget.target.x, this.movementTarget.target.y);
                 this.sketch.pop();
             }
+        }
+
+        if (this.showPath) {
+            this.sketch.push();
+            this.sketch.beginShape(this.sketch.LINES);
+            if (this.movementTarget) {
+                this.sketch.stroke(0, 50);
+                this.sketch.line(this.position.x, this.position.y, this.movementTarget.target.x, this.movementTarget.target.y);
+                this.sketch.vertex(this.position.x, this.position.y);
+                this.sketch.vertex(this.movementTarget.target.x, this.movementTarget.target.y);
+            } else {
+                this.sketch.vertex(this.position.x, this.position.y);
+            }
+            
+            if (this.potentialLocations && this.potentialLocations.length > 0) {
+                this.sketch.stroke(0, 50);
+                for (const pot of this.potentialLocations) {
+                    this.sketch.vertex(pot.target.x, pot.target.y);
+                    this.sketch.circle(pot.target.x, pot.target.y, 5)
+                }
+            }
+
+            this.sketch.endShape();
+            this.sketch.pop();
         }
     }
 
@@ -492,10 +524,6 @@ class Pawn extends Entity {
                 this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
                 this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
                 this.sketch.pop();
-
-                if (this.position.copy().sub(taskPoint.position.copy()).mag() > 40) {
-                    console.log(taskPoint);
-                }
             }
 
             return false;
@@ -656,6 +684,8 @@ class Pawn extends Entity {
 
         if (target instanceof Goal) {
 
+            if (this.knownLocations.indexOf(target) >= 0) return target;
+
             const noise = this.sketch.createVector((Math.random() * 10 * this.noiseScale) -  5 * this.noiseScale, (Math.random() * 5 * this.noiseScale) -  2.5 * this.noiseScale) as Vector;
             const noisyPosition = target.position.copy().add(noise);
             this.potentialLocations.push(new MovementTarget(target, target.kind, noisyPosition));
@@ -781,7 +811,7 @@ class Pawn extends Entity {
         return l1.position.copy().sub(this.position).magSq() - l2.position.copy().sub(this.position).magSq();
     }
 
-    findInRange(l: Entity, range: number = 10): boolean {
-        return l.position.copy().sub(this.position).magSq() < range * range;
+    findInRange(l: Vector, range: number = 10): boolean {
+        return l.copy().sub(this.position).magSq() < range * range;
     }
 }

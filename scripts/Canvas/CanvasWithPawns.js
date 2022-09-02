@@ -80,13 +80,25 @@ class CanvasWithPawns extends BaseCanvas {
                     this.hasStarted = true;
                     this.startButton.innerHTML = "Reset";
                 } else {
-
                     this.restart();
                 }
             })
         }
         if (this.trailsEnabled) {
             this.pg = this.sketch.createGraphics(this.width, this.height);
+        }
+    }
+
+    bindControl(control, property, onPawn, pawnProperty) {
+        if (control) {
+            control.addEventListener("change", () => {
+                this[property] = control.value;
+                if (onPawn) {
+                    for (const pawn of this.pawns) {
+                        pawn[pawnProperty] = this[property];
+                    }
+                }
+            })
         }
     }
 
