@@ -1,4 +1,5 @@
 class Entity {
+    
     position: Vector;
     type: any;
     sketch: any;
@@ -26,6 +27,9 @@ class Entity {
     }
 
     workStops(pawn: Pawn) {
+    }
+
+    forceWorkStops(pawn: Pawn): void {
     }
     
     workPauses() {

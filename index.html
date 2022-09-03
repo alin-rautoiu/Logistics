@@ -38,6 +38,8 @@
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-4.js"></script>
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-5.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Sequence/sequence-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -55,6 +57,7 @@
             new KnowledgeCanvas3('knowledge-reproduction-canvas-3');
             new KnowledgeCanvas4('knowledge-reproduction-canvas-4');
             new KnowledgeCanvas5('knowledge-reproduction-canvas-5');
+            new SequenceCanvas1('sequence-canvas-1');
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -500,6 +503,30 @@
                                 <img title="High density" src="./resources/imgs/high density.png" alt="A canvas with the expired actors dispersed between the different opportunity points.">
                                 Whereas in this one they are more evenly distributed between the opportunity points, with the clusters encircling the points showing much less pronounced, hinting that they haven't reached their destination.
                             </div>
+                        </div>
+                    </div>
+                    <h3>Poor coordination</h3>
+                    <p>Rarely actors have simple needs that can be resolved through a single opportunity. Nor can all opportunities simply be exploited without some prior work. I've modeled this observation in the nest series of boards. The actors cannot exploit the unfamiliar opportunities without first expending the result of some prior work. This could be seen as modeling an industrial process, starting with extracting a mineral then transporting it from production point to point, but as in the other cases the visualization needed be read as a literal, if abstracted, representation of the modeled process. Many of the activities where such visualizations are useful are precisely those that don't immediately lend themselves to visual representations. For example one could look at this as a model for writing an article, with the opportunity points representing various steps in the process such as ideating, researching, revising or proofreading with the time spent moving between them as context switching.</p>
+                    <div id="sequence-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig id="fig5a">Fig. 5a</fig>
+                        <div class="canvas-setup hidden">
+                            <label for="resources-num">Number of opportunities</label>
+                            <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
+                            <label class="hidden" for="actors-num">Number of actors</label>
+                            <input class="actors-num hidden" type="number" min="1" value="1" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <!-- <label for="actors-search">Actors' search radius</label> -->
+                            <input class="actors-search" type="hidden" value="70">
+                            <label for="actors-lifespan">Actors' lifetime decay</label>
+                            <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
+                            <label for="show-actors-path">Show actors' path</label>
+                            <input class="show-actors-path" name="show-actors-path" type="checkbox">
+                            <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
+                            <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2" step="0.1">
+                            <label for="noise-scale" title="How strong is noise">Noise scale</label>
+                            <input class="noise-scale" name="noise-scale" type="number" min="0"  max="150" value="30" step="1">
                         </div>
                     </div>
             </section>

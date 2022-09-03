@@ -11,7 +11,7 @@ class TaskPoint extends Goal {
                 break;
             case 2:
                 this.req = [];
-                this.mainColor = this.sketch.color(230, 230, 255);
+                this.mainColor = this.sketch.color(200, 200, 230);
                 this.accentColor = this.sketch.color(25, 25, 180);
                 break;
             case 3:
@@ -69,15 +69,11 @@ class TaskPoint extends Goal {
                 this.sketch.fill(this.mainColor);
                 break;
         }
-        if (this.active) {
-            this.rotation += 0.1;
-        }
         this.sketch.translate(this.position.x, this.position.y);
         this.sketch.rotate(this.rotation);
         this.sketch.translate(-this.position.x, -this.position.y);
         this.drawHex(this.position.x, this.position.y, this.r);
         this.sketch.text(this.kind, this.position.y - 10);
-        this.resources.display(this.position, this.r + 4);
         this.sketch.pop();
     }
     requires() {
@@ -100,7 +96,7 @@ class TaskPoint extends Goal {
             case 1:
                 return "rgb(230, 255, 230)";
             case 2:
-                return "rgb(230, 230, 255)";
+                return "rgb(200, 200, 230)";
             case 3:
                 return 'green';
             case 4:
@@ -158,6 +154,9 @@ class TaskPoint extends Goal {
         }
         this.active = canCollect;
         this.occupied = !this.active;
+        if (this.active) {
+            this.rotation += 0.1;
+        }
     }
     workStops(actor) {
         this.active = false;
@@ -167,6 +166,13 @@ class TaskPoint extends Goal {
         if (actor.collaborates || actor.behavior === 'dead') {
             this.workers.splice(actorIndex, 1);
         }
+    }
+    forceWorkStops(actor) {
+        this.active = false;
+        const actorIndex = this.workers.indexOf(actor);
+        if (actorIndex < 0)
+            return;
+        this.workers.splice(actorIndex, 1);
     }
     workPauses() {
         this.active = false;

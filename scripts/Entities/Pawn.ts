@@ -181,6 +181,7 @@ class Pawn extends Entity {
             new FoodIsCloseEnough(this),
             new Selector([
                 new KnowsFoodLocations(this),
+                new IsGoingTowardsFoodOrRequirement(this),
                 new GoToFood(this)
             ]),
             new RandomWalk(this)
@@ -568,6 +569,10 @@ class Pawn extends Entity {
         const currentTask = this.getCurrentTask();
         const currentTaskIndex = this.tasks.indexOf(currentTask);
         this.tasks.splice(currentTaskIndex, 1);
+        const nextTask = this.getCurrentTask();
+        if (nextTask && nextTask.kind !== currentTask.kind && currentTask.movementTarget?.entity) {
+            currentTask.movementTarget.entity.forceWorkStops(this);
+        }
     }
 
     getVelocity() {
@@ -673,8 +678,10 @@ class Pawn extends Entity {
     receiveTargetPosition(target: MovementTarget) {
 
         if (!target) return;
-        this.receiveLocation(target.entity);
-        this.movementTarget = target;
+        if (this.movementTarget?.entity != target?.entity) {
+            this.receiveLocation(target.entity);
+            this.movementTarget = target;
+        }
     }
 
     receivePotentialLocation(target: Entity) {
@@ -805,6 +812,16 @@ class Pawn extends Entity {
         }
 
         return true;
+    }
+
+    hasEnoughAll(req: number[]): boolean {
+        let enough = true;
+
+        for (const kind of req) {
+            enough = enough && this.resources.getAmount(kind) >= 10;
+        }
+
+        return enough;
     }
 
     sortByDistance(l1: Entity, l2: Entity) {

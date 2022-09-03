@@ -103,6 +103,7 @@ class Pawn extends Entity {
             new FoodIsCloseEnough(this),
             new Selector([
                 new KnowsFoodLocations(this),
+                new IsGoingTowardsFoodOrRequirement(this),
                 new GoToFood(this)
             ]),
             new RandomWalk(this)
@@ -456,9 +457,14 @@ class Pawn extends Entity {
         this.behavior = 'wait';
     }
     removeCurrentTask() {
+        var _a;
         const currentTask = this.getCurrentTask();
         const currentTaskIndex = this.tasks.indexOf(currentTask);
         this.tasks.splice(currentTaskIndex, 1);
+        const nextTask = this.getCurrentTask();
+        if (nextTask && nextTask.kind !== currentTask.kind && ((_a = currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.entity)) {
+            currentTask.movementTarget.entity.forceWorkStops(this);
+        }
     }
     getVelocity() {
         const bounceH = (this.position.x <= 0 && Math.sign(this.direction.x) == -1)
@@ -546,10 +552,13 @@ class Pawn extends Entity {
         return this.toNotify[other.idx].hasBeenNotified;
     }
     receiveTargetPosition(target) {
+        var _a;
         if (!target)
             return;
-        this.receiveLocation(target.entity);
-        this.movementTarget = target;
+        if (((_a = this.movementTarget) === null || _a === void 0 ? void 0 : _a.entity) != (target === null || target === void 0 ? void 0 : target.entity)) {
+            this.receiveLocation(target.entity);
+            this.movementTarget = target;
+        }
     }
     receivePotentialLocation(target) {
         if (target === undefined || target === null) {
@@ -656,6 +665,13 @@ class Pawn extends Entity {
             return enough;
         }
         return true;
+    }
+    hasEnoughAll(req) {
+        let enough = true;
+        for (const kind of req) {
+            enough = enough && this.resources.getAmount(kind) >= 10;
+        }
+        return enough;
     }
     sortByDistance(l1, l2) {
         return l1.position.copy().sub(this.position).magSq() - l2.position.copy().sub(this.position).magSq();

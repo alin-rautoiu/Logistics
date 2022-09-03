@@ -16,6 +16,8 @@ class Entity {
     }
     workStops(pawn) {
     }
+    forceWorkStops(pawn) {
+    }
     workPauses() {
     }
 }

@@ -29,4 +29,6 @@ class Goal extends Entity {
     }
     workPauses() {
     }
+    forceWorkStops(pawn) {
+    }
 }

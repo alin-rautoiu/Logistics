@@ -499,7 +499,7 @@ class GoToTask extends PawnNode {
 
         if (currentTask.direction === TaskDirection.EXTRACT) {
             const found = this.pawn.knownLocations
-                .filter((l: TaskPoint) => l.isFree(this.pawn))
+                .filter((l: TaskPoint) => l.kind === currentTask.kind && l.isFree(this.pawn))
                 .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
 
             if (!found) {
@@ -514,8 +514,9 @@ class GoToTask extends PawnNode {
 
                 return NodeState.FAILURE;
             }
-
-            this.pawn.receiveTargetPosition(new MovementTarget(found));
+            if (!this.pawn.movementTarget || (this.pawn.movementTarget.target && this.pawn.movementTarget.target !== found.position)) {
+                this.pawn.receiveTargetPosition(new MovementTarget(found));
+            }
             return NodeState.SUCCESS;
         } else if (currentTask.direction === TaskDirection.GIVE) {
             const found = this.pawn.organization
@@ -593,8 +594,13 @@ class SwitchToTaskRequirement extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
+        if (currentTask.movementTarget?.entity) {
+            currentTask.movementTarget?.entity.workStops(this.pawn);
+        }
         const requirements = TaskPoint.requirements(currentTask.kind);
-        this.pawn.tasks = this.pawn.tasks.concat(requirements.map(r => new Task(TaskDirection.EXTRACT, r)));
+        this.pawn.tasks = requirements.map(r => new Task(TaskDirection.EXTRACT, r)).concat(this.pawn.tasks);
+        this.pawn.movementTarget = null;
+        currentTask.movementTarget = null;
         return NodeState.SUCCESS;
     }
 }
@@ -626,13 +632,29 @@ class FoodIsCloseEnough extends PawnNode {
         if (!this.pawn.consumes) return NodeState.SUCCESS;
 
         const remainingDistance = this.pawn.remainingDistance();
-        const closestFood = this.pawn.knownFoodLocations
+        let closestFood = this.pawn.knownLocations
+            .filter(l => l.kind == this.pawn.needs)
             .sort((l1: Entity, l2: Entity) => this.pawn.sortByDistance(l1, l2))
             .find((l: Goal) => this.pawn.findInRange(l.position, remainingDistance));
 
-        if (closestFood) {
+        const requirements = TaskPoint.requirements(this.pawn.needs);
+
+        if ((!requirements && closestFood) || (requirements && this.pawn.hasEnoughAll(requirements))) {
             this.pawn.closestFood = closestFood;
             return NodeState.SUCCESS;
+        } else {
+            const needsToSwitchTo = requirements.filter(r => this.pawn.resources.getAmount(r) < 10);
+            for (const sr of needsToSwitchTo) {
+                closestFood = this.pawn.knownLocations
+                    .filter(l => l.kind == sr)
+                    .sort((l1: Entity, l2: Entity) => this.pawn.sortByDistance(l1, l2))
+                    .find((l: Goal) => this.pawn.findInRange(l.position, remainingDistance));
+
+                    if (closestFood) {
+                        this.pawn.closestFood = closestFood;
+                        return NodeState.SUCCESS;
+                    }
+            }
         }
 
         return NodeState.FAILURE;
@@ -665,7 +687,8 @@ class GoToFood extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
-        if (currentTask && currentTask.kind != this.pawn.needs) {
+        const requirements = TaskPoint.requirements(this.pawn.needs);
+        if (currentTask && ((currentTask.kind != this.pawn.needs) || !requirements.find(r => r == currentTask.kind))) {
             this.pawn.tasks.push(new Task(TaskDirection.EXTRACT, this.pawn.needs));
         }
 
@@ -714,6 +737,7 @@ class RandomWalk extends PawnNode {
             .add(this.pawn.sketch.createVector(xd, yd))
             .normalize();
         this.pawn.movementTarget = null;
+        this.pawn.behavior = 'random-walk';
         return NodeState.SUCCESS;
     }
 }
@@ -1063,6 +1087,20 @@ class TaskStillExists extends PawnNode {
             case TaskDirection.RECEIVE:
                 return NodeState.SUCCESS;
         }
+    }
+}
+
+class IsGoingTowardsFoodOrRequirement extends PawnNode {
+    constructor(pawn: Pawn) {
+        super(pawn);
+        this.name = 'IsGoingTowardsFood';
+    }
+
+    run(): NodeState {
+        super.run();
+        const currentTask = this.pawn.getCurrentTask();
+        const requirements = TaskPoint.requirements(this.pawn.needs);
+        return currentTask.kind == this.pawn.needs || requirements.find(r => r == this.pawn.needs) ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 
