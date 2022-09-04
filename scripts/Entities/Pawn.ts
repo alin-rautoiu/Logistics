@@ -81,7 +81,7 @@ class Pawn extends Entity {
         this.found = false;
         this.collaborates = false;
         this.toNotify = {};
-        this.resources = new ResourceHolder(this.sketch);
+        this.resources = new ResourceHolder(this.sketch, this);
         this.knownLocations = [];
         this.knownFoodLocations = [];
         this.unknownLocations = [];

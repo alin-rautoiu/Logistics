@@ -40,24 +40,27 @@
     <script type="text/javascript" src="./built/Canvas/Knowlege/Instanced/knowledge-canvas-5.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/sequence-canvasBase.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-2.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight);
-            new OpportunityNonCollab('trial-canvas');
-            new OpportunityCollab('trial-canvas-2');
-            new ResourceCanvas1('resource-canvas-1');
-            new ResourceCanvas2('resource-canvas-2');
-            new ResourceCanvas3('resource-canvas-3');
-            new KnowledgeCanvas1('knowledge-reproduction-canvas-1');
-            new KnowledgeCanvas2('knowledge-reproduction-canvas-2');
-            new KnowledgeCanvas3('knowledge-reproduction-canvas-3');
-            new KnowledgeCanvas4('knowledge-reproduction-canvas-4');
-            new KnowledgeCanvas5('knowledge-reproduction-canvas-5');
-            new SequenceCanvas1('sequence-canvas-1');
+            const canvasObjects = [];
+            canvasObjects.push(new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight));
+            canvasObjects.push(new OpportunityNonCollab('trial-canvas'));
+            canvasObjects.push(new OpportunityCollab('trial-canvas-2'));
+            canvasObjects.push(new ResourceCanvas1('resource-canvas-1'));
+            canvasObjects.push(new ResourceCanvas2('resource-canvas-2'));
+            canvasObjects.push(new ResourceCanvas3('resource-canvas-3'));
+            canvasObjects.push(new KnowledgeCanvas1('knowledge-reproduction-canvas-1'));
+            canvasObjects.push(new KnowledgeCanvas2('knowledge-reproduction-canvas-2'));
+            canvasObjects.push(new KnowledgeCanvas3('knowledge-reproduction-canvas-3'));
+            canvasObjects.push(new KnowledgeCanvas4('knowledge-reproduction-canvas-4'));
+            canvasObjects.push(new KnowledgeCanvas5('knowledge-reproduction-canvas-5'));
+            canvasObjects.push(new SequenceCanvas1('sequence-canvas-1'));
+            canvasObjects.push(new SequenceCanvas2('sequence-canvas-2'));
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -67,6 +70,19 @@
                     timers.push(setTimeout(() => {
                         b.parentElement.querySelector('.read-more-details:not(.opened)').classList.toggle('display-none');
                     }, 300));
+                })
+            })
+
+            window.addEventListener('scroll', () => {
+                canvasObjects.forEach((c) => {
+                    if (!c.canvas) return;
+                    const canvas = document.querySelector(`#${c.canvasId} canvas`);
+                    const canvasRelativeY = canvas.getBoundingClientRect().y;
+                    if ((canvasRelativeY + c.height) < 0 || (canvasRelativeY - c.height) > window.innerHeight) {
+                        c.sketch.noLoop();
+                    } else {
+                        c.sketch.loop();
+                    }
                 })
             })
 
@@ -392,8 +408,11 @@
                 </div>
                 <p>As long as the organization takes in new members at a higher rate than the expiration rate of the
                     prior members and it allows the time for the acquired information to be diffused, no new member has
-                    to go through the discovery process. <span class="read-more"><span class="read-more-open"></span><span
-                    class="read-more-details display-none"><span>For the sake of clarity I've had the actors in this scene not share between them, instead focusing only on reaching the opportunity point and communicating.</span></span></span> This is one way to build up institutional knowledge.</p>
+                    to go through the discovery process. <span class="read-more"><span
+                            class="read-more-open"></span><span class="read-more-details display-none"><span>For the
+                                sake of clarity I've had the actors in this scene not share between them, instead
+                                focusing only on reaching the opportunity point and communicating.</span></span></span>
+                    This is one way to build up institutional knowledge.</p>
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -426,7 +445,7 @@
                     dangerous.</p>
             </section>
             <section>
-                <h2>2. How organizations fail</h2>
+                <h2>2. How flat organizations fail</h2>
                 <h3>Faulty communication</h3>
                 <p>Up to this point we've modeled the communication between actors as lossless and consistent. There are
                     many environments where this is not the case. Let us consider a situation where the identified
@@ -460,7 +479,10 @@
                 </div>
                 <p>There's also a symmetric phenomena, where the opportunities are stable but the transmitted
                     information gets corrupted. <span class="read-more"><span class="read-more-open"></span><span
-                    class="read-more-details display-none"><span>Again for clarity's sake I've had the actors in this scene not share between them, instead focusing only on reaching the opportunity point and communicating.</span></span></span> For the actor this might appear identical, arriving at what they
+                            class="read-more-details display-none"><span>Again for clarity's sake I've had the actors in
+                                this scene not share between them, instead focusing only on reaching the opportunity
+                                point and communicating.</span></span></span> For the actor this might appear identical,
+                    arriving at what they
                     presumed to be an opportunity and finding nothing actionable, but it's distinct enough to warrant a
                     separate representation.</p>
                 <p>Especially considering that this kind of noisy communication can have multiple causes: itself a
@@ -469,47 +491,10 @@
                     how each of these factors affect the communication between actors is outside the scope of this
                     project, but I hope it can at least help you consider how they all factor in and especially how very
                     different problems might create very similar problematic results.</p>
-                    <div class="canvas-wrapper has-more">
-                        <div id="knowledge-reproduction-canvas-5" class="canvas-container">
-                            <button type="button" class="canvas-button start-button">Start</button>
-                            <fig id="fig4b">Fig. 4b</fig>
-                            <div class="canvas-setup hidden">
-                                <label for="resources-num">Number of opportunities</label>
-                                <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
-                                <label class="hidden" for="actors-num">Number of actors</label>
-                                <input class="actors-num hidden" type="number" min="1" value="1" max="200">
-                                <label for="actors-speed">Actors' speed</label>
-                                <input class="actors-speed" type="number" min="0" value="1" step="0.1">
-                                <!-- <label for="actors-search">Actors' search radius</label> -->
-                                <input class="actors-search" type="hidden" value="70">
-                                <label for="actors-lifespan">Actors' lifetime decay</label>
-                                <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
-                                <label for="show-actors-path">Show actors' path</label>
-                                <input class="show-actors-path" name="show-actors-path" type="checkbox">
-                                <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
-                                <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2" step="0.1">
-                                <label for="noise-scale" title="How strong is noise">Noise scale</label>
-                                <input class="noise-scale" name="noise-scale" type="number" min="0"  max="150" value="30" step="1">
-                            </div>
-                        </div>
-                        <div class="canvas-discussion">
-                            <div class="canvas-discussion-to-be-expanded">
-                                <p>Consider how this faulty communication turns the density of an organization from an asset into an issue that impedes not only on its growth, but on its very functioning.</p>
-                                <p>For the first image the simulation was configured so that the actors were spawned with a low frequency, resulting in a sparse organization, with the wrong information naturally filtered out.
-                                    In the second one the actors were spawned at a much higher rate, creating a dense organization that perpetuated wrong information.
-                                </p>
-                                <img title="Low density" src="./resources/imgs/low density.png" alt="A canvas with the expired actors clustered around the opportunity points.">
-                                Notice how in the canvas above the actors are clustered around the opportunity points. Despite some setback many of them arrive at the correct site and perform their task or satisfy their need.
-                                <img title="High density" src="./resources/imgs/high density.png" alt="A canvas with the expired actors dispersed between the different opportunity points.">
-                                Whereas in this one they are more evenly distributed between the opportunity points, with the clusters encircling the points showing much less pronounced, hinting that they haven't reached their destination.
-                            </div>
-                        </div>
-                    </div>
-                    <h3>Poor coordination</h3>
-                    <p>Rarely actors have simple needs that can be resolved through a single opportunity. Nor can all opportunities simply be exploited without some prior work. I've modeled this observation in the nest series of boards. The actors cannot exploit the unfamiliar opportunities without first expending the result of some prior work. This could be seen as modeling an industrial process, starting with extracting a mineral then transporting it from production point to point, but as in the other cases the visualization needed be read as a literal, if abstracted, representation of the modeled process. Many of the activities where such visualizations are useful are precisely those that don't immediately lend themselves to visual representations. For example one could look at this as a model for writing an article, with the opportunity points representing various steps in the process such as ideating, researching, revising or proofreading with the time spent moving between them as context switching.</p>
-                    <div id="sequence-canvas-1" class="canvas-container">
+                <div class="canvas-wrapper has-more">
+                    <div id="knowledge-reproduction-canvas-5" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
-                        <fig id="fig5a">Fig. 5a</fig>
+                        <fig id="fig4b">Fig. 4b</fig>
                         <div class="canvas-setup hidden">
                             <label for="resources-num">Number of opportunities</label>
                             <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
@@ -524,11 +509,97 @@
                             <label for="show-actors-path">Show actors' path</label>
                             <input class="show-actors-path" name="show-actors-path" type="checkbox">
                             <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
-                            <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2" step="0.1">
+                            <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
+                                step="0.1">
                             <label for="noise-scale" title="How strong is noise">Noise scale</label>
-                            <input class="noise-scale" name="noise-scale" type="number" min="0"  max="150" value="30" step="1">
+                            <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
+                                step="1">
                         </div>
                     </div>
+                    <div class="canvas-discussion">
+                        <div class="canvas-discussion-to-be-expanded">
+                            <p>Consider how this faulty communication turns the density of an organization from an asset
+                                into an issue that impedes not only on its growth, but on its very functioning.</p>
+                            <p>For the first image the simulation was configured so that the actors were spawned with a
+                                low frequency, resulting in a sparse organization, with the wrong information naturally
+                                filtered out.
+                                In the second one the actors were spawned at a much higher rate, creating a dense
+                                organization that perpetuated wrong information.
+                            </p>
+                            <img title="Low density" src="./resources/imgs/low density.png"
+                                alt="A canvas with the expired actors clustered around the opportunity points.">
+                            Notice how in the canvas above the actors are clustered around the opportunity points.
+                            Despite some setback many of them arrive at the correct site and perform their task or
+                            satisfy their need.
+                            <img title="High density" src="./resources/imgs/high density.png"
+                                alt="A canvas with the expired actors dispersed between the different opportunity points.">
+                            Whereas in this one they are more evenly distributed between the opportunity points, with
+                            the clusters encircling the points showing much less pronounced, hinting that they haven't
+                            reached their destination.
+                        </div>
+                    </div>
+                </div>
+                <h3>Poor coordination</h3>
+                <p>Rarely actors have simple needs that can be resolved through a single opportunity. Nor can all
+                    opportunities simply be exploited without some prior work. I've modeled this observation in the next
+                    series of boards. The actors cannot exploit the unfamiliar opportunities without first expending the
+                    result of some prior work. This could be seen as modeling an industrial process, starting with
+                    extracting a mineral then transporting it from production point to point, but as in the other cases
+                    the visualization needed be read as a literal, if abstracted, representation of the modeled process.
+                    Many of the activities where such visualizations are useful are precisely those that don't
+                    immediately lend themselves to visual representations. For example one could look at this as a model
+                    for writing an article, with the opportunity points representing various steps in the process such
+                    as ideating, researching, revising or proofreading with the time spent moving between them as
+                    context switching.</p>
+                <div id="sequence-canvas-1" class="canvas-container">
+                    <button type="button" class="canvas-button start-button">Start</button>
+                    <fig id="fig5a">Fig. 5a</fig>
+                    <div class="canvas-setup hidden">
+                        <label for="resources-num">Number of opportunities</label>
+                        <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
+                        <label class="hidden" for="actors-num">Number of actors</label>
+                        <input class="actors-num hidden" type="number" min="1" value="1" max="200">
+                        <label for="actors-speed">Actors' speed</label>
+                        <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                        <!-- <label for="actors-search">Actors' search radius</label> -->
+                        <input class="actors-search" type="hidden" value="70">
+                        <label for="actors-lifespan">Actors' lifetime decay</label>
+                        <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
+                        <label for="show-actors-path">Show actors' path</label>
+                        <input class="show-actors-path" name="show-actors-path" type="checkbox">
+                        <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
+                        <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
+                            step="0.1">
+                        <label for="noise-scale" title="How strong is noise">Noise scale</label>
+                        <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
+                            step="1">
+                    </div>
+                </div>
+                <p>Actors operating alone can perform task of some complexity.</p>
+                <div id="sequence-canvas-2" class="canvas-container">
+                    <button type="button" class="canvas-button start-button">Start</button>
+                    <fig id="fig5a">Fig. 5b</fig>
+                    <div class="canvas-setup hidden">
+                        <label for="resources-num">Number of opportunities</label>
+                        <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
+                        <label class="hidden" for="actors-num">Number of actors</label>
+                        <input class="actors-num hidden" type="number" min="1" value="1" max="200">
+                        <label for="actors-speed">Actors' speed</label>
+                        <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                        <!-- <label for="actors-search">Actors' search radius</label> -->
+                        <input class="actors-search" type="hidden" value="70">
+                        <label for="actors-lifespan">Actors' lifetime decay</label>
+                        <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
+                        <label for="show-actors-path">Show actors' path</label>
+                        <input class="show-actors-path" name="show-actors-path" type="checkbox">
+                        <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
+                        <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
+                            step="0.1">
+                        <label for="noise-scale" title="How strong is noise">Noise scale</label>
+                        <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
+                            step="1">
+                    </div>
+                </div>
             </section>
             <!-- 
             <section>
@@ -542,10 +613,15 @@
                 <ul>
                     <li>Designing Freedom - Beer, Stafford</li>
                     <li>Platform for Change - Beer, Stafford</li>
-                    <li><a href="https://www.jofreeman.com/joreen/tyranny.htm" title="The Tyranny of Structurelessness">The Tyranny of Structurelessness - Freeman, Jo</a></li>
+                    <li><a href="https://www.jofreeman.com/joreen/tyranny.htm"
+                            title="The Tyranny of Structurelessness">The Tyranny of Structurelessness - Freeman, Jo</a>
+                    </li>
                     <li>The Dawn of Everything - Graeber, David; Wengrow, David</li>
-                    <li><a href="https://logicmag.io/clouds/agile-and-the-long-crisis-of-software/" title="Agile and the Long Crisis of Software">Agile and the Long Crisis of Software - Posner, Miriam</a></li>
-                    <li><a href="https://natureofcode.com/book/" title="The Nature of Code">The Nature of Code - Shiffman, Daniel</a></li>
+                    <li><a href="https://logicmag.io/clouds/agile-and-the-long-crisis-of-software/"
+                            title="Agile and the Long Crisis of Software">Agile and the Long Crisis of Software -
+                            Posner, Miriam</a></li>
+                    <li><a href="https://natureofcode.com/book/" title="The Nature of Code">The Nature of Code -
+                            Shiffman, Daniel</a></li>
                     <li>Red Plenty - Spufford, Francis</li>
                 </ul>
             </section>

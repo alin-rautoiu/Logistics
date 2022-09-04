@@ -2,29 +2,10 @@ class TaskPoint extends Goal {
     constructor(sketch, x, y, kind, canvas) {
         super(sketch, x, y, "resource");
         this.kind = kind;
-        this.resources = new ResourceHolder(this.sketch);
-        switch (kind) {
-            case 1:
-                this.req = [];
-                this.mainColor = this.sketch.color(230, 255, 230);
-                this.accentColor = this.sketch.color(25, 180, 25);
-                break;
-            case 2:
-                this.req = [];
-                this.mainColor = this.sketch.color(200, 200, 230);
-                this.accentColor = this.sketch.color(25, 25, 180);
-                break;
-            case 3:
-                this.req = [1];
-                this.mainColor = this.sketch.color('green');
-                this.accentColor = this.sketch.color('green');
-                break;
-            case 4:
-                this.req = [1, 2];
-                this.mainColor = this.sketch.color(20, 180, 180);
-                this.accentColor = this.sketch.color(20, 180, 180);
-                break;
-        }
+        this.resources = new ResourceHolder(this.sketch, this);
+        this.req = TaskPoint.requirements(kind);
+        this.mainColor = TaskPoint.color(kind);
+        this.accentColor = TaskPoint.colorAccent(kind);
         this.lifetimeDecay = 0;
         this.rotation = 0;
         this.r = 12;
@@ -41,7 +22,7 @@ class TaskPoint extends Goal {
         this.sketch.push();
         this.sketch.stroke('rgba(0,0,0,0.2)');
         this.sketch.fill('rgba(0,0,0,0.2)');
-        this.drawHex(this.position.x, this.position.y, this.r);
+        TaskPoint.drawHex(this.position.x, this.position.y, this.r, this.sketch);
         this.sketch.pop();
     }
     display() {
@@ -51,30 +32,15 @@ class TaskPoint extends Goal {
             this.removed = true;
         }
         this.sketch.push();
-        switch (this.kind) {
-            case 1:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 2:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 3:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-            case 4:
-                this.sketch.stroke(this.accentColor);
-                this.sketch.fill(this.mainColor);
-                break;
-        }
+        this.sketch.stroke(this.accentColor);
+        this.sketch.fill(this.mainColor);
         this.sketch.translate(this.position.x, this.position.y);
         this.sketch.rotate(this.rotation);
         this.sketch.translate(-this.position.x, -this.position.y);
-        this.drawHex(this.position.x, this.position.y, this.r);
+        TaskPoint.drawHex(this.position.x, this.position.y, this.r, this.sketch);
         this.sketch.text(this.kind, this.position.y - 10);
         this.sketch.pop();
+        this.resources.display(this.position, this.r + 4);
     }
     requires() {
         return this.req;
@@ -89,6 +55,8 @@ class TaskPoint extends Goal {
                 return [1];
             case 4:
                 return [1, 2];
+            case 5:
+                return [2];
         }
     }
     static color(kind) {
@@ -101,6 +69,8 @@ class TaskPoint extends Goal {
                 return 'green';
             case 4:
                 return "rgb(20, 180, 180)";
+            case 5:
+                return "rgb(25, 25, 180)";
         }
     }
     static colorAccent(kind) {
@@ -113,6 +83,8 @@ class TaskPoint extends Goal {
                 return 'green';
             case 4:
                 return "rgb(20, 180, 180)";
+            case 5:
+                return "rgb(25, 25, 180)";
         }
     }
     static requiredColor(kind) {
@@ -177,11 +149,11 @@ class TaskPoint extends Goal {
     workPauses() {
         this.active = false;
     }
-    drawHex(x, y, r) {
-        this.sketch.beginShape();
+    static drawHex(x, y, r, sketch) {
+        sketch.beginShape();
         for (let i = 0; i < 6; i++) {
-            this.sketch.vertex(x + Math.sin(i / 3 * Math.PI) * r, y + Math.cos(i / 3 * Math.PI) * r);
+            sketch.vertex(x + Math.sin(i / 3 * Math.PI) * r, y + Math.cos(i / 3 * Math.PI) * r);
         }
-        this.sketch.endShape(this.sketch.CLOSE);
+        sketch.endShape(sketch.CLOSE);
     }
 }
