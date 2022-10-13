@@ -6,14 +6,24 @@ class SequenceCanvasBase extends CanvasWithPawns {
         this.resourceDecay = 0;
     }
 
-    setup()  {
+    setup() {
         super.setup();
     }
 
     draw() {
         super.draw();
-        for(const res of this.resources) {
+        for (const res of this.resources) {
             res.display();
         }
+    }
+
+    addAPawn(i, x?: number, y?: number): Pawn {
+        const p = super.addAPawn(i, x, y);
+
+        if (!x) {
+            this.setPawnOnGrid(p, i);
+        }
+
+        return p;
     }
 }

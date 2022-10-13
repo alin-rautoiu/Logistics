@@ -26,7 +26,9 @@ class TaskPoint extends Goal {
         this.sketch.pop();
     }
     display() {
-        this.lifetime -= this.lifetimeDecay;
+        if (this.canvas && this.canvas.hasStarted) {
+            this.lifetime -= this.lifetimeDecay;
+        }
         if (!this.removed && this.lifetime <= 0 && this.canvas) {
             this.canvas.removeResource(this);
             this.removed = true;

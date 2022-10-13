@@ -219,9 +219,9 @@ class TickTime extends PawnNode {
 
         this.pawn.lifetime -= (this.sketch.deltaTime * this.pawn.lifetimeDecay);
         if (this.pawn.paused) {
-            this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
+            this.pawn.hungerMeter -= this.pawn.consumes ? (this.sketch.deltaTime * this.pawn.hungerRate) : 0;
         } else {
-            this.pawn.hungerMeter -= this.pawn.consumes ? this.sketch.deltaTime : 0;
+            this.pawn.hungerMeter -= this.pawn.consumes ? (this.sketch.deltaTime * this.pawn.hungerRate) : 0;
         }
 
 
@@ -1099,6 +1099,7 @@ class IsGoingTowardsFoodOrRequirement extends PawnNode {
     run(): NodeState {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
+        if (!currentTask) return NodeState.FAILURE;
         const requirements = TaskPoint.requirements(this.pawn.needs);
         return currentTask.kind == this.pawn.needs || requirements.find(r => r == this.pawn.needs) ? NodeState.SUCCESS : NodeState.FAILURE;
     }

@@ -43,6 +43,7 @@ class Pawn extends Entity {
     potentialLocations: MovementTarget[];
     shares: boolean;
     showPath: any;
+    hungerRate: any;
 
     public get movementTarget() {
         const currentTask = this.getCurrentTask();
@@ -101,6 +102,7 @@ class Pawn extends Entity {
         this.noiseScale = 0.0;
         this.potentialLocations = [];
         this.shares = shares ?? true;
+        this.hungerRate = 1;
 
         this.decisions = [];
         const stopWork = () => {
@@ -339,7 +341,6 @@ class Pawn extends Entity {
     }
 
     display() {
-
         this.sketch.push();
         this.sketch.noStroke();
 
@@ -789,7 +790,9 @@ class Pawn extends Entity {
             const receiveTask: Task = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
             return receiveTask ? receiveTask : this.tasks[0];
         }
-        return null;
+
+        const least: number = this.resources.least(this.needs);
+        return new Task(TaskDirection.EXTRACT, least);
     }
 
     getCurrentRange() {

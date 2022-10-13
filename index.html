@@ -41,6 +41,7 @@
     <script type="text/javascript" src="./built/Canvas/Sequence/sequence-canvasBase.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -61,6 +62,7 @@
             canvasObjects.push(new KnowledgeCanvas5('knowledge-reproduction-canvas-5'));
             canvasObjects.push(new SequenceCanvas1('sequence-canvas-1'));
             canvasObjects.push(new SequenceCanvas2('sequence-canvas-2'));
+            canvasObjects.push(new SequenceCanvas3('sequence-canvas-3'));
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -161,50 +163,76 @@
                 </div>
             </header>
             <section>
-                <h2>0. What is a model</h2>
+                <h2>0. Questions</h2>
+                <h3>What is a model?</h3>
                 <p>Models can be thought of as many things. As a system of equations that takes an input and outputs a
                     result. As a map. As a story.</p>
                 <p>We live only in the here and now, but models allow us, in a certain sense and for a limited number of
                     issues, to be everywhere and everytime.</p>
                 <p>This is why we use models to predict what would happen, to measure the consequences of our decisions.
-                    We also use models to diagnose what went wrong.</p>
+                    We use models to diagnose what went wrong.</p>
                 <p>There are brilliantly elegant models that rest on flawed assumptions of the real world. There are
                     models that ask the wrong questions.</p>
-                <p>This is why a model is not a role-model and building it is in fact the first cybernetic act.</p>
+                <p>Understanding this becomes especially important when we use models to construct our social world. A
+                    model is not a role-model and building it is in fact the first cybernetic act.</p>
+                <section class="deemphasis">
+                    <h3>What is being modeled?</h3>
+                    <p>This is an interactive essay about work, collaboration, production and reproduction. You will be
+                        presented with a number of boards containing actors represented as red dots.</p>
+                    <p>Usually, the agents will been modeled as pseudo-<em>random walkers</em>
+                        <span class="read-more"><span class="read-more-open"></span><span
+                                class="read-more-details display-none"><span>The <em>random walk</em> is a process
+                                    through
+                                    which a
+                                    mathematical space is traversed iteratively from the starting point, moving in each
+                                    iteration with one unit on a particular dimension. This algorithm can be used to
+                                    simulate
+                                    brownian motion, the movement of amoebas on a surface, to trace a foraging animal or
+                                    even to
+                                    map stock prices.</span> <span> It this case the agents don't start at the origin
+                                    point
+                                    of the space and
+                                    can move simultaneously on the X and Y direction.</span>
+                            </span></span> in pursuit of a destination, represent as a green dot. Each agent only has a
+                        limited range
+                        of acquisition represented by the pulsing red circle. It will identify the opportunity only if
+                        it
+                        finds it in its range.
+                    </p>
+                    <p>As the modeled situations will become more complicated, the actors won't simply have to discover
+                        and
+                        reach a
+                        certain point on the board, but also to perform some sort of work there. In this case, the goals
+                        will be represented as color-coded hexagons.</p>
+                    <p>What follows aren't animations, but realtime simulations based on the rules as they've been
+                        explained. The simulations inside the boards can be re-ran. The actors are placed on grid with a
+                        random offset. The goal is randomly placed as well. After being reset for the first time, many
+                        of the boards will display a panel exposing relevant parameters, allowing you to change them,
+                        test the claims made by the explanations, your own intuitions and the limits of the model
+                        itself.</p>
+                    <div class="note">
+                        <p>In the body of this essay I will use terms like <em>fitness</em>, <em>performance</em> or
+                            <em>efficiency</em>. They are not to be taken as universal, homogenous categories, but
+                            applied strictly to the situations described. Their particular meanings as deployed here are
+                            defined or at least strongly implied. I am aware, as any serious reader will be, of the
+                            problematizations and deconstructions of these categories in the general discourse.
+                        </p>
+                    </div>
+                </section>
             </section>
             <section>
                 <h2>1. The need for an organization</h2>
                 <h3>Opportunity acquisition</h3>
-                <p>Agents can share common goals. An organization offers its members the means to identify
-                    opportunities.</p>
-                <p>For this experiment the agents (the red dots) have been modeled as pseudo-<em>random walkers</em>
-                    <span class="read-more"><span class="read-more-open"></span><span
-                            class="read-more-details display-none"><span>The <em>random walk</em> is a process through
-                                which a
-                                mathematical space is traversed iteratively from the starting point, moving in each
-                                iteration with one unit on a particular dimension. This algorithm can be used to
-                                simulate
-                                brownian motion, the movement of amoebas on a surface, to trace a foraging animal or
-                                even to
-                                map stock prices.</span> <span> It this case the agents don't start at the origin point
-                                of the space and
-                                can move simultaneously on the X and Y direction.</span>
-                        </span></span> in pursuit of a destination (the green dot). Each agent only has a limited range
-                    of acquisition represented by the pulsing
-                    red circle. It will identify the opportunity only if it finds it in its range.
+                <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
+                    reaching the destination they will simply stop. The same space is covered multiple times over. It
+                    can take a long time for all of them to reach their goal.
                 </p>
-                <p></p>
-                <p>The actors are placed on grid with a random offset. The goal is randomly placed.</p>
                 <p>The model doesn't necessarily looks like what it models. You can think of this simulation in as
                     literal a way as possible: an entity, be it an amoeba, a grazing cow, a drunk man or a submarine,
                     searching for something in low visibility conditions. But this can simulate any kind of searching
                     over an unstructured domain: looking for an arbitrary turn of phrase in a book of
                     poems or finding the differences between nearly matching photos. In these cases the pixels would
                     represent the words, respectively where the eye is falling on the images.</p>
-                <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
-                    reaching the destination they will simply stop. The same space is covered multiple times over. It
-                    can take a long time for all of them to reach their goal.
-                </p>
                 <div class="canvas-wrapper">
                     <div id="trial-canvas" class="canvas-container">
                         <div class="canvas-setup hidden right-side">
@@ -219,6 +247,8 @@
                         <fig>Fig. 1a</fig>
                     </div>
                 </div>
+                <p>But agents can share common goals. An organization offers its members the means to identify
+                    opportunities.</p>
                 <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
                     the goal. In this way, the agent to finish last will do so with only a small delay compared to the
                     fastest one.</p>
@@ -381,7 +411,8 @@
                     </div>
                 </div>
                 <p>It isn't surprising what happens such actors are placed in an environment with no knowledge of its
-                    opportunities.</p>
+                    opportunities. Reaching the opportunity is a mostly left to chance and very much determined by their
+                    starting position in relation to where the opportunities are placed./p>
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-2" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -545,7 +576,8 @@
                     series of boards. The actors cannot exploit the unfamiliar opportunities without first expending the
                     result of some prior work. This could be seen as modeling an industrial process, starting with
                     extracting a mineral then transporting it from production point to point, but as in the other cases
-                    the visualization needed be read as a literal, if abstracted, representation of the modeled process.
+                    the visualization needn't be read as a literal, if abstracted, representation of the modeled
+                    process.
                     Many of the activities where such visualizations are useful are precisely those that don't
                     immediately lend themselves to visual representations. For example one could look at this as a model
                     for writing an article, with the opportunity points representing various steps in the process such
@@ -575,15 +607,41 @@
                             step="1">
                     </div>
                 </div>
-                <p>Actors operating alone can perform task of some complexity.</p>
+                <p>Actors operating alone can perform task of some complexity. As with everything else, it's almost a
+                    simple function of resource availability and competition.</p>
                 <div id="sequence-canvas-2" class="canvas-container">
                     <button type="button" class="canvas-button start-button">Start</button>
-                    <fig id="fig5a">Fig. 5b</fig>
+                    <fig id="fig5b">Fig. 5b</fig>
                     <div class="canvas-setup hidden">
                         <label for="resources-num">Number of opportunities</label>
                         <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
                         <label class="hidden" for="actors-num">Number of actors</label>
-                        <input class="actors-num hidden" type="number" min="1" value="1" max="200">
+                        <input class="actors-num hidden" type="number" min="1" value="3" max="200">
+                        <label for="actors-speed">Actors' speed</label>
+                        <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                        <!-- <label for="actors-search">Actors' search radius</label> -->
+                        <input class="actors-search" type="hidden" value="70">
+                        <label for="actors-lifespan">Actors' lifetime decay</label>
+                        <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
+                        <label for="show-actors-path">Show actors' path</label>
+                        <input class="show-actors-path" name="show-actors-path" type="checkbox">
+                        <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
+                        <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
+                            step="0.1">
+                        <label for="noise-scale" title="How strong is noise">Noise scale</label>
+                        <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
+                            step="1">
+                    </div>
+                </div>
+                <p>This gives us the intuition that actors working as group should perform better in an organization</p>
+                <div id="sequence-canvas-3" class="canvas-container">
+                    <button type="button" class="canvas-button start-button">Start</button>
+                    <fig id="fig5c">Fig. 5c</fig>
+                    <div class="canvas-setup hidden">
+                        <label for="resources-num">Number of opportunities</label>
+                        <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
+                        <label class="hidden" for="actors-num">Number of actors</label>
+                        <input class="actors-num hidden" type="number" min="1" value="3" max="200">
                         <label for="actors-speed">Actors' speed</label>
                         <input class="actors-speed" type="number" min="0" value="1" step="0.1">
                         <!-- <label for="actors-search">Actors' search radius</label> -->
@@ -613,6 +671,9 @@
                 <ul>
                     <li>Designing Freedom - Beer, Stafford</li>
                     <li>Platform for Change - Beer, Stafford</li>
+                    <li>Destruction and Creation - Boyd, John</li>
+                    <li>Gameplay Mode - Crogan, Patrick</li>
+                    <li>Age of Empires - Ensemble Studios</li>
                     <li><a href="https://www.jofreeman.com/joreen/tyranny.htm"
                             title="The Tyranny of Structurelessness">The Tyranny of Structurelessness - Freeman, Jo</a>
                     </li>
@@ -620,6 +681,10 @@
                     <li><a href="https://logicmag.io/clouds/agile-and-the-long-crisis-of-software/"
                             title="Agile and the Long Crisis of Software">Agile and the Long Crisis of Software -
                             Posner, Miriam</a></li>
+                    <li>The Ignorant Schoolmaster - Rancière, Jacques</li>
+                    <li><a href="https://mindcraftstories.ro/rubrici/longread/de-1-aprilie-internetul-si-a-facut-autoportretul/"
+                            title="De 1 Aprilie, internetul și-a făcut autoportretul">De 1 Aprilie, internetul și-a
+                            făcut autoportretul - Răuțoiu, Alin</a></li>
                     <li><a href="https://natureofcode.com/book/" title="The Nature of Code">The Nature of Code -
                             Shiffman, Daniel</a></li>
                     <li>Red Plenty - Spufford, Francis</li>

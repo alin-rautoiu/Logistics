@@ -1,12 +1,12 @@
 class ResourceHolder {
     sketch: any;
-    resources: Map<number, number>;
+    resources: Object;
     owner: Entity;
     showProg: number;
     
     constructor(sketch: any, owner: Entity) {
         this.sketch = sketch;
-        this.resources = new Map<number, number>();
+        this.resources = {};
         this.owner = owner;
         this.showProg = 0;
     }
@@ -121,5 +121,18 @@ class ResourceHolder {
 
     setResource(kind: number, amount: number) {
         this.resources[kind] = {kind: kind, amount: amount}
+    }
+
+    least(fallback: number): number {
+        const min = {kind: 0, qt: Number.POSITIVE_INFINITY};
+        
+        for(const res of Object.keys(this.resources)) {
+            if (min.qt > this.resources[res].amount) {
+                min.kind = this.resources[res].kind;
+                min.qt = this.resources[res].amount;
+            }
+        }
+
+        return min.kind == 0 ? fallback : min.kind;
     }
 }

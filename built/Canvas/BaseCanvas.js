@@ -23,6 +23,7 @@ class BaseCanvas {
         this.scale = 1;
         this.canZoom = false;
         this.sketch.frameRate(60);
+        this.hasStarted = false;
     }
     setup() {
     }

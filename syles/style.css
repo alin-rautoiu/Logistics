@@ -42,6 +42,30 @@ footer {
     justify-content: center;
 }
 
+.deemphasis h3 {
+    font-size: 1rem;
+}
+
+.deemphasis p{
+    font-size: 0.8rem;
+}
+
+.note {
+    background-color: #ff7f5029 ;
+    align-self: center;
+}
+
+.note p {
+    margin: 2rem 3rem;
+    max-width: 800px;
+}
+
+@media screen and (min-width:1280px) {
+    .note {
+        width: 110%;
+    }
+}
+
 .cover {
     height: 200px;
     position: relative;

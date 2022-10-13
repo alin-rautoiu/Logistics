@@ -1,4 +1,4 @@
-class SequenceCanvas2 extends SequenceCanvasBase {
+class SequenceCanvas3 extends SequenceCanvasBase {
     constructor(canvasId) {
         super(canvasId);
     }
@@ -12,6 +12,7 @@ class SequenceCanvas2 extends SequenceCanvasBase {
                 p.needs = 1;
             }
             p.consumes = true;
+            p.shares = true;
             p.maxHunger = 14000;
             p.hungerMeter = p.maxHunger;
         }
@@ -37,7 +38,10 @@ class SequenceCanvas2 extends SequenceCanvasBase {
         }
         for (const pawn of this.pawns) {
             pawn.knownLocations = this.resources;
+            pawn.collaborates = true;
+            pawn.hungerRate = Math.random() + 0.5;
         }
+        this.pawns.forEach(p => p.organization = this.pawns.filter(o => o.idx !== p.idx));
     }
     replenishResources(resType) {
         const res = new TaskPoint(this.sketch, (Math.random() * (this.width - 200)) + 100, ((Math.random() * (this.height - 100)) + 50), resType);

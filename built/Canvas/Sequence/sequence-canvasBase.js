@@ -13,4 +13,11 @@ class SequenceCanvasBase extends CanvasWithPawns {
             res.display();
         }
     }
+    addAPawn(i, x, y) {
+        const p = super.addAPawn(i, x, y);
+        if (!x) {
+            this.setPawnOnGrid(p, i);
+        }
+        return p;
+    }
 }

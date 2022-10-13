@@ -35,6 +35,7 @@ class Pawn extends Entity {
         this.noiseScale = 0.0;
         this.potentialLocations = [];
         this.shares = shares !== null && shares !== void 0 ? shares : true;
+        this.hungerRate = 1;
         this.decisions = [];
         const stopWork = () => {
             return new AlwaysSucceed(new Sequence([
@@ -646,7 +647,8 @@ class Pawn extends Entity {
             const receiveTask = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
             return receiveTask ? receiveTask : this.tasks[0];
         }
-        return null;
+        const least = this.resources.least(this.needs);
+        return new Task(TaskDirection.EXTRACT, least);
     }
     getCurrentRange() {
         return this.diameter + 5 + Math.abs(this.sketch.sin(this.pulsePeriod)) * this.searchRadius;
