@@ -22,6 +22,8 @@
     <script type="text/javascript" src="./built/Entities/Goal.js"></script>
     <script type="text/javascript" src="./built/Entities/TaskPoint.js"></script>
     <script type="text/javascript" src="./built/Entities/Pawn.js"></script>
+    <script type="text/javascript" src="./built/Entities/CommandablePawn.js"></script>
+
 
     <script type="text/javascript" src="./built/Canvas/BaseCanvas.js"></script>
     <script type="text/javascript" src="./built/Canvas/CanvasWithPawns.js"></script>
@@ -42,6 +44,7 @@
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-2.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Command/CommandCanvasBase.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -63,6 +66,7 @@
             canvasObjects.push(new SequenceCanvas1('sequence-canvas-1'));
             canvasObjects.push(new SequenceCanvas2('sequence-canvas-2'));
             canvasObjects.push(new SequenceCanvas3('sequence-canvas-3'));
+            canvasObjects.push(new CommandCanvasBase('command-canvas-1'));
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -649,7 +653,7 @@
                         </div>
                     </div>
                 </div>
-                <p>This gives us the intuition that actors working as group should perform better in an organization</p>
+                <p>This gives us the intuition that actors working as group should perform better in an organization.</p>
                 <div class="canvas-wrapper has-more" data-link="sequence-canvas-2">
                     <div id="sequence-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -678,6 +682,28 @@
                             size of the organization increases and as the tasks become more complex. The organization
                             also allows for peculiar pathologies when the actors receive or request resources both
                             bellow their subsistence limit and near their carrying capacity.
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h2>3. The plan</h2>
+                <h3>Delegation, coordination and compartmentalization</h3>
+                <p>An attempt at addressing these issues is constraining individual autonomy though a command structure and a division of labor.</p>
+                <div>
+                    <div class="canvas-wrapper">
+                        <div id="command-canvas-1" class="canvas-container">
+                            <button type="button" class="canvas-button start-button">Start</button>
+                            <fig id="fig6a">Fig. 6a</fig>
+                            <div class="canvas-setup hidden">
+                                <label for="actors-num">Number of actors</label>
+                                <input class="actors-num" type="number" min="1" value="6" max="200">
+                                <label for="actors-speed">Actors' speed</label>
+                                <input class="actors-speed" type="number" min="0" value="0.5" step="0.1">
+                                <label for="actors-search">Actors' search radius</label>
+                                <input class="actors-search" type="hidden" value="70">
+                                <input class="resource-frequency" type="hidden" min="0" value="0" step="1">
+                            </div>
                         </div>
                     </div>
                 </div>

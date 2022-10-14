@@ -415,7 +415,6 @@ class GoToTask extends PawnNode {
             if (!found) {
                 return NodeState.SUCCESS;
             }
-            this.pawn.sketch.line(this.pawn.position.x, this.pawn.position.y, found.position.x, found.position.y);
             const otherTask = found.getCurrentTask();
             if (!(otherTask && otherTask.direction == TaskDirection.RECEIVE)) {
                 found.tasks = [(new Task(TaskDirection.RECEIVE, need)), ...found.tasks];

@@ -5,7 +5,7 @@ class Task {
 
     constructor(direction: TaskDirection, payload: number | MovementTarget) {
         this.direction = direction;
-        if (direction === TaskDirection.COMMUNICATION) {
+        if (direction === TaskDirection.COMMUNICATION || direction === TaskDirection.MOVE) {
             this.movementTarget = payload as MovementTarget;
         } else {
             this.kind = payload as number;
@@ -15,5 +15,6 @@ class Task {
 
 enum TaskDirection {
     EXTRACT, GIVE, RECEIVE,
-    COMMUNICATION
+    COMMUNICATION,
+    MOVE
 }
