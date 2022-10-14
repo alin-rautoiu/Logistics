@@ -403,20 +403,22 @@ class GoToTask extends PawnNode {
             return NodeState.SUCCESS;
         }
         else if (currentTask.direction === TaskDirection.GIVE) {
+            const need = currentTask.kind;
             const found = this.pawn.organization
                 .filter((p) => p.behavior !== "dead"
-                && !p.hasEnough()
-                && (p.getCurrentTask().kind != p.needs
-                    || p.behavior != 'collect'))
-                .sort((l1, l2) => l1.resources.getAmount(l1.needs) == l2.resources.getAmount(l2.needs)
+                && ((p.getCurrentTask() && (p.getCurrentTask().kind == need || TaskPoint.requirements(p.getCurrentTask().kind).indexOf(need) != -1))
+                    || (!p.getCurrentTask() && (p.needs == need || TaskPoint.requirements(p.needs).indexOf(need) != -1)))
+                && !p.hasEnoughAll([need]))
+                .sort((l1, l2) => l1.resources.getAmount(need) == l2.resources.getAmount(need)
                 ? this.pawn.sortByDistance(l1, l2)
-                : l1.resources.getAmount(l1.needs) - l2.resources.getAmount(l2.needs))[0];
+                : l1.resources.getAmount(need) - l2.resources.getAmount(need))[0];
             if (!found) {
                 return NodeState.SUCCESS;
             }
+            this.pawn.sketch.line(this.pawn.position.x, this.pawn.position.y, found.position.x, found.position.y);
             const otherTask = found.getCurrentTask();
             if (!(otherTask && otherTask.direction == TaskDirection.RECEIVE)) {
-                found.tasks.push(new Task(TaskDirection.RECEIVE, found.needs));
+                found.tasks = [(new Task(TaskDirection.RECEIVE, need)), ...found.tasks];
                 const taskPoint = (_a = found.movementTarget) === null || _a === void 0 ? void 0 : _a.entity;
                 if (taskPoint) {
                     taskPoint.workStops(this.pawn);
@@ -721,7 +723,7 @@ class Share extends PawnNode {
             const other = this.pawn.movementTarget.entity;
             if (!other)
                 return NodeState.FAILURE;
-            if (this.pawn.resources.getAmount(this.pawn.needs) <= 10 || other.resources.getAmount(this.pawn.needs) >= 20) {
+            if (this.pawn.resources.getAmount(currentTask.kind) <= this.pawn.givingThreshold || other.resources.getAmount(currentTask.kind) >= 20) {
                 return NodeState.SUCCESS;
             }
             return NodeState.RUNNING;
@@ -739,14 +741,15 @@ class CanShare extends PawnNode {
         let canShare = this.pawn.shares && this.pawn.organization.length > 1;
         const found = this.pawn.organization
             .filter((p) => p.behavior !== "dead"
-            && p.resources.getAmount(p.needs) <= 5
-            && (p.getCurrentTask() == null
-                || p.getCurrentTask().kind != p.needs
-                || p.behavior != 'collect'))
+            && p.resources.getAmount(p.resources.least(p.needs)) <= p.requestThreshold
+            && p.behavior != 'collect'
+            && this.pawn.resources.hasSufficientResource(p.resources.least(p.needs)))
             .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
-        if (found && this.pawn.resources.getAmount(found.needs) <= 10)
+        if (!found || found.tasks.find(t => t.direction == TaskDirection.RECEIVE))
             return NodeState.FAILURE;
-        return found && canShare && this.pawn.consumes ? NodeState.SUCCESS : NodeState.FAILURE;
+        if (this.pawn.resources.getAmount(found.resources.least(found.needs)) <= this.pawn.givingThreshold)
+            return NodeState.FAILURE;
+        return canShare && this.pawn.consumes ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
 class Receives extends PawnNode {
@@ -768,6 +771,7 @@ class IsSharing extends PawnNode {
     run() {
         super.run();
         const currentTask = this.pawn.getCurrentTask();
+        console.log(currentTask);
         return currentTask && currentTask.direction === TaskDirection.GIVE ? NodeState.SUCCESS : NodeState.FAILURE;
     }
 }
@@ -778,8 +782,14 @@ class StartSharing extends PawnNode {
     }
     run() {
         super.run();
-        if (this.pawn.resources.getAmount(this.pawn.needs) >= 20) {
-            this.pawn.tasks.push(new Task(TaskDirection.GIVE, this.pawn.needs));
+        const found = this.pawn.organization
+            .filter((p) => p.behavior !== "dead"
+            && p.resources.getAmount(p.resources.least(p.needs)) <= p.requestThreshold
+            && p.behavior != 'collect'
+            && this.pawn.resources.hasSufficientResource(p.resources.least(p.needs)))
+            .sort((l1, l2) => this.pawn.sortByDistance(l1, l2))[0];
+        if (found) {
+            this.pawn.tasks = [(new Task(TaskDirection.GIVE, found.resources.least(found.needs))), ...this.pawn.tasks];
             return NodeState.SUCCESS;
         }
         return NodeState.FAILURE;

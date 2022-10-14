@@ -1,15 +1,23 @@
 class SequenceCanvas3 extends SequenceCanvasBase {
     constructor(canvasId) {
         super(canvasId);
+        this.givingThresholdControl = document.querySelector(`#${this.canvasId} .giving-threshold`);
+        this.bindControl(this.givingThresholdControl, "givingThreshold", true, "givingThreshold");
+        this.requestThresholdControl = document.querySelector(`#${this.canvasId} .request-threshold`);
+        this.bindControl(this.requestThresholdControl, "requestThreshold", true, "requestThreshold");
     }
     setup() {
         super.setup();
         for (let i = 0; i < this.pawnsNumber; i++) {
             const p = this.addAPawn(i);
             this.setPawnOnGrid(p, i);
-            p.needs = Math.ceil(Math.random() * 5);
+            p.needs = Math.ceil(2 + Math.random() * 3);
             if (p.needs == 0) {
                 p.needs = 1;
+            }
+            p.resources.setResource(p.needs, 0);
+            for (const req of TaskPoint.requirements(p.needs)) {
+                p.resources.setResource(req, 0);
             }
             p.consumes = true;
             p.shares = true;
@@ -40,8 +48,11 @@ class SequenceCanvas3 extends SequenceCanvasBase {
             pawn.knownLocations = this.resources;
             pawn.collaborates = true;
             pawn.hungerRate = Math.random() + 0.5;
+            pawn.givingThreshold = this.givingThreshold;
+            pawn.requestThreshold = this.requestThreshold;
         }
         this.pawns.forEach(p => p.organization = this.pawns.filter(o => o.idx !== p.idx));
+        this.bindControl("");
     }
     replenishResources(resType) {
         const res = new TaskPoint(this.sketch, (Math.random() * (this.width - 200)) + 100, ((Math.random() * (this.height - 100)) + 50), resType);

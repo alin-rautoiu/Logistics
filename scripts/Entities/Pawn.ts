@@ -44,6 +44,8 @@ class Pawn extends Entity {
     shares: boolean;
     showPath: any;
     hungerRate: any;
+    givingThreshold: number;
+    requestThreshold: number;
 
     public get movementTarget() {
         const currentTask = this.getCurrentTask();
@@ -103,6 +105,9 @@ class Pawn extends Entity {
         this.potentialLocations = [];
         this.shares = shares ?? true;
         this.hungerRate = 1;
+        this.givingThreshold = 10;
+        this.requestThreshold = 5;
+
 
         this.decisions = [];
         const stopWork = () => {
@@ -494,9 +499,10 @@ class Pawn extends Entity {
         if (entity instanceof Pawn) {
             const other: Pawn = entity;
             if (task.direction == TaskDirection.GIVE) {
+                const need = task.kind;
                 this.transfer(other);
                 this.behavior = 'feed';
-                if (other.resources.hasSufficientResource(other.needs) || this.resources.getAmount(other.needs) <= 10) {
+                if (other.resources.hasSufficientResource(need) || this.resources.getAmount(need) <= 20 - this.givingThreshold) {
                     return true;
                 }
                 return false;
@@ -509,7 +515,6 @@ class Pawn extends Entity {
                 return true;
             }
         }
-
 
         if (entity instanceof TaskPoint) {
             const taskPoint: TaskPoint = entity;
@@ -524,7 +529,6 @@ class Pawn extends Entity {
                 this.sketch.push();
                 this.sketch.strokeWeight(1);
                 this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
-                this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
                 this.sketch.pop();
             }
 
@@ -563,7 +567,6 @@ class Pawn extends Entity {
         }
 
         this.removeCurrentTask()
-        this.behavior = 'wait';
     }
 
     removeCurrentTask() {
@@ -574,6 +577,7 @@ class Pawn extends Entity {
         if (nextTask && nextTask.kind !== currentTask.kind && currentTask.movementTarget?.entity) {
             currentTask.movementTarget.entity.forceWorkStops(this);
         }
+        this.behavior = 'wait';
     }
 
     getVelocity() {
@@ -791,6 +795,7 @@ class Pawn extends Entity {
             return receiveTask ? receiveTask : this.tasks[0];
         }
 
+        return null;
         const least: number = this.resources.least(this.needs);
         return new Task(TaskDirection.EXTRACT, least);
     }
@@ -821,7 +826,7 @@ class Pawn extends Entity {
         let enough = true;
 
         for (const kind of req) {
-            enough = enough && this.resources.getAmount(kind) >= 10;
+            enough = enough && this.resources.getAmount(kind) >= this.givingThreshold;
         }
 
         return enough;

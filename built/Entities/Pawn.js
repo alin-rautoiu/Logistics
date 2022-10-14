@@ -36,6 +36,8 @@ class Pawn extends Entity {
         this.potentialLocations = [];
         this.shares = shares !== null && shares !== void 0 ? shares : true;
         this.hungerRate = 1;
+        this.givingThreshold = 10;
+        this.requestThreshold = 5;
         this.decisions = [];
         const stopWork = () => {
             return new AlwaysSucceed(new Sequence([
@@ -393,9 +395,10 @@ class Pawn extends Entity {
         if (entity instanceof Pawn) {
             const other = entity;
             if (task.direction == TaskDirection.GIVE) {
+                const need = task.kind;
                 this.transfer(other);
                 this.behavior = 'feed';
-                if (other.resources.hasSufficientResource(other.needs) || this.resources.getAmount(other.needs) <= 10) {
+                if (other.resources.hasSufficientResource(need) || this.resources.getAmount(need) <= 20 - this.givingThreshold) {
                     return true;
                 }
                 return false;
@@ -455,7 +458,6 @@ class Pawn extends Entity {
             }
         }
         this.removeCurrentTask();
-        this.behavior = 'wait';
     }
     removeCurrentTask() {
         var _a;
@@ -466,6 +468,7 @@ class Pawn extends Entity {
         if (nextTask && nextTask.kind !== currentTask.kind && ((_a = currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.entity)) {
             currentTask.movementTarget.entity.forceWorkStops(this);
         }
+        this.behavior = 'wait';
     }
     getVelocity() {
         const bounceH = (this.position.x <= 0 && Math.sign(this.direction.x) == -1)
@@ -647,6 +650,7 @@ class Pawn extends Entity {
             const receiveTask = this.tasks.find(t => t.direction === TaskDirection.RECEIVE);
             return receiveTask ? receiveTask : this.tasks[0];
         }
+        return null;
         const least = this.resources.least(this.needs);
         return new Task(TaskDirection.EXTRACT, least);
     }
@@ -671,7 +675,7 @@ class Pawn extends Entity {
     hasEnoughAll(req) {
         let enough = true;
         for (const kind of req) {
-            enough = enough && this.resources.getAmount(kind) >= 10;
+            enough = enough && this.resources.getAmount(kind) >= this.givingThreshold;
         }
         return enough;
     }

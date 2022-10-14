@@ -7,7 +7,7 @@ class SequenceCanvas2 extends SequenceCanvasBase {
         for (let i = 0; i < this.pawnsNumber; i++) {
             const p = this.addAPawn(i);
             this.setPawnOnGrid(p, i);
-            p.needs = Math.ceil(Math.random() * 5);
+            p.needs = Math.ceil(2 + Math.random() * 3);
             if (p.needs == 0) {
                 p.needs = 1;
             }

@@ -1,6 +1,6 @@
 class CanvasWithPawns extends BaseCanvas {
     constructor(canvasId) {
-        var _a, _b;
+        var _a, _b, _c, _d, _e;
         super(canvasId);
         this.pawns = [];
         this.baseColor = [];
@@ -12,12 +12,13 @@ class CanvasWithPawns extends BaseCanvas {
         this.pawnsHungerControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-hunger`);
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
-        this.pawnsSearch = this.pawnsSearchControl.value;
-        this.pawnsHunger = (_b = (_a = this.pawnsHungerControl) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 6000;
+        this.pawnsSearch = (_b = (_a = this.pawnsSearchControl) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 0;
+        this.pawnsHunger = (_d = (_c = this.pawnsHungerControl) === null || _c === void 0 ? void 0 : _c.value) !== null && _d !== void 0 ? _d : 6000;
         this.numCols = 0;
         this.numRows = 0;
-        this.pawnsSearchControl.addEventListener('change', () => {
-            this.pawnsSearch = this.pawnsSearchControl.value;
+        (_e = this.pawnsSearchControl) === null || _e === void 0 ? void 0 : _e.addEventListener('change', () => {
+            var _a, _b;
+            this.pawnsSearch = (_b = (_a = this.pawnsSearchControl) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 0;
             for (const pawn of this.pawns) {
                 pawn.searchRadius = this.pawnsSearch;
             }
@@ -78,6 +79,11 @@ class CanvasWithPawns extends BaseCanvas {
     }
     bindControl(control, property, onPawn, pawnProperty) {
         if (control) {
+            try {
+                this[property] = control.value;
+            }
+            catch (_a) {
+            }
             control.addEventListener("change", () => {
                 this[property] = control.value;
                 if (onPawn) {
@@ -118,14 +124,14 @@ class CanvasWithPawns extends BaseCanvas {
         this.setup();
     }
     setup() {
-        var _a, _b;
+        var _a, _b, _c, _d;
         const sqrSz = Math.sqrt((this.width * this.height) / this.pawnsNumber);
         this.numCols = Math.max(1, Math.floor(this.width / sqrSz));
         this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
-        this.pawnsSearch = this.pawnsSearchControl.value;
-        this.pawnsHunger = (_b = (_a = this.pawnsHungerControl) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 6000;
+        this.pawnsSearch = (_b = (_a = this.pawnsSearchControl) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : 0;
+        this.pawnsHunger = (_d = (_c = this.pawnsHungerControl) === null || _c === void 0 ? void 0 : _c.value) !== null && _d !== void 0 ? _d : 6000;
     }
     addAPawn(i, x, y) {
         const p = this.createPawn(i !== null && i !== void 0 ? i : this.pawns.length, x, y);

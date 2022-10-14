@@ -14,15 +14,15 @@ class CanvasWithPawns extends BaseCanvas {
 
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
-        this.pawnsSearch = this.pawnsSearchControl.value;
+        this.pawnsSearch = this.pawnsSearchControl?.value ?? 0;
         this.pawnsHunger = this.pawnsHungerControl?.value ?? 6000;
 
 
         this.numCols = 0;
         this.numRows = 0;
 
-        this.pawnsSearchControl.addEventListener('change', () => {
-            this.pawnsSearch = this.pawnsSearchControl.value;
+        this.pawnsSearchControl?.addEventListener('change', () => {
+            this.pawnsSearch = this.pawnsSearchControl?.value ?? 0;
             for (const pawn of this.pawns) {
                 pawn.searchRadius = this.pawnsSearch;
             }
@@ -91,6 +91,11 @@ class CanvasWithPawns extends BaseCanvas {
 
     bindControl(control, property, onPawn, pawnProperty) {
         if (control) {
+            try{
+                this[property] = control.value;
+            } catch {
+            }
+
             control.addEventListener("change", () => {
                 this[property] = control.value;
                 if (onPawn) {
@@ -139,7 +144,7 @@ class CanvasWithPawns extends BaseCanvas {
         this.numRows = Math.max(1, Math.ceil(this.height / sqrSz));
         this.pawnsNumber = this.pawnsNumberControl.value;
         this.pawnsSpeed = this.pawnsSpeedControl.value;
-        this.pawnsSearch = this.pawnsSearchControl.value;
+        this.pawnsSearch = this.pawnsSearchControl?.value ?? 0;
         this.pawnsHunger = this.pawnsHungerControl?.value ?? 6000;
     }
 

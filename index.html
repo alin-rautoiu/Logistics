@@ -88,6 +88,23 @@
                 })
             })
 
+            // const mapper = new p5();
+            // window.addEventListener('scroll', () => {
+            //     const ps = document.querySelectorAll('section > p');
+            //     for (const p of ps) {
+            //         const boundingRect = p.getBoundingClientRect();
+            //         if (boundingRect.top <= 0) {
+            //             p.style['transform'] = null;
+            //         } else {
+            //             const fract = Math.abs((window.innerHeight / 2) - boundingRect.top);
+            //             const squished = mapper.map(fract, 0, window.innerHeight / 2, Math.PI / 2, Math.PI , true);
+            //             const scale = 1 + mapper.map(Math.abs(Math.sin(squished)), 0, 1, 0, 0.3, true);
+            //             console.log({ top: boundingRect.top, scale, fract, innerHeight: window.innerHeight / 2 });
+            //             p.style['transform'] = `scale(${scale})`;
+            //         }
+            //     }
+            // })
+
             const resourceListener = document.querySelector('#resource-canvas-wrapper-3');
             const resourceCallback = (mutationList, observer) => {
 
@@ -329,8 +346,8 @@
                             <input class="actors-speed" type="number" min="0" value="2" step="0.1">
                             <!-- <label for="actors-search">Actors' search radius</label> -->
                             <input class="actors-search" type="hidden" value="70">
-                            <label for="actors-speed">Actors' "hunger"</label>
-                            <input class="actors-speed" type="number" min="0" value="6000" step="10">
+                            <label for="actors-hunger">Actors' "hunger"</label>
+                            <input class="actors-hunger" type="number" min="0" value="6000" step="10">
                             <label for="resource-frequency">Opportunity frequency</label>
                             <input class="resource-frequency" type="number" min="0" value="3" step="1">
                             <!-- <label class="hidden" for="actors-with-paused">Actors pause</label>
@@ -609,53 +626,59 @@
                 </div>
                 <p>Actors operating alone can perform task of some complexity. As with everything else, it's almost a
                     simple function of resource availability and competition.</p>
-                <div id="sequence-canvas-2" class="canvas-container">
-                    <button type="button" class="canvas-button start-button">Start</button>
-                    <fig id="fig5b">Fig. 5b</fig>
-                    <div class="canvas-setup hidden">
-                        <label for="resources-num">Number of opportunities</label>
-                        <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
-                        <label class="hidden" for="actors-num">Number of actors</label>
-                        <input class="actors-num hidden" type="number" min="1" value="3" max="200">
-                        <label for="actors-speed">Actors' speed</label>
-                        <input class="actors-speed" type="number" min="0" value="1" step="0.1">
-                        <!-- <label for="actors-search">Actors' search radius</label> -->
-                        <input class="actors-search" type="hidden" value="70">
-                        <label for="actors-lifespan">Actors' lifetime decay</label>
-                        <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
-                        <label for="show-actors-path">Show actors' path</label>
-                        <input class="show-actors-path" name="show-actors-path" type="checkbox">
-                        <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
-                        <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
-                            step="0.1">
-                        <label for="noise-scale" title="How strong is noise">Noise scale</label>
-                        <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
-                            step="1">
+                <div class="canvas-wrapper">
+                    <div id="sequence-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig id="fig5b">Fig. 5b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label class="" for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="3" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="actors-hunger">Actors' "hunger"</label>
+                            <input class="actors-hunger" type="number" min="0" value="6000" step="10">
+                            <label for="giving-threshold" title="How much resources should an actor share">Giving
+                                threshold</label>
+                            <input class="giving-threshold" name="giving-threshold" type="number" min="1" max="20"
+                                step="1" value="19">
+                            <div></div>
+                            <label for="request-threshold" title="Below what value should an actor receive">Request
+                                threshold</label>
+                            <input class="request-threshold" name="request-threshold" type="number" min="1" max="20"
+                                step="1" value="5">
+                        </div>
                     </div>
                 </div>
                 <p>This gives us the intuition that actors working as group should perform better in an organization</p>
-                <div id="sequence-canvas-3" class="canvas-container">
-                    <button type="button" class="canvas-button start-button">Start</button>
-                    <fig id="fig5c">Fig. 5c</fig>
-                    <div class="canvas-setup hidden">
-                        <label for="resources-num">Number of opportunities</label>
-                        <input class="resources-num" name="resources-num" type="number" min="1" value="3" max="20">
-                        <label class="hidden" for="actors-num">Number of actors</label>
-                        <input class="actors-num hidden" type="number" min="1" value="3" max="200">
-                        <label for="actors-speed">Actors' speed</label>
-                        <input class="actors-speed" type="number" min="0" value="1" step="0.1">
-                        <!-- <label for="actors-search">Actors' search radius</label> -->
-                        <input class="actors-search" type="hidden" value="70">
-                        <label for="actors-lifespan">Actors' lifetime decay</label>
-                        <input class="actors-lifespan" type="number" min="0" value="1" step=".1">
-                        <label for="show-actors-path">Show actors' path</label>
-                        <input class="show-actors-path" name="show-actors-path" type="checkbox">
-                        <label for="actors-frequency" title="How fast new actors spawn">Actors' frequency</label>
-                        <input class="actors-frequency" name="actors-frequency" type="number" min="0" value="2"
-                            step="0.1">
-                        <label for="noise-scale" title="How strong is noise">Noise scale</label>
-                        <input class="noise-scale" name="noise-scale" type="number" min="0" max="150" value="30"
-                            step="1">
+                <div class="canvas-wrapper has-more" data-link="sequence-canvas-2">
+                    <div id="sequence-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig id="fig5c">Fig. 5c</fig>
+                        <div class="canvas-setup hidden four-lines">
+                            <label class="" for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="1" value="3" max="200">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="actors-hunger">Actors' "hunger"</label>
+                            <input class="actors-hunger" type="number" min="0" value="6000" step="10">
+                            <label for="giving-threshold" title="How much resources should an actor share">Giving
+                                threshold</label>
+                            <input class="giving-threshold" name="giving-threshold" type="number" min="1" max="20"
+                                step="1" value="10">
+                            <div></div>
+                            <label for="request-threshold" title="Below what value should an actor receive">Request
+                                threshold</label>
+                            <input class="request-threshold" name="request-threshold" type="number" min="1" max="20"
+                                step="1" value="5">
+                        </div>
+                    </div>
+                    <div class="canvas-discussion">
+                        <div class="canvas-discussion-to-be-expanded">
+                            Instead, they perform only marginally better than the unorganized actors, especially as the
+                            size of the organization increases and as the tasks become more complex. The organization
+                            also allows for peculiar pathologies when the actors receive or request resources both
+                            bellow their subsistence limit and near their carrying capacity.
+                        </div>
                     </div>
                 </div>
             </section>

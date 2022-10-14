@@ -125,7 +125,6 @@ class ResourceHolder {
 
     least(fallback: number): number {
         const min = {kind: 0, qt: Number.POSITIVE_INFINITY};
-        
         for(const res of Object.keys(this.resources)) {
             if (min.qt > this.resources[res].amount) {
                 min.kind = this.resources[res].kind;

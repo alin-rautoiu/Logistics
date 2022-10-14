@@ -42,6 +42,14 @@ footer {
     justify-content: center;
 }
 
+.canvas-wrapper:has(#planets-background-canvas) {
+    pointer-events: none;
+}
+
+#planets-background-canvas {
+    pointer-events: none;
+}
+
 .deemphasis h3 {
     font-size: 1rem;
 }
