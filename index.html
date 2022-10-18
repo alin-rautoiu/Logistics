@@ -30,6 +30,7 @@
     <script type="text/javascript" src="./built/Canvas/Opportunity/opportunity-canvasClass.js"></script>
     <script type="text/javascript" src="./built/Canvas/Opportunity/Instanced/OpportunityNonCollab.js"></script>
     <script type="text/javascript" src="./built/Canvas/Opportunity/Instanced/OpportunityCollab.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Opportunity/Instanced/OpportunityRandom.js"></script>
     <script type="text/javascript" src="./built/Canvas/Resource/resource-canvasClass.js"></script>
     <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-1.js"></script>
     <script type="text/javascript" src="./built/Canvas/Resource/Instanced/resource-canvas-2.js"></script>
@@ -55,6 +56,7 @@
             canvasObjects.push(new PlanetCanvas('planets-background-canvas', window.innerWidth, window.innerHeight));
             canvasObjects.push(new OpportunityNonCollab('trial-canvas'));
             canvasObjects.push(new OpportunityCollab('trial-canvas-2'));
+            canvasObjects.push(new OpportunityRandom('trial-canvas-0'));
             canvasObjects.push(new ResourceCanvas1('resource-canvas-1'));
             canvasObjects.push(new ResourceCanvas2('resource-canvas-2'));
             canvasObjects.push(new ResourceCanvas3('resource-canvas-3'));
@@ -186,8 +188,8 @@
             <section>
                 <h2>0. Questions</h2>
                 <h3>What is a model?</h3>
-                <p>Models can be thought of as many things. As a system of equations that takes an input and outputs a
-                    result. As a map. As a story.</p>
+                <p>Models can be thought of as many things. As a system of equations. As maps. As stories. They are
+                    whatever present an outcome out from an original situation.</p>
                 <p>We live only in the here and now, but models allow us, in a certain sense and for a limited number of
                     issues, to be everywhere and everytime.</p>
                 <p>This is why we use models to predict what would happen, to measure the consequences of our decisions.
@@ -198,32 +200,43 @@
                     model is not a role-model and building it is in fact the first cybernetic act.</p>
                 <section class="deemphasis">
                     <h3>What is being modeled?</h3>
+                    <div class="canvas-wrapper">
+                        <div id="trial-canvas-0" class="canvas-container">
+                            <div class="canvas-setup hidden right-side">
+                                <label for="actors-num">Number of actors</label>
+                                <input title="actors-num" class="actors-num" type="number" min="1" value="1" max="200">
+                                <label for="actors-speed">Actors' speed</label>
+                                <input class="actors-speed" type="number" min="0" value="2" step="0.1">
+                                <label for="actors-search">Actors' search radius</label>
+                                <input class="actors-search" type="number" value="70">
+                            </div>
+                            <button type="button" class="canvas-button start-button">Start</button>
+                            <fig>Fig. 0</fig>
+                        </div>
+                    </div>
                     <p>This is an interactive essay about work, collaboration, production and reproduction. You will be
                         presented with a number of boards containing actors represented as red dots.</p>
-                    <p>Usually, the agents will been modeled as pseudo-<em>random walkers</em>
+                    <p>Usually, the actors will been modeled as pseudo-<em>random walkers</em>
                         <span class="read-more"><span class="read-more-open"></span><span
                                 class="read-more-details display-none"><span>The <em>random walk</em> is a process
-                                    through
-                                    which a
-                                    mathematical space is traversed iteratively from the starting point, moving in each
+                                    through which a mathematical space is traversed iteratively from the starting point,
+                                    moving in each
                                     iteration with one unit on a particular dimension. This algorithm can be used to
-                                    simulate
-                                    brownian motion, the movement of amoebas on a surface, to trace a foraging animal or
-                                    even to
-                                    map stock prices.</span> <span> It this case the agents don't start at the origin
-                                    point
-                                    of the space and
-                                    can move simultaneously on the X and Y direction.</span>
-                            </span></span> in pursuit of a destination, represent as a green dot. Each agent only has a
-                        limited range
-                        of acquisition represented by the pulsing red circle. It will identify the opportunity only if
-                        it
-                        finds it in its range.
+                                    simulate brownian motion, the movement of amoebas on a surface, to trace a foraging
+                                    animal or
+                                    even to map stock prices.</span> <span> It this case the actors don't start at the
+                                    origin
+                                    point of the space and can move simultaneously on the X and Y direction, which is why I call them pseudo-random walkers.</span>
+                            </span></span> in pursuit of a destination, represent as a green dot. Each actor only has a
+                        limited range of acquisition represented by the pulsing red circle. It will identify the
+                        opportunity only if
+                        it finds it in its range.
                     </p>
                     <p>As the modeled situations will become more complicated, the actors won't simply have to discover
                         and
                         reach a
-                        certain point on the board, but also to perform some sort of work there. In this case, the goals
+                        certain point on the board, but they'll also have to perform some sort of work there. In this
+                        case, the goals
                         will be represented as color-coded hexagons.</p>
                     <p>What follows aren't animations, but realtime simulations based on the rules as they've been
                         explained. The simulations inside the boards can be re-ran. The actors are placed on grid with a
@@ -239,12 +252,16 @@
                             problematizations and deconstructions of these categories in the general discourse.
                         </p>
                     </div>
+                    <p>The examples will start simple, introducing concepts relevant to organizations, building upon
+                        them, and combining them. By their very nature, the simulations are incomplete pictures of both
+                        the natural and the social world. But, I believe, this simplicity, when used judiciously and
+                        critically, allows us to better understand these worlds.</p>
                 </section>
             </section>
             <section>
                 <h2>1. The need for an organization</h2>
-                <h3>Opportunity acquisition</h3>
-                <p>The agents in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
+                <h3>Opportunity acquisition and communication</h3>
+                <p>The actors in the first canvas (<em>Fig. 1a</em>) are pursuing the goal on their own. When
                     reaching the destination they will simply stop. The same space is covered multiple times over. It
                     can take a long time for all of them to reach their goal.
                 </p>
@@ -268,10 +285,10 @@
                         <fig>Fig. 1a</fig>
                     </div>
                 </div>
-                <p>But agents can share common goals. An organization offers its members the means to identify
-                    opportunities.</p>
-                <p>The agents in the second canvas (<em>Fig. 1b</em>) will communicate to each other the position of
-                    the goal. In this way, the agent to finish last will do so with only a small delay compared to the
+                <p>But actors can share common goals. An organization offers its members the means to identify
+                    opportunities, if they can communicate.</p>
+                <p>The actors in the second canvas (<em>Fig. 1b</em>) will relate to each other the position of
+                    the goal. In this way, the actor to finish last will do so with only a small delay compared to the
                     fastest one.</p>
                 <div class="canvas-wrapper has-more" data-link="trial-canvas">
                     <div id="trial-canvas-2" class="canvas-container">
@@ -293,17 +310,17 @@
                             </p>
                         </div>
                         <div class="canvas-discussion-to-be-expanded">
-                            <p>Play with the parameters for the agents on each canvas. Notice how much fitter (faster
-                                and/or with a larger search radius) the agents exploring on their own have to be to
+                            <p>Play with the parameters for the actors on each canvas. Notice how much fitter (faster
+                                and/or with a larger search radius) the actors exploring on their own have to be to
                                 reach the goal in a comparable time with those able to collaborate. Also note that the
-                                more collaborating agents there are, the quicker they all reach the destination.</p>
+                                more collaborating actors there are, the quicker they all reach the destination.</p>
 
                             <p>Fundamental to this result are <strong>lines of communication</strong>, a <strong>shared
                                     goal</strong> and a
                                 <strong>command structure</strong>.
                             </p>
                             <p>In this case the lines of communication have been presumed to have perfect integrity and
-                                considerable speed. </p>
+                                considerable speed.</p>
                             <p>It's self-evident that the goal is shared.</p>
                             <p>The command structure is perfectly horizontal. Each member can issue to each other the
                                 full spectrum of possible tasks, which in this case consists of one single command.</p>
@@ -311,11 +328,11 @@
                         </div>
                     </div>
                 </div>
-                <h3>Resource pooling</h3>
+                <h3>Resource pooling and expiration</h3>
                 <p>Actors are pursuing opportunities in according to their needs. When their needs aren't met after a
                     period of time, they expire. As before, we can think of this from the literal and prosaic, such as
-                    animals dying from lack of food, to the more complex, such as employees quitting a job if they don't
-                    find the tasks they're given stimulating enough. </p>
+                    animals dying from lack of food, to the more complex, such as employees quitting a job if they aren't paid enough, or someone exiting a social, artistic or political organization if they don't
+                    find the tasks they're given stimulating enough.</p>
                 <div class="canvas-wrapper">
                     <div id="resource-canvas-1" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -334,7 +351,7 @@
                 <p>The actors will satisfy their needs by acting on task points.<span class="read-more"><span
                             class="read-more-open"></span><span class="read-more-details display-none"><span>In this
                                 case the task points disappear after a period of time to simulate scarcity. The actors
-                                are also aware of the task points' position, they don't need to discover them of the
+                                are also aware of the task points' position, they don't need to discover them on the
                                 board at this point.</span>
                         </span></span>They will go to the nearest free task point and perform some kind of work on it,
                     gaining the means to satisfy their needs, up to a limit. We can imagine this to be a solitary prey
@@ -363,9 +380,9 @@
                         </div>
                     </div>
                 </div>
-                <P>This creates a very competitive environment. But what if the learn to share? If an actor has a
+                <p>This creates a very competitive environment. But what if the learn to share? If an actor has a
                     surplus, it'll try to identify the nearest member of its organization lacking the resource it needs
-                    and impart to it half of what it acquired.</P>
+                    and impart to it half of what it acquired.</p>
                 <div class="canvas-wrapper has-more" id="resource-canvas-wrapper-3" data-link="resource-canvas-2">
                     <div id="resource-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -407,6 +424,9 @@
                 <p></p>
                 <h3>Skills transfer or knowledge reproduction</h3>
                 <p>Let us now consider that actors naturally expire after a set time, even if their needs are met.</p>
+                <p>Animals in a pack simply die of old age. As do employees. But employees and members of an organization will also want to exit it after a set period of time, even if all their needs ar met.</p>
+                <p>This is a similar outcome to the prior one, but arrived at in a different enough way that it warrants its own modeled process.</p>
+                <p>Having unity between the two ways in which agents expire can mask problems in an organization, while delineating between them allows the expression of another trait of organizations.</p>
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-1" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -431,9 +451,9 @@
                         </div>
                     </div>
                 </div>
-                <p>It isn't surprising what happens such actors are placed in an environment with no knowledge of its
-                    opportunities. Reaching the opportunity is a mostly left to chance and very much determined by their
-                    starting position in relation to where the opportunities are placed./p>
+                <p>It isn't surprising what happens when independent actors are placed in an environment with no knowledge of its
+                    opportunities. Reaching the opportunity is mostly left to chance and very much determined by their
+                    starting position in relation to where the opportunities are placed.</p>
                 <div class="canvas-wrapper">
                     <div id="knowledge-reproduction-canvas-2" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -458,9 +478,9 @@
                         </div>
                     </div>
                 </div>
-                <p>As long as the organization takes in new members at a higher rate than the expiration rate of the
-                    prior members and it allows the time for the acquired information to be diffused, no new member has
-                    to go through the discovery process. <span class="read-more"><span
+                <p>On the other hand, as long as the organization takes in new members at a higher rate than the expiration rate of the
+                    prior members, while allowing the time for the acquired information to be diffused, no new member has
+                    to go through the discovery process.<span class="read-more"><span
                             class="read-more-open"></span><span class="read-more-details display-none"><span>For the
                                 sake of clarity I've had the actors in this scene not share between them, instead
                                 focusing only on reaching the opportunity point and communicating.</span></span></span>
@@ -535,7 +555,7 @@
                                 this scene not share between them, instead focusing only on reaching the opportunity
                                 point and communicating.</span></span></span> For the actor this might appear identical,
                     arriving at what they
-                    presumed to be an opportunity and finding nothing actionable, but it's distinct enough to warrant a
+                    presumed to be an opportunity and finding nothing actionable, but, as it was the case with the expiration of actors, it's distinct enough to warrant a
                     separate representation.</p>
                 <p>Especially considering that this kind of noisy communication can have multiple causes: itself a
                     feature of the environment (a noisy medium or a medium poorly suited for the chosen communication
@@ -575,7 +595,7 @@
                             <p>For the first image the simulation was configured so that the actors were spawned with a
                                 low frequency, resulting in a sparse organization, with the wrong information naturally
                                 filtered out.
-                                In the second one the actors were spawned at a much higher rate, creating a dense
+                                In the second one, the actors were spawned at a much higher rate, creating a dense
                                 organization that perpetuated wrong information.
                             </p>
                             <img title="Low density" src="./resources/imgs/low density.png"
@@ -595,12 +615,12 @@
                 <p>Rarely actors have simple needs that can be resolved through a single opportunity. Nor can all
                     opportunities simply be exploited without some prior work. I've modeled this observation in the next
                     series of boards. The actors cannot exploit the unfamiliar opportunities without first expending the
-                    result of some prior work. This could be seen as modeling an industrial process, starting with
+                    result of some prior work. This could be seen as modeling an industrial or logistic process, starting with
                     extracting a mineral then transporting it from production point to point, but as in the other cases
-                    the visualization needn't be read as a literal, if abstracted, representation of the modeled
+                    the visualization needn't be read as a literal, if visually abstracted, representation of the modeled
                     process.
                     Many of the activities where such visualizations are useful are precisely those that don't
-                    immediately lend themselves to visual representations. For example one could look at this as a model
+                    immediately lend themselves to graphical representations. For example one could look at this as a model
                     for writing an article, with the opportunity points representing various steps in the process such
                     as ideating, researching, revising or proofreading with the time spent moving between them as
                     context switching.</p>
@@ -653,7 +673,8 @@
                         </div>
                     </div>
                 </div>
-                <p>This gives us the intuition that actors working as group should perform better in an organization.</p>
+                <p>This gives us the intuition that actors working as group should perform better in an organization.
+                </p>
                 <div class="canvas-wrapper has-more" data-link="sequence-canvas-2">
                     <div id="sequence-canvas-3" class="canvas-container">
                         <button type="button" class="canvas-button start-button">Start</button>
@@ -680,7 +701,7 @@
                         <div class="canvas-discussion-to-be-expanded">
                             Instead, they perform only marginally better than the unorganized actors, especially as the
                             size of the organization increases and as the tasks become more complex. The organization
-                            also allows for peculiar pathologies when the actors receive or request resources both
+                            also presents peculiar pathologies when the actors receive or request resources both
                             bellow their subsistence limit and near their carrying capacity.
                         </div>
                     </div>
@@ -689,7 +710,8 @@
             <section>
                 <h2>3. The plan</h2>
                 <h3>Delegation, coordination and compartmentalization</h3>
-                <p>An attempt at addressing these issues is constraining individual autonomy though a command structure and a division of labor.</p>
+                <p>An attempt at addressing these issues is constraining individual autonomy though a command structure
+                    and a division of labor.</p>
                 <div>
                     <div class="canvas-wrapper">
                         <div id="command-canvas-1" class="canvas-container">
