@@ -104,6 +104,27 @@ class CommandablePawn extends Pawn {
             this.sketch.strokeWeight(2);
             this.sketch.noFill();
             this.sketch.ellipse(this.position.x, this.position.y, this.diameter + 2, this.diameter + 2);
+            const moveTasks = this.tasks.filter(t => { var _a; return t.direction === TaskDirection.MOVE && ((_a = t.movementTarget) === null || _a === void 0 ? void 0 : _a.target); });
+            if (moveTasks.length > 0) {
+                this.sketch.stroke('rgba(50, 200, 0, 0.6)');
+                this.sketch.strokeWeight(1);
+                this.sketch.drawingContext.setLineDash([4, 4]);
+                let prevX = this.position.x;
+                let prevY = this.position.y;
+                for (const task of moveTasks) {
+                    const wp = task.movementTarget.target;
+                    this.sketch.line(prevX, prevY, wp.x, wp.y);
+                    prevX = wp.x;
+                    prevY = wp.y;
+                }
+                this.sketch.drawingContext.setLineDash([]);
+                this.sketch.fill('rgba(50, 200, 0, 0.8)');
+                this.sketch.noStroke();
+                for (let i = 0; i < moveTasks.length; i++) {
+                    const wp = moveTasks[i].movementTarget.target;
+                    this.sketch.circle(wp.x, wp.y, i === 0 ? 8 : 6);
+                }
+            }
             this.sketch.pop();
         }
         else {
@@ -122,6 +143,14 @@ class CommandablePawn extends Pawn {
         this.bounceV = bounceV;
         const frameRate = this.frameRate;
         const target = this.tasks[0].movementTarget.target;
+        const arrivalThreshold = this.diameter;
+        if (this.tasks.length > 1 && this.tasks[0].direction === TaskDirection.MOVE && !this.tasks[0].movementTarget.entity) {
+            const dist = target.copy().sub(this.position.copy()).mag();
+            if (dist < arrivalThreshold) {
+                this.removeCurrentTask();
+                return this.sketch.createVector(0, 0);
+            }
+        }
         this.direction = (target.copy().sub(this.position.copy())).normalize();
         const velocity = this.sketch.createVector(this.direction.x * this.speed / frameRate * bounceH, this.direction.y * this.speed / frameRate * bounceV);
         if (this.sketch.select('#show-direction').value() === "true") {

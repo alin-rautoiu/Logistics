@@ -1,4 +1,22 @@
 class Pawn extends Entity {
+    get movementTarget() {
+        const currentTask = this.getCurrentTask();
+        return currentTask === null || currentTask === void 0 ? void 0 : currentTask.movementTarget;
+    }
+    set movementTarget(target) {
+        const currentTask = this.getCurrentTask();
+        if (target) {
+            this.direction = target.target.copy().sub(this.position).normalize();
+        }
+        if (currentTask) {
+            currentTask.movementTarget = target;
+        }
+    }
+    get destination() {
+        var _a;
+        const currentTask = this.getCurrentTask();
+        return (_a = currentTask === null || currentTask === void 0 ? void 0 : currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.target;
+    }
     constructor(sketch, x = 400, y = 200, diameter = 18, speed, searchRadius, pg, target, idx, shares) {
         super(sketch, x, y, "Pawn");
         this.frameRate = 60;
@@ -166,24 +184,6 @@ class Pawn extends Entity {
         this.collaborates = undefined;
         this.isOnHWall = undefined;
         this.isOnVWall = undefined;
-    }
-    get movementTarget() {
-        const currentTask = this.getCurrentTask();
-        return currentTask === null || currentTask === void 0 ? void 0 : currentTask.movementTarget;
-    }
-    set movementTarget(target) {
-        const currentTask = this.getCurrentTask();
-        if (target) {
-            this.direction = target.target.copy().sub(this.position).normalize();
-        }
-        if (currentTask) {
-            currentTask.movementTarget = target;
-        }
-    }
-    get destination() {
-        var _a;
-        const currentTask = this.getCurrentTask();
-        return (_a = currentTask === null || currentTask === void 0 ? void 0 : currentTask.movementTarget) === null || _a === void 0 ? void 0 : _a.target;
     }
     behave() {
         this.decisions.forEach(element => {
@@ -424,7 +424,6 @@ class Pawn extends Entity {
                 this.sketch.push();
                 this.sketch.strokeWeight(1);
                 this.sketch.stroke(TaskPoint.colorAccent(taskPoint.kind));
-                this.sketch.line(this.position.x, this.position.y, taskPoint.position.x, taskPoint.position.y);
                 this.sketch.pop();
             }
             return false;

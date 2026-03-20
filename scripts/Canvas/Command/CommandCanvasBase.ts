@@ -70,9 +70,15 @@ class CommandCanvasBase extends CanvasWithPawns {
                 setTimeout(() => this.destinationPosition = null, 500);
                 this.destinationSet = true;
 
-                for (const cp of this.selectedPawns) {
-                    cp.tasks = [new Task(TaskDirection.MOVE, new MovementTarget(null, null, this.destinationPosition.copy()))];
-                    cp.receiveTargetPosition(cp.tasks[0].movementTarget);
+                if (e.shiftKey) {
+                    for (const cp of this.selectedPawns) {
+                        cp.tasks.push(new Task(TaskDirection.MOVE, new MovementTarget(null, null, this.destinationPosition.copy())));
+                    }
+                } else {
+                    for (const cp of this.selectedPawns) {
+                        cp.tasks = [new Task(TaskDirection.MOVE, new MovementTarget(null, null, this.destinationPosition.copy()))];
+                        cp.receiveTargetPosition(cp.tasks[0].movementTarget);
+                    }
                 }
             }
         })
