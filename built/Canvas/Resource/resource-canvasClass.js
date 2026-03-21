@@ -1,7 +1,7 @@
 class ResourceCanvasBase extends CanvasWithPawns {
-    constructor(sketch, canvasId) {
+    constructor(canvasId) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
-        super(sketch, canvasId);
+        super(canvasId);
         this.resources = [];
         this.resourceFrequencyControl = document.querySelector(`#${this.canvasId} .canvas-setup .resource-frequency`);
         this.pauseDurationControl = document.querySelector(`#${this.canvasId} .canvas-setup .actors-pause-duration`);

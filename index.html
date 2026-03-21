@@ -21,6 +21,7 @@
     <script type="text/javascript" src="./built/Entities/Entity.js"></script>
     <script type="text/javascript" src="./built/Entities/Goal.js"></script>
     <script type="text/javascript" src="./built/Entities/TaskPoint.js"></script>
+    <script type="text/javascript" src="./built/Entities/MarketTaskPoint.js"></script>
     <script type="text/javascript" src="./built/Entities/Pawn.js"></script>
     <script type="text/javascript" src="./built/Entities/CommandablePawn.js"></script>
 
@@ -46,6 +47,30 @@
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-2.js"></script>
     <script type="text/javascript" src="./built/Canvas/Sequence/Instanced/sequence-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Command/CommandCanvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Hierarchy/hierarchy-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Hierarchy/Instanced/hierarchy-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Hierarchy/Instanced/hierarchy-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Hierarchy/Instanced/hierarchy-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Competition/competition-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Competition/Instanced/competition-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Competition/Instanced/competition-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Competition/Instanced/competition-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Roles/roles-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Roles/Instanced/roles-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Roles/Instanced/roles-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Roles/Instanced/roles-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Democracy/democracy-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Democracy/Instanced/democracy-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Democracy/Instanced/democracy-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Democracy/Instanced/democracy-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Reputation/reputation-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Reputation/Instanced/reputation-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Reputation/Instanced/reputation-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Reputation/Instanced/reputation-canvas-3.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Market/market-canvasBase.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Market/Instanced/market-canvas-1.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Market/Instanced/market-canvas-2.js"></script>
+    <script type="text/javascript" src="./built/Canvas/Market/Instanced/market-canvas-3.js"></script>
     <script type="text/javascript" src="./built/Canvas/Planets/PlanetCanvas.js"></script>
 
     <link rel="stylesheet" href="./syles/style.css">
@@ -69,6 +94,24 @@
             canvasObjects.push(new SequenceCanvas2('sequence-canvas-2'));
             canvasObjects.push(new SequenceCanvas3('sequence-canvas-3'));
             canvasObjects.push(new CommandCanvasBase('command-canvas-1'));
+            canvasObjects.push(new HierarchyCanvas1('hierarchy-canvas-1'));
+            canvasObjects.push(new HierarchyCanvas2('hierarchy-canvas-2'));
+            canvasObjects.push(new HierarchyCanvas3('hierarchy-canvas-3'));
+            canvasObjects.push(new CompetitionCanvas1('competition-canvas-1'));
+            canvasObjects.push(new CompetitionCanvas2('competition-canvas-2'));
+            canvasObjects.push(new CompetitionCanvas3('competition-canvas-3'));
+            canvasObjects.push(new RolesCanvas1('roles-canvas-1'));
+            canvasObjects.push(new RolesCanvas2('roles-canvas-2'));
+            canvasObjects.push(new RolesCanvas3('roles-canvas-3'));
+            canvasObjects.push(new DemocracyCanvas1('democracy-canvas-1'));
+            canvasObjects.push(new DemocracyCanvas2('democracy-canvas-2'));
+            canvasObjects.push(new DemocracyCanvas3('democracy-canvas-3'));
+            canvasObjects.push(new ReputationCanvas1('reputation-canvas-1'));
+            canvasObjects.push(new ReputationCanvas2('reputation-canvas-2'));
+            canvasObjects.push(new ReputationCanvas3('reputation-canvas-3'));
+            canvasObjects.push(new MarketCanvas1('market-canvas-1'));
+            canvasObjects.push(new MarketCanvas2('market-canvas-2'));
+            canvasObjects.push(new MarketCanvas3('market-canvas-3'));
             const readMoreButtons = document.querySelectorAll('.read-more-open');
             readMoreButtons.forEach(b => {
 
@@ -726,6 +769,289 @@
                                 <input class="actors-search" type="hidden" value="70">
                                 <input class="resource-frequency" type="hidden" min="0" value="0" step="1">
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <h2>4. Other configurations</h2>
+
+                <h3>Hierarchy</h3>
+                <p>These boards move from a simple chain of command to deeper management trees where delayed relays create stale, uneven knowledge at the edges.</p>
+                <div class="canvas-wrapper">
+                    <div id="hierarchy-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 7a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="4" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="hierarchy-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 7b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="5" value="10" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="relay-delay">Relay delay (frames)</label>
+                            <input class="relay-delay" type="number" min="0" value="180" step="10">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="hierarchy-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 7c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="6" value="12" max="50">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="relay-delay">Relay delay (frames)</label>
+                            <input class="relay-delay" type="number" min="0" value="120" step="10">
+                            <label for="tier-count">Tier count</label>
+                            <input class="tier-count" type="number" min="2" max="5" value="4" step="1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Competition</h3>
+                <p>Rival groups first race as isolated individuals, then coordinate internally, and finally diverge under unequal starting information.</p>
+                <div class="canvas-wrapper">
+                    <div id="competition-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 8a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="4" value="10" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1.1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="competition-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 8b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="4" value="10" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1.1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="competition-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 8c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="4" value="10" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1.1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Roles</h3>
+                <p>Specialization is introduced first as siloed work, then as cross-role sharing, and finally as a fragile dependency chain sensitive to role ratios.</p>
+                <div class="canvas-wrapper">
+                    <div id="roles-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 9a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="6" value="9" max="45">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="roles-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 9b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="6" value="9" max="45">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="giving-threshold">Giving threshold</label>
+                            <input class="giving-threshold" type="number" min="1" max="30" value="10" step="1">
+                            <label for="request-threshold">Request threshold</label>
+                            <input class="request-threshold" type="number" min="1" max="20" value="3" step="1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="roles-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 9c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="4" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="ratio-1">Type 1 actor count</label>
+                            <input class="ratio-1" type="number" min="1" max="20" value="3" step="1">
+                            <label for="ratio-2">Type 2 actor count</label>
+                            <input class="ratio-2" type="number" min="1" max="20" value="3" step="1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Democracy</h3>
+                <p>Collective choice starts with simple majority, moves to proportional allocation, then reaches consensus deadlock as options and actors grow.</p>
+                <div class="canvas-wrapper">
+                    <div id="democracy-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 10a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="vote-cycle">Vote cycle (frames)</label>
+                            <input class="vote-cycle" type="number" min="30" value="300" step="30">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="democracy-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 10b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="vote-cycle">Vote cycle (frames)</label>
+                            <input class="vote-cycle" type="number" min="30" value="360" step="30">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="democracy-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 10c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Reputation</h3>
+                <p>Trust networks appear robust in stable conditions, self-correct when errors are occasional, and can still collapse when high-trust sources become unreliable.</p>
+                <div class="canvas-wrapper">
+                    <div id="reputation-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 11a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="reputation-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 11b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="reputation-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 11c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Market</h3>
+                <p>Price signals coordinate choices without direct communication, but policy constraints and strategic lock-in can distort the emergent allocation.</p>
+                <div class="canvas-wrapper">
+                    <div id="market-canvas-1" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 12a</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="price-elasticity">Price elasticity</label>
+                            <input class="price-elasticity" type="number" min="0" value="1" step="0.1">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="market-canvas-2" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 12b</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="price-floor">Price floor</label>
+                            <input class="price-floor" type="number" min="0" value="0" step="0.5">
+                            <label for="price-ceiling">Price ceiling</label>
+                            <input class="price-ceiling" type="number" min="1" value="10" step="0.5">
+                            <input class="actors-search" type="hidden" value="70">
+                        </div>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <div id="market-canvas-3" class="canvas-container">
+                        <button type="button" class="canvas-button start-button">Start</button>
+                        <fig>Fig. 12c</fig>
+                        <div class="canvas-setup hidden right-side">
+                            <label for="actors-num">Number of actors</label>
+                            <input class="actors-num" type="number" min="3" value="8" max="40">
+                            <label for="actors-speed">Actors' speed</label>
+                            <input class="actors-speed" type="number" min="0" value="1" step="0.1">
+                            <label for="monopolists">Monopolists</label>
+                            <input class="monopolists" type="number" min="0" value="1" step="1">
+                            <label for="lock-duration">Lock duration (frames)</label>
+                            <input class="lock-duration" type="number" min="1" value="180" step="10">
+                            <input class="actors-search" type="hidden" value="70">
                         </div>
                     </div>
                 </div>

@@ -233,6 +233,100 @@ canvas {
     margin-bottom: 10px;
 }
 
+/* ---- Clean minimal input styling ---- */
+.canvas-setup label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.01em;
+}
+
+.canvas-setup input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+    background: #fff;
+    border: 1.5px solid #bbb;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.82rem;
+    color: #222;
+    width: 5.5em;
+    transition: border-color 0.15s;
+    outline: none;
+}
+
+.canvas-setup input[type=number]::-webkit-inner-spin-button,
+.canvas-setup input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.canvas-setup input[type=number]:focus {
+    border-color: #555;
+}
+
+.canvas-setup input[type=checkbox] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.05em;
+    height: 1.05em;
+    border: 1.5px solid #bbb;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+
+.canvas-setup input[type=checkbox]:checked {
+    background: #333;
+    border-color: #333;
+}
+
+.canvas-setup input[type=checkbox]:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    width: 0.28em;
+    height: 0.5em;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.canvas-setup input[type=checkbox]:focus {
+    border-color: #555;
+    outline: none;
+}
+
+.canvas-button {
+    background: #fff;
+    border: 1.5px solid #888;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #222;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.12s, border-color 0.12s;
+}
+
+.canvas-button:hover {
+    background: #f0f0f0;
+    border-color: #555;
+}
+
+.canvas-button:active {
+    background: #e0e0e0;
+}
+/* ---- End input styling ---- */
+
 .read-more {
     display: inline;
     user-select: none;
